@@ -271,13 +271,15 @@ class Forecasting
             return ['lower' => [], 'upper' => [], 'std_dev' => 0];
         }
 
-        // Calculate standard deviation of historical data
-        $mean = array_sum($historicalData) / count($historicalData);
+        // Calculate standard deviation of historical data (using sample variance)
+        $n = count($historicalData);
+        $mean = array_sum($historicalData) / $n;
         $variance = 0;
         foreach ($historicalData as $value) {
             $variance += pow($value - $mean, 2);
         }
-        $stdDev = sqrt($variance / count($historicalData));
+        // Use Bessel's correction (n-1) for sample variance
+        $stdDev = sqrt($variance / max(1, $n - 1));
 
         // Calculate confidence intervals
         $lower = [];
@@ -307,12 +309,14 @@ class Forecasting
             return [];
         }
 
-        $mean = array_sum($data) / count($data);
+        $n = count($data);
+        $mean = array_sum($data) / $n;
         $variance = 0;
         foreach ($data as $value) {
             $variance += pow($value - $mean, 2);
         }
-        $stdDev = sqrt($variance / count($data));
+        // Use Bessel's correction (n-1) for sample variance
+        $stdDev = sqrt($variance / max(1, $n - 1));
 
         $anomalies = [];
         if ($stdDev > 0) {
