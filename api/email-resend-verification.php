@@ -113,7 +113,7 @@ try {
     $logRateLimit->close();
     
     // Send verification email
-    $verificationLink = "https://" . $_SERVER['HTTP_HOST'] . "/supplier/api/verify-email.php?token=" . $verificationToken;
+    $verificationLink = SITE_URL . "/supplier/api/verify-email.php?token=" . $verificationToken;
     $emailTemplate = getEmailVerificationTemplate($supplierName, $verificationLink, $emailData['email']);
     
     $emailSent = sendEmail(

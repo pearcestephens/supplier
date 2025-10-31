@@ -57,18 +57,20 @@ function renderEmailList(emails) {
     emails.forEach(email => {
         const isPrimary = email.is_primary;
         const isVerified = email.verified;
+        const emailAddress = escapeHtml(email.email);
+        const emailId = email.id;
         
         html += `
             <div class="list-group-item d-flex justify-content-between align-items-center">
                 <div>
-                    <strong>${escapeHtml(email.email)}</strong>
+                    <strong>${emailAddress}</strong>
                     ${isPrimary ? '<span class="badge bg-primary ms-2">Primary</span>' : ''}
                     ${isVerified ? '<span class="badge bg-success ms-1">Verified</span>' : '<span class="badge bg-warning text-dark ms-1">Unverified</span>'}
                 </div>
                 <div class="btn-group">
-                    ${!isPrimary && isVerified ? `<button class="btn btn-sm btn-info" onclick="setPrimary(${email.id})">Set Primary</button>` : ''}
-                    ${!isVerified ? `<button class="btn btn-sm btn-secondary" onclick="resendVerification(${email.id})">Resend</button>` : ''}
-                    ${!isPrimary ? `<button class="btn btn-sm btn-danger" onclick="removeEmail(${email.id}, '${escapeHtml(email.email)}')">Remove</button>` : ''}
+                    ${!isPrimary && isVerified ? `<button class="btn btn-sm btn-info" onclick="setPrimary(${emailId})">Set Primary</button>` : ''}
+                    ${!isVerified ? `<button class="btn btn-sm btn-secondary" onclick="resendVerification(${emailId})">Resend</button>` : ''}
+                    ${!isPrimary ? `<button class="btn btn-sm btn-danger" data-email-id="${emailId}" data-email="${emailAddress}" onclick="removeEmailHandler(this)">Remove</button>` : ''}
                 </div>
             </div>
         `;
@@ -171,6 +173,15 @@ function isValidEmail(email) {
 // ============================================================================
 // REMOVE EMAIL
 // ============================================================================
+
+/**
+ * Handle remove email button click with data attributes
+ */
+function removeEmailHandler(button) {
+    const emailId = parseInt(button.getAttribute('data-email-id'));
+    const emailAddress = button.getAttribute('data-email');
+    removeEmail(emailId, emailAddress);
+}
 
 /**
  * Remove email address with confirmation

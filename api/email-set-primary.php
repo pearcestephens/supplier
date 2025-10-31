@@ -68,7 +68,6 @@ try {
         sendJsonResponse(true, [
             'email' => $emailData['email']
         ], 'This email is already set as primary');
-        exit;
     }
     
     // Must be verified to set as primary

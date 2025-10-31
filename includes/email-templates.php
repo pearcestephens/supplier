@@ -182,7 +182,7 @@ function sendEmail(string $to, string $subject, string $htmlBody, string $textBo
     $headers[] = "MIME-Version: 1.0";
     
     // Create multipart boundary
-    $boundary = md5(uniqid((string)time()));
+    $boundary = bin2hex(random_bytes(16));
     
     $headers[] = "Content-Type: multipart/alternative; boundary=\"{$boundary}\"";
     
