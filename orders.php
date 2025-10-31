@@ -398,7 +398,7 @@ $actionButtons = '
                             </tr>
                         <?php else: ?>
                             <?php foreach ($orders as $order): ?>
-                                <tr>
+                                <tr class="clickable-row" onclick="window.location.href='/supplier/order-detail.php?id=<?php echo $order['id']; ?>'" style="cursor: pointer;">
                                     <td class="fw-bold"><?php echo htmlspecialchars($order['vend_number'] ?? $order['public_id'] ?? 'N/A'); ?></td>
                                     <td>
                                         <div class="fw-bold"><?php echo htmlspecialchars($order['outlet_name']); ?></div>
@@ -434,7 +434,7 @@ $actionButtons = '
                                             <?php echo htmlspecialchars($order['state']); ?>
                                         </span>
                                     </td>
-                                    <td class="text-center">
+                                    <td class="text-center" onclick="event.stopPropagation();">
                                         <?php if ($order['state'] === 'SENT' || $order['state'] === 'RECEIVING'): ?>
                                             <button class="btn btn-sm btn-warning" onclick="updateTracking(<?php echo $order['id']; ?>)" title="Add/Update Tracking">
                                                 <i class="fas fa-shipping-fast"></i>
@@ -443,13 +443,13 @@ $actionButtons = '
                                             <span class="text-muted">-</span>
                                         <?php endif; ?>
                                     </td>
-                                    <td class="text-center">
+                                    <td class="text-center" onclick="event.stopPropagation();">
                                         <div class="btn-group btn-group-sm">
-                                            <a href="?tab=orders&view=<?php echo $order['id']; ?>" class="btn btn-light" title="View Details">
-                                                <i class="fas fa-eye"></i>
+                                            <a href="/supplier/order-detail.php?id=<?php echo $order['id']; ?>" class="btn btn-primary" title="View Full Details">
+                                                <i class="fas fa-eye"></i> View
                                             </a>
                                             <?php if ($order['state'] === 'OPEN' || $order['state'] === 'SENT'): ?>
-                                                <button class="btn btn-primary" onclick="updateOrder(<?php echo $order['id']; ?>)" title="Update Status">
+                                                <button class="btn btn-warning" onclick="updateOrder(<?php echo $order['id']; ?>)" title="Update Status">
                                                     <i class="fas fa-edit"></i>
                                                 </button>
                                             <?php endif; ?>
@@ -686,6 +686,17 @@ $actionButtons = '
 .orders-table tbody tr:hover {
     background-color: rgba(59, 130, 246, 0.05);
     transform: scale(1.01);
+}
+
+/* Clickable row styling */
+.clickable-row {
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.clickable-row:hover {
+    background-color: rgba(59, 130, 246, 0.1) !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
 }
 
 .page-title {
