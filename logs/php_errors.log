@@ -6873,3 +6873,13 @@ Stack trace:
 [31-Oct-2025 22:52:51 Pacific/Auckland] PHP Error [2]: include(): Failed opening '/home/129337.cloudwaysapps.com/jcepnzzkmj/public_html/supplier/components/footer.php' for inclusion (include_path='.:/usr/share/php') in /home/129337.cloudwaysapps.com/jcepnzzkmj/public_html/supplier/products.php on line 448
 [31-Oct-2025 23:21:59 Pacific/Auckland] Inventory movements error: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'jcepnzzkmj.inventory_movements' doesn't exist
 [31-Oct-2025 23:22:16 Pacific/Auckland] Inventory movements error: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'jcepnzzkmj.inventory_movements' doesn't exist
+[01-Nov-2025 00:37:48 Pacific/Auckland] Uncaught exception: Call to undefined method Auth::requireAuth() in /home/129337.cloudwaysapps.com/jcepnzzkmj/public_html/supplier/api/search-orders.php:15
+[01-Nov-2025 00:37:48 Pacific/Auckland] Stack trace: #0 {main}
+[01-Nov-2025 00:37:50 Pacific/Auckland] Uncaught exception: Call to undefined method Auth::requireAuth() in /home/129337.cloudwaysapps.com/jcepnzzkmj/public_html/supplier/api/get-order-detail.php:15
+[01-Nov-2025 00:37:50 Pacific/Auckland] Stack trace: #0 {main}
+[01-Nov-2025 00:37:59 Pacific/Auckland] Uncaught exception: Call to undefined method Auth::requireAuth() in /home/129337.cloudwaysapps.com/jcepnzzkmj/public_html/supplier/api/get-warranty-detail.php:15
+[01-Nov-2025 00:37:59 Pacific/Auckland] Stack trace: #0 {main}
+[01-Nov-2025 00:37:59 Pacific/Auckland] Uncaught exception: Call to undefined method Auth::requireAuth() in /home/129337.cloudwaysapps.com/jcepnzzkmj/public_html/supplier/api/search-products.php:15
+[01-Nov-2025 00:37:59 Pacific/Auckland] Stack trace: #0 {main}
+[01-Nov-2025 00:38:00 Pacific/Auckland] Uncaught exception: Call to undefined method Auth::requireAuth() in /home/129337.cloudwaysapps.com/jcepnzzkmj/public_html/supplier/api/update-account.php:15
+[01-Nov-2025 00:38:00 Pacific/Auckland] Stack trace: #0 {main}

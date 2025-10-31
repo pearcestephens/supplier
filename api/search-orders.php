@@ -12,7 +12,7 @@ declare(strict_types=1);
 require_once __DIR__ . '/../bootstrap.php';
 
 // Require authentication
-Auth::requireAuth();
+requireAuth();
 
 header('Content-Type: application/json');
 
@@ -21,10 +21,10 @@ try {
     if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
         throw new Exception('Invalid request method');
     }
-
+    
     // Get search query
     $query = $_GET['q'] ?? '';
-
+    
     if (strlen($query) < 2) {
         echo json_encode([
             'success' => true,
@@ -33,11 +33,9 @@ try {
         ]);
         exit;
     }
-
+    
     // Get supplier ID from session
-    $supplierId = Auth::getSupplierId();
-
-    if (!$supplierId) {
+    $supplierId = getSupplierID();    if (!$supplierId) {
         throw new Exception('Supplier ID not found in session');
     }
 

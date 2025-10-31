@@ -12,7 +12,7 @@ declare(strict_types=1);
 require_once __DIR__ . '/../bootstrap.php';
 
 // Require authentication
-Auth::requireAuth();
+requireAuth();
 
 header('Content-Type: application/json');
 
@@ -21,18 +21,16 @@ try {
     if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
         throw new Exception('Invalid request method');
     }
-
-    // Get claim ID
+    
+    // Get and validate claim ID
     $claimId = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
-
+    
     if (!$claimId) {
         throw new Exception('Invalid claim ID');
     }
-
+    
     // Get supplier ID from session
-    $supplierId = Auth::getSupplierId();
-
-    if (!$supplierId) {
+    $supplierId = getSupplierID();    if (!$supplierId) {
         throw new Exception('Supplier ID not found in session');
     }
 
