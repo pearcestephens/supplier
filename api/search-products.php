@@ -1,0 +1,116 @@
+<?php
+/**
+ * Search Products API Endpoint
+ * Provides autocomplete search functionality for products
+ * 
+ * @package SupplierPortal
+ * @version 1.0.0
+ */
+
+declare(strict_types=1);
+
+require_once __DIR__ . '/../bootstrap.php';
+
+// Require authentication
+Auth::requireAuth();
+
+header('Content-Type: application/json');
+
+try {
+    // Validate request method
+    if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
+        throw new Exception('Invalid request method');
+    }
+    
+    // Get search query
+    $query = $_GET['q'] ?? '';
+    
+    if (strlen($query) < 2) {
+        echo json_encode([
+            'success' => true,
+            'results' => [],
+            'message' => 'Query too short'
+        ]);
+        exit;
+    }
+    
+    // Get supplier ID from session
+    $supplierId = Auth::getSupplierId();
+    
+    if (!$supplierId) {
+        throw new Exception('Supplier ID not found in session');
+    }
+    
+    // Search products (name, SKU)
+    $db = Database::getInstance();
+    $mysqli = $db->getConnection();
+    
+    $searchTerm = '%' . $query . '%';
+    
+    $stmt = $mysqli->prepare("
+        SELECT 
+            sp.id,
+            sp.product_name,
+            sp.sku,
+            sp.current_stock,
+            sp.unit_price,
+            sp.status,
+            vp.id as vend_product_id
+        FROM supplier_products sp
+        LEFT JOIN vend_products vp ON sp.sku = vp.sku
+        WHERE sp.supplier_id = ?
+        AND (
+            sp.product_name LIKE ?
+            OR sp.sku LIKE ?
+        )
+        ORDER BY sp.product_name
+        LIMIT 10
+    ");
+    
+    $stmt->bind_param('iss', $supplierId, $searchTerm, $searchTerm);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    
+    $results = [];
+    while ($row = $result->fetch_assoc()) {
+        // Determine stock status
+        $stockStatus = 'in stock';
+        $stockClass = 'success';
+        
+        if ($row['current_stock'] <= 0) {
+            $stockStatus = 'out of stock';
+            $stockClass = 'danger';
+        } elseif ($row['current_stock'] < 10) {
+            $stockStatus = 'low stock';
+            $stockClass = 'warning';
+        }
+        
+        $results[] = [
+            'id' => $row['id'],
+            'title' => $row['product_name'],
+            'subtitle' => 'SKU: ' . $row['sku'] . ' | Stock: ' . $row['current_stock'] . ' | $' . number_format((float)$row['unit_price'], 2),
+            'sku' => $row['sku'],
+            'stock' => $row['current_stock'],
+            'price' => $row['unit_price'],
+            'stock_status' => $stockStatus,
+            'stock_class' => $stockClass,
+            'type' => 'product',
+            'icon' => 'box'
+        ];
+    }
+    
+    echo json_encode([
+        'success' => true,
+        'results' => $results,
+        'count' => count($results)
+    ]);
+    
+} catch (Exception $e) {
+    error_log("Search Products API Error: " . $e->getMessage());
+    
+    http_response_code(500);
+    echo json_encode([
+        'success' => false,
+        'message' => 'Search failed: ' . $e->getMessage()
+    ]);
+}

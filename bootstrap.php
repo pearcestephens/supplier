@@ -31,6 +31,7 @@ require_once __DIR__ . '/lib/DatabasePDO.php';
 require_once __DIR__ . '/lib/Session.php';
 require_once __DIR__ . '/lib/Auth.php';
 require_once __DIR__ . '/lib/Utils.php';
+require_once __DIR__ . '/lib/status-badge-helper.php';
 
 // ============================================================================
 // STEP 3: Initialize session (MUST be before Auth)

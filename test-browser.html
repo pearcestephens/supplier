@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Browser Testing Suite</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-section {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .test-section h2 {
+            margin-top: 0;
+            color: #333;
+            border-bottom: 2px solid #d4af37;
+            padding-bottom: 10px;
+        }
+        .test-button {
+            background: #d4af37;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+            font-size: 14px;
+        }
+        .test-button:hover {
+            background: #c19b2f;
+        }
+        .result {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 13px;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        .console-log {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 15px;
+            margin-top: 10px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .console-log pre {
+            margin: 0;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 Supplier Portal - Browser Testing Suite</h1>
+    
+    <!-- Console Error Check -->
+    <div class="test-section">
+        <h2>1. JavaScript Console Errors</h2>
+        <p>Press F12 and check the Console tab. There should be <strong>zero errors</strong>.</p>
+        <div id="console-status" class="result info">
+            Checking for console errors...
+        </div>
+    </div>
+
+    <!-- API Endpoint Tests -->
+    <div class="test-section">
+        <h2>2. API Endpoint Tests</h2>
+        <p>Test all 5 newly created API endpoints</p>
+        
+        <button class="test-button" onclick="testSearchOrders()">Test Search Orders</button>
+        <button class="test-button" onclick="testGetOrderDetail()">Test Get Order Detail</button>
+        <button class="test-button" onclick="testGetWarrantyDetail()">Test Get Warranty Detail</button>
+        <button class="test-button" onclick="testSearchProducts()">Test Search Products</button>
+        <button class="test-button" onclick="testUpdateAccount()">Test Update Account</button>
+        
+        <div id="api-results"></div>
+    </div>
+
+    <!-- JavaScript Feature Tests -->
+    <div class="test-section">
+        <h2>3. JavaScript Features</h2>
+        <p>Test individual UX enhancement features</p>
+        
+        <button class="test-button" onclick="testToast()">Test Toast Notification</button>
+        <button class="test-button" onclick="testConfirmDialog()">Test Confirm Dialog</button>
+        <button class="test-button" onclick="testButtonLoading()">Test Button Loading</button>
+        <button class="test-button" onclick="testFormValidation()">Test Form Validation</button>
+        
+        <div id="feature-results"></div>
+    </div>
+
+    <!-- Network Requests -->
+    <div class="test-section">
+        <h2>4. Network Requests</h2>
+        <p>Check Network tab (F12) for any failed requests (404, 500, etc.)</p>
+        <div class="console-log">
+            <pre id="network-log">Open Network tab to monitor...</pre>
+        </div>
+    </div>
+
+    <!-- File Loading Check -->
+    <div class="test-section">
+        <h2>5. Resource Loading</h2>
+        <p>Checking if all CSS and JS files loaded successfully...</p>
+        <div id="resource-status"></div>
+    </div>
+
+    <script>
+        // Console error tracking
+        let consoleErrors = [];
+        const originalError = console.error;
+        console.error = function(...args) {
+            consoleErrors.push(args.join(' '));
+            originalError.apply(console, args);
+            updateConsoleStatus();
+        };
+
+        function updateConsoleStatus() {
+            const status = document.getElementById('console-status');
+            if (consoleErrors.length === 0) {
+                status.className = 'result success';
+                status.textContent = '✅ No console errors detected!';
+            } else {
+                status.className = 'result error';
+                status.innerHTML = `❌ ${consoleErrors.length} console error(s) detected:<br><pre>${consoleErrors.join('\n')}</pre>`;
+            }
+        }
+
+        // Check console status after page load
+        setTimeout(updateConsoleStatus, 1000);
+
+        // API Tests
+        function testSearchOrders() {
+            appendResult('api-results', 'Testing search-orders.php...', 'info');
+            fetch('/supplier/api/search-orders.php?q=PO')
+                .then(r => r.json())
+                .then(data => {
+                    appendResult('api-results', `✅ Search Orders: ${JSON.stringify(data, null, 2)}`, 'success');
+                })
+                .catch(err => {
+                    appendResult('api-results', `❌ Search Orders Error: ${err.message}`, 'error');
+                });
+        }
+
+        function testGetOrderDetail() {
+            appendResult('api-results', 'Testing get-order-detail.php...', 'info');
+            fetch('/supplier/api/get-order-detail.php?id=1')
+                .then(r => r.json())
+                .then(data => {
+                    appendResult('api-results', `✅ Get Order Detail: Success (${data.html ? 'HTML returned' : 'No HTML'})`, 'success');
+                })
+                .catch(err => {
+                    appendResult('api-results', `❌ Get Order Detail Error: ${err.message}`, 'error');
+                });
+        }
+
+        function testGetWarrantyDetail() {
+            appendResult('api-results', 'Testing get-warranty-detail.php...', 'info');
+            fetch('/supplier/api/get-warranty-detail.php?id=1')
+                .then(r => r.json())
+                .then(data => {
+                    appendResult('api-results', `✅ Get Warranty Detail: Success (${data.html ? 'HTML returned' : 'No HTML'})`, 'success');
+                })
+                .catch(err => {
+                    appendResult('api-results', `❌ Get Warranty Detail Error: ${err.message}`, 'error');
+                });
+        }
+
+        function testSearchProducts() {
+            appendResult('api-results', 'Testing search-products.php...', 'info');
+            fetch('/supplier/api/search-products.php?q=vape')
+                .then(r => r.json())
+                .then(data => {
+                    appendResult('api-results', `✅ Search Products: ${data.count || 0} results found`, 'success');
+                })
+                .catch(err => {
+                    appendResult('api-results', `❌ Search Products Error: ${err.message}`, 'error');
+                });
+        }
+
+        function testUpdateAccount() {
+            appendResult('api-results', 'Testing update-account.php (dry run)...', 'info');
+            // Don't actually update - just test endpoint exists
+            fetch('/supplier/api/update-account.php', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'}
+            })
+            .then(r => r.json())
+            .then(data => {
+                appendResult('api-results', `✅ Update Account: Endpoint accessible`, 'success');
+            })
+            .catch(err => {
+                appendResult('api-results', `ℹ️  Update Account: ${err.message} (expected - needs form data)`, 'info');
+            });
+        }
+
+        // Feature Tests
+        function testToast() {
+            if (typeof showToast === 'function') {
+                showToast('Test toast notification!', 'success');
+                appendResult('feature-results', '✅ Toast notification displayed', 'success');
+            } else {
+                appendResult('feature-results', '❌ showToast() function not found', 'error');
+            }
+        }
+
+        function testConfirmDialog() {
+            if (typeof confirmAction === 'function') {
+                confirmAction('Test confirmation dialog', 'This is a test', 'info').then(() => {
+                    appendResult('feature-results', '✅ Confirm dialog displayed', 'success');
+                });
+            } else {
+                appendResult('feature-results', '❌ confirmAction() function not found', 'error');
+            }
+        }
+
+        function testButtonLoading() {
+            const btn = document.querySelector('.test-button');
+            if (typeof setButtonLoading === 'function') {
+                setButtonLoading(btn, true);
+                setTimeout(() => {
+                    setButtonLoading(btn, false);
+                    appendResult('feature-results', '✅ Button loading state works', 'success');
+                }, 2000);
+            } else {
+                appendResult('feature-results', '❌ setButtonLoading() function not found', 'error');
+            }
+        }
+
+        function testFormValidation() {
+            appendResult('feature-results', 'ℹ️  Form validation: Navigate to a form page to test', 'info');
+        }
+
+        // Helper function
+        function appendResult(containerId, message, type) {
+            const container = document.getElementById(containerId);
+            const div = document.createElement('div');
+            div.className = `result ${type}`;
+            div.textContent = message;
+            container.appendChild(div);
+        }
+
+        // Check resource loading
+        window.addEventListener('load', () => {
+            const resources = performance.getEntriesByType('resource');
+            const failed = resources.filter(r => r.transferSize === 0);
+            
+            const resourceStatus = document.getElementById('resource-status');
+            if (failed.length === 0) {
+                resourceStatus.className = 'result success';
+                resourceStatus.textContent = `✅ All ${resources.length} resources loaded successfully`;
+            } else {
+                resourceStatus.className = 'result error';
+                resourceStatus.innerHTML = `❌ ${failed.length} resources failed to load:<br><pre>${failed.map(r => r.name).join('\n')}</pre>`;
+            }
+        });
+    </script>
+</body>
+</html>

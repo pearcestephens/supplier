@@ -59,5 +59,24 @@
 <!-- Main App JS -->
 <script src="/supplier/assets/js/app.js?v=<?php echo time(); ?>"></script>
 
+<!-- ============================================================================
+     UX ENHANCEMENT SCRIPTS
+     ========================================================================== -->
+<!-- SweetAlert2 for confirmations -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<!-- UX Enhancement Utilities -->
+<script src="/supplier/assets/js/toast.js?v=<?php echo time(); ?>"></script>
+<script src="/supplier/assets/js/button-loading.js?v=<?php echo time(); ?>"></script>
+<script src="/supplier/assets/js/confirm-dialogs.js?v=<?php echo time(); ?>"></script>
+<script src="/supplier/assets/js/form-validation.js?v=<?php echo time(); ?>"></script>
+<script src="/supplier/assets/js/mobile-menu.js?v=<?php echo time(); ?>"></script>
+<script src="/supplier/assets/js/copy-clipboard.js?v=<?php echo time(); ?>"></script>
+<script src="/supplier/assets/js/table-sorting.js?v=<?php echo time(); ?>"></script>
+<script src="/supplier/assets/js/autocomplete.js?v=<?php echo time(); ?>"></script>
+<script src="/supplier/assets/js/inline-edit.js?v=<?php echo time(); ?>"></script>
+<script src="/supplier/assets/js/modal-templates.js?v=<?php echo time(); ?>"></script>
+<script src="/supplier/assets/js/lazy-loading.js?v=<?php echo time(); ?>"></script>
+
 <!-- NOTE: Page-specific JavaScript should be included by each page AFTER this component -->
 <!-- Then close </body></html> in each page file -->

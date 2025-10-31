@@ -29,7 +29,7 @@ if (strlen($query) < 2) {
 
 try {
     $stmt = $pdo->prepare("
-        SELECT 
+        SELECT
             c.id,
             c.consignment_number,
             c.total_cost,
@@ -45,11 +45,11 @@ try {
         ORDER BY c.date_ordered DESC
         LIMIT 10
     ");
-    
+
     $searchTerm = "%{$query}%";
     $stmt->execute([$supplierId, $searchTerm, $searchTerm]);
     $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    
+
     $results = [];
     foreach ($orders as $order) {
         $results[] = [
@@ -60,12 +60,12 @@ try {
             'url' => '/supplier/orders.php?id=' . $order['id']
         ];
     }
-    
+
     echo json_encode([
         'success' => true,
         'results' => $results
     ]);
-    
+
 } catch (Exception $e) {
     error_log('Search orders error: ' . $e->getMessage());
     echo json_encode([
@@ -98,7 +98,7 @@ if (!$supplierId) {
 try {
     // Get order details
     $stmt = $pdo->prepare("
-        SELECT 
+        SELECT
             c.*,
             o.name as outlet_name,
             o.physical_address1,
@@ -111,15 +111,15 @@ try {
     ");
     $stmt->execute([$orderId, $supplierId]);
     $order = $stmt->fetch(PDO::FETCH_ASSOC);
-    
+
     if (!$order) {
         echo json_encode(['success' => false, 'error' => 'Order not found']);
         exit;
     }
-    
+
     // Get order items
     $stmt = $pdo->prepare("
-        SELECT 
+        SELECT
             cli.quantity,
             cli.cost,
             p.name as product_name,
@@ -131,7 +131,7 @@ try {
     ");
     $stmt->execute([$orderId]);
     $items = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    
+
     // Build HTML
     $html = '
     <div class="order-detail">
@@ -155,7 +155,7 @@ try {
                 </address>
             </div>
         </div>
-        
+
         <h6>Order Items</h6>
         <div class="table-responsive">
             <table class="table table-striped table-sm">
@@ -169,7 +169,7 @@ try {
                     </tr>
                 </thead>
                 <tbody>';
-    
+
     foreach ($items as $item) {
         $lineTotal = $item['quantity'] * $item['cost'];
         $html .= '
@@ -181,7 +181,7 @@ try {
                         <td class="text-end">$' . number_format($lineTotal, 2) . '</td>
                     </tr>';
     }
-    
+
     $html .= '
                 </tbody>
                 <tfoot>
@@ -193,12 +193,12 @@ try {
             </table>
         </div>
     </div>';
-    
+
     echo json_encode([
         'success' => true,
         'html' => $html
     ]);
-    
+
 } catch (Exception $e) {
     error_log('Get order detail error: ' . $e->getMessage());
     echo json_encode([
@@ -230,7 +230,7 @@ if (!$supplierId) {
 
 try {
     $stmt = $pdo->prepare("
-        SELECT 
+        SELECT
             w.*,
             p.name as product_name,
             p.sku
@@ -240,12 +240,12 @@ try {
     ");
     $stmt->execute([$claimId, $supplierId]);
     $claim = $stmt->fetch(PDO::FETCH_ASSOC);
-    
+
     if (!$claim) {
         echo json_encode(['success' => false, 'error' => 'Claim not found']);
         exit;
     }
-    
+
     $html = '
     <div class="warranty-detail">
         <div class="row mb-3">
@@ -266,12 +266,12 @@ try {
                 </table>
             </div>
         </div>
-        
+
         <h6>Description</h6>
         <div class="alert alert-light">
             ' . nl2br(htmlspecialchars($claim['description'])) . '
         </div>';
-    
+
     if ($claim['image_url']) {
         $html .= '
         <h6>Attached Images</h6>
@@ -281,14 +281,14 @@ try {
             </div>
         </div>';
     }
-    
+
     $html .= '</div>';
-    
+
     echo json_encode([
         'success' => true,
         'html' => $html
     ]);
-    
+
 } catch (Exception $e) {
     error_log('Get warranty detail error: ' . $e->getMessage());
     echo json_encode([
@@ -353,24 +353,24 @@ if ($field === 'contact_email' && !filter_var($value, FILTER_VALIDATE_EMAIL)) {
 
 try {
     $stmt = $pdo->prepare("
-        UPDATE suppliers 
+        UPDATE suppliers
         SET {$field} = ?, updated_at = NOW()
         WHERE id = ?
     ");
     $stmt->execute([$value, $supplierId]);
-    
+
     // Log the change
     $stmt = $pdo->prepare("
         INSERT INTO activity_log (supplier_id, action, details, created_at)
         VALUES (?, 'account_update', ?, NOW())
     ");
     $stmt->execute([$supplierId, "Updated {$field}"]);
-    
+
     echo json_encode([
         'success' => true,
         'message' => 'Updated successfully'
     ]);
-    
+
 } catch (Exception $e) {
     error_log('Update account error: ' . $e->getMessage());
     echo json_encode([
@@ -406,7 +406,7 @@ if (strlen($query) < 2) {
 
 try {
     $stmt = $pdo->prepare("
-        SELECT 
+        SELECT
             p.id,
             p.name,
             p.sku,
@@ -423,15 +423,15 @@ try {
         ORDER BY p.name
         LIMIT 10
     ");
-    
+
     $searchTerm = "%{$query}%";
     $stmt->execute([$supplierId, $searchTerm, $searchTerm]);
     $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    
+
     $results = [];
     foreach ($products as $product) {
         $stockBadge = $product['total_stock'] > 0 ? 'In Stock' : 'Out of Stock';
-        
+
         $results[] = [
             'title' => $product['name'],
             'subtitle' => 'SKU: ' . $product['sku'] . ' - $' . number_format($product['supply_price'], 2),
@@ -440,12 +440,12 @@ try {
             'url' => '/supplier/products.php?id=' . $product['id']
         ];
     }
-    
+
     echo json_encode([
         'success' => true,
         'results' => $results
     ]);
-    
+
 } catch (Exception $e) {
     error_log('Search products error: ' . $e->getMessage());
     echo json_encode([

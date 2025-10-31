@@ -13,6 +13,11 @@
     <div class="page-header-top">
         <div class="container-fluid px-4">
             <div class="d-flex justify-content-between align-items-center">
+                <!-- Mobile Menu Toggle Button -->
+                <button class="btn btn-link d-md-none me-2 p-0" onclick="toggleMobileMenu()" style="color: #d4af37; font-size: 1.5rem;" aria-label="Toggle menu">
+                    <i class="fas fa-bars"></i>
+                </button>
+
                 <!-- Welcome Message -->
                 <div class="welcome-message mb-0">
                     Welcome back, <span class="fw-semibold"><?php echo htmlspecialchars($supplierName ?? 'User'); ?></span>

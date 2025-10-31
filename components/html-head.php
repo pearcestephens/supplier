@@ -38,7 +38,13 @@ if (!isset($pageTitle)) {
     <!-- Chart.js for Flip Card Area Charts -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
 
+    <!-- SweetAlert2 for confirmations -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+
     <!-- Custom Styles - FORCE RELOAD -->
     <link rel="stylesheet" href="/supplier/assets/css/style.css?v=<?php echo time() . '-' . rand(1000, 9999); ?>">
+
+    <!-- UX Enhancements CSS -->
+    <link rel="stylesheet" href="/supplier/assets/css/ux-enhancements.css?v=<?php echo time(); ?>">
 </head>
 <body>

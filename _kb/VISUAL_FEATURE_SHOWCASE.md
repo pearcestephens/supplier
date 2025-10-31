@@ -50,8 +50,8 @@ After:         [Save Changes]
 ### Usage
 ```html
 <!-- Auto-attach to forms -->
-<button type="submit" 
-        data-async 
+<button type="submit"
+        data-async
         data-loading-text="Saving...">
     Save Changes
 </button>
@@ -133,25 +133,25 @@ Phone Number
 ```html
 <form data-validate="true">
     <!-- Email validation -->
-    <input type="email" 
-           name="email" 
-           data-rule="email" 
+    <input type="email"
+           name="email"
+           data-rule="email"
            required>
-    
+
     <!-- Phone validation -->
-    <input type="tel" 
-           name="phone" 
+    <input type="tel"
+           name="phone"
            data-rule="phone">
-    
+
     <!-- URL validation -->
-    <input type="url" 
-           name="website" 
+    <input type="url"
+           name="website"
            data-rule="url">
-    
+
     <!-- Number validation -->
-    <input type="number" 
-           name="quantity" 
-           data-rule="number" 
+    <input type="number"
+           name="quantity"
+           data-rule="number"
            min="1">
 </form>
 ```
@@ -194,7 +194,7 @@ On click:
 ### Usage
 ```html
 <!-- Add to page header -->
-<button class="btn btn-link d-md-none" 
+<button class="btn btn-link d-md-none"
         onclick="toggleMobileMenu()">
     <i class="fas fa-bars"></i>
 </button>
@@ -304,7 +304,7 @@ Dropdown appears:
 
 ### Usage
 ```html
-<input type="text" 
+<input type="text"
        placeholder="Search orders..."
        data-autocomplete-url="/api/search-orders.php"
        data-autocomplete-min="2">
@@ -336,8 +336,8 @@ Company Name: [New Company Name] ← Green flash
 
 ### Usage
 ```html
-<div class="inline-edit" 
-     data-field="company_name" 
+<div class="inline-edit"
+     data-field="company_name"
      data-value="Vape Shed Ltd."
      data-save-url="/api/update-account.php"
      data-type="text">
@@ -345,13 +345,13 @@ Company Name: [New Company Name] ← Green flash
 </div>
 
 <!-- For textarea -->
-<div class="inline-edit" 
+<div class="inline-edit"
      data-type="textarea">
     Address text...
 </div>
 
 <!-- For email -->
-<div class="inline-edit" 
+<div class="inline-edit"
      data-type="email">
     email@example.com
 </div>
@@ -401,7 +401,7 @@ showAjaxModal({
 });
 
 // Auto-attach to links
-<a href="#" 
+<a href="#"
    data-modal-ajax="/api/get-order.php?id=123"
    data-modal-title="Order Details"
    data-modal-size="lg">
@@ -440,9 +440,9 @@ After entering viewport:
 ### Usage
 ```html
 <!-- Lazy load images -->
-<img data-src="warranty-photo.jpg" 
-     src="placeholder.png" 
-     class="lazy-load" 
+<img data-src="warranty-photo.jpg"
+     src="placeholder.png"
+     class="lazy-load"
      alt="Warranty claim photo">
 ```
 
@@ -697,8 +697,8 @@ Button focus:
 
 ---
 
-**This visual guide shows what each feature looks like and how to use it.**  
+**This visual guide shows what each feature looks like and how to use it.**
 **All features are production-ready and fully documented with code examples.**
 
-**For implementation details, see:** `INTEGRATION_GUIDE.md`  
+**For implementation details, see:** `INTEGRATION_GUIDE.md`
 **For quick start, see:** `IMPLEMENTATION_SUMMARY.md`
