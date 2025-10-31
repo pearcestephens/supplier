@@ -1,0 +1,780 @@
+/**
+ * Business Intelligence Theme
+ * 
+ * Data-dense, modern, professional
+ * Inspired by: Stripe, Linear, Notion, Tableau
+ * 
+ * Philosophy:
+ * - Maximum information density
+ * - Minimal visual noise
+ * - Fast scanning & analysis
+ * - Professional & trustworthy
+ */
+
+/* ============================================
+   TYPOGRAPHY - Data-First
+   ============================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif !important;
+    font-size: 13px !important;
+    line-height: 1.5 !important;
+    color: #1f2937 !important;
+    background-color: #f9fafb !important;
+    -webkit-font-smoothing: antialiased !important;
+    -moz-osx-font-smoothing: grayscale !important;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif !important;
+    font-weight: 600 !important;
+    color: #111827 !important;
+    letter-spacing: -0.02em !important;
+}
+
+h1 { font-size: 24px !important; margin-bottom: 4px !important; }
+h2 { font-size: 20px !important; margin-bottom: 4px !important; }
+h3 { font-size: 16px !important; margin-bottom: 4px !important; }
+h4 { font-size: 14px !important; margin-bottom: 4px !important; }
+h5 { font-size: 13px !important; margin-bottom: 4px !important; }
+h6 { font-size: 12px !important; margin-bottom: 4px !important; }
+
+/* Monospace for numbers/data */
+.number,
+.metric,
+.stat,
+td.numeric,
+.tabular-nums {
+    font-variant-numeric: tabular-nums !important;
+    font-feature-settings: 'tnum' !important;
+}
+
+
+/* ============================================
+   LAYOUT - Compact & Efficient
+   ============================================ */
+
+.content-wrapper {
+    background-color: #f9fafb !important;
+    padding: 16px !important;
+}
+
+.container-fluid {
+    max-width: 1600px !important;
+    padding: 0 8px !important;
+}
+
+/* Reduce spacing everywhere */
+.row {
+    margin-left: -8px !important;
+    margin-right: -8px !important;
+}
+
+.col,
+[class*="col-"] {
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+}
+
+
+/* ============================================
+   SIDEBAR - Minimal Black
+   ============================================ */
+
+.main-sidebar {
+    background: #000000 !important;
+    width: 220px !important;
+}
+
+.sidebar-dark-primary .nav-sidebar > .nav-item > .nav-link {
+    color: #9ca3af !important;
+    padding: 8px 16px !important;
+    font-size: 13px !important;
+    font-weight: 500 !important;
+    border-radius: 0 !important;
+}
+
+.sidebar-dark-primary .nav-sidebar > .nav-item > .nav-link:hover {
+    background-color: #1a1a1a !important;
+    color: #ffffff !important;
+}
+
+.sidebar-dark-primary .nav-sidebar > .nav-item > .nav-link.active {
+    background-color: #1f2937 !important;
+    color: #ffffff !important;
+    border-left: 2px solid #3b82f6 !important;
+}
+
+.brand-link {
+    background: #000000 !important;
+    border-bottom: 1px solid #1a1a1a !important;
+    padding: 12px 16px !important;
+}
+
+.brand-text {
+    color: #ffffff !important;
+    font-weight: 600 !important;
+    font-size: 16px !important;
+}
+
+
+/* ============================================
+   NAVBAR - Clean White
+   ============================================ */
+
+.main-header {
+    background: #ffffff !important;
+    border-bottom: 1px solid #e5e7eb !important;
+    padding: 0 16px !important;
+}
+
+.main-header .navbar {
+    background: transparent !important;
+}
+
+.main-header .nav-link {
+    color: #6b7280 !important;
+    font-size: 13px !important;
+    padding: 8px 12px !important;
+}
+
+.main-header .nav-link:hover {
+    color: #111827 !important;
+}
+
+
+/* ============================================
+   CARDS - Clean White Containers
+   ============================================ */
+
+.card {
+    background: #ffffff !important;
+    border: 1px solid #e5e7eb !important;
+    border-radius: 6px !important;
+    box-shadow: none !important;
+    margin-bottom: 16px !important;
+}
+
+.card-header {
+    background: #ffffff !important;
+    border-bottom: 1px solid #e5e7eb !important;
+    padding: 12px 16px !important;
+    font-weight: 600 !important;
+    font-size: 14px !important;
+    color: #111827 !important;
+}
+
+.card-body {
+    padding: 16px !important;
+}
+
+.card-footer {
+    background: #f9fafb !important;
+    border-top: 1px solid #e5e7eb !important;
+    padding: 12px 16px !important;
+    font-size: 12px !important;
+    color: #6b7280 !important;
+}
+
+/* No shadow on hover - keep it flat */
+.card:hover {
+    border-color: #d1d5db !important;
+}
+
+
+/* ============================================
+   TABLES - Dense & Scannable
+   ============================================ */
+
+.table {
+    font-size: 13px !important;
+    margin-bottom: 0 !important;
+}
+
+.table thead th {
+    background: #f9fafb !important;
+    border-bottom: 2px solid #e5e7eb !important;
+    color: #6b7280 !important;
+    font-weight: 600 !important;
+    font-size: 11px !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.05em !important;
+    padding: 8px 12px !important;
+    white-space: nowrap !important;
+}
+
+.table tbody td {
+    padding: 10px 12px !important;
+    border-bottom: 1px solid #f3f4f6 !important;
+    color: #374151 !important;
+    vertical-align: middle !important;
+}
+
+.table tbody tr:hover {
+    background-color: #f9fafb !important;
+}
+
+.table tbody tr:last-child td {
+    border-bottom: none !important;
+}
+
+/* Striping (subtle) */
+.table-striped tbody tr:nth-of-type(odd) {
+    background-color: #fafafa !important;
+}
+
+/* Compact variant */
+.table-sm thead th {
+    padding: 6px 10px !important;
+}
+
+.table-sm tbody td {
+    padding: 8px 10px !important;
+}
+
+/* Numeric columns */
+.table td.numeric,
+.table th.numeric {
+    text-align: right !important;
+    font-variant-numeric: tabular-nums !important;
+}
+
+
+/* ============================================
+   BUTTONS - Minimal & Purposeful
+   ============================================ */
+
+.btn {
+    font-size: 13px !important;
+    font-weight: 500 !important;
+    padding: 8px 16px !important;
+    border-radius: 6px !important;
+    border: none !important;
+    transition: all 0.15s ease !important;
+    cursor: pointer !important;
+}
+
+/* Primary action - Blue */
+.btn-primary {
+    background-color: #3b82f6 !important;
+    color: #ffffff !important;
+}
+
+.btn-primary:hover {
+    background-color: #2563eb !important;
+    color: #ffffff !important;
+}
+
+.btn-primary:active {
+    background-color: #1d4ed8 !important;
+}
+
+/* Secondary - Gray outline */
+.btn-secondary,
+.btn-default {
+    background-color: #ffffff !important;
+    color: #374151 !important;
+    border: 1px solid #d1d5db !important;
+}
+
+.btn-secondary:hover,
+.btn-default:hover {
+    background-color: #f9fafb !important;
+    border-color: #9ca3af !important;
+    color: #111827 !important;
+}
+
+/* Success - Green */
+.btn-success {
+    background-color: #10b981 !important;
+    color: #ffffff !important;
+}
+
+.btn-success:hover {
+    background-color: #059669 !important;
+    color: #ffffff !important;
+}
+
+/* Danger - Red */
+.btn-danger {
+    background-color: #ef4444 !important;
+    color: #ffffff !important;
+}
+
+.btn-danger:hover {
+    background-color: #dc2626 !important;
+    color: #ffffff !important;
+}
+
+/* Warning - Amber */
+.btn-warning {
+    background-color: #f59e0b !important;
+    color: #ffffff !important;
+}
+
+.btn-warning:hover {
+    background-color: #d97706 !important;
+    color: #ffffff !important;
+}
+
+/* Info - Cyan */
+.btn-info {
+    background-color: #06b6d4 !important;
+    color: #ffffff !important;
+}
+
+.btn-info:hover {
+    background-color: #0891b2 !important;
+    color: #ffffff !important;
+}
+
+/* Small buttons */
+.btn-sm {
+    font-size: 12px !important;
+    padding: 6px 12px !important;
+}
+
+/* Extra small buttons */
+.btn-xs {
+    font-size: 11px !important;
+    padding: 4px 10px !important;
+}
+
+
+/* ============================================
+   BADGES - Clean Labels
+   ============================================ */
+
+.badge {
+    font-size: 11px !important;
+    font-weight: 600 !important;
+    padding: 4px 8px !important;
+    border-radius: 4px !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.05em !important;
+}
+
+.badge-primary {
+    background-color: #dbeafe !important;
+    color: #1e40af !important;
+}
+
+.badge-success {
+    background-color: #d1fae5 !important;
+    color: #065f46 !important;
+}
+
+.badge-danger {
+    background-color: #fee2e2 !important;
+    color: #991b1b !important;
+}
+
+.badge-warning {
+    background-color: #fef3c7 !important;
+    color: #92400e !important;
+}
+
+.badge-info {
+    background-color: #cffafe !important;
+    color: #155e75 !important;
+}
+
+.badge-secondary {
+    background-color: #f3f4f6 !important;
+    color: #4b5563 !important;
+}
+
+
+/* ============================================
+   INFO BOXES - KPI Metrics
+   ============================================ */
+
+.info-box {
+    background: #ffffff !important;
+    border: 1px solid #e5e7eb !important;
+    border-radius: 6px !important;
+    box-shadow: none !important;
+    padding: 16px !important;
+    margin-bottom: 16px !important;
+}
+
+.info-box-icon {
+    border-radius: 6px !important;
+    width: 48px !important;
+    height: 48px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+.bg-primary .info-box-icon {
+    background-color: #dbeafe !important;
+    color: #1e40af !important;
+}
+
+.bg-success .info-box-icon {
+    background-color: #d1fae5 !important;
+    color: #065f46 !important;
+}
+
+.bg-warning .info-box-icon {
+    background-color: #fef3c7 !important;
+    color: #92400e !important;
+}
+
+.bg-danger .info-box-icon {
+    background-color: #fee2e2 !important;
+    color: #991b1b !important;
+}
+
+.bg-info .info-box-icon {
+    background-color: #cffafe !important;
+    color: #155e75 !important;
+}
+
+.info-box-text {
+    font-size: 11px !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.05em !important;
+    color: #6b7280 !important;
+    font-weight: 600 !important;
+    margin-bottom: 4px !important;
+}
+
+.info-box-number {
+    font-size: 24px !important;
+    font-weight: 700 !important;
+    color: #111827 !important;
+    font-variant-numeric: tabular-nums !important;
+}
+
+
+/* ============================================
+   FORMS - Clean Inputs
+   ============================================ */
+
+.form-control,
+.custom-select,
+select.form-control {
+    font-size: 13px !important;
+    padding: 8px 12px !important;
+    border: 1px solid #d1d5db !important;
+    border-radius: 6px !important;
+    background-color: #ffffff !important;
+    color: #374151 !important;
+    transition: all 0.15s ease !important;
+}
+
+.form-control:focus,
+.custom-select:focus,
+select.form-control:focus {
+    border-color: #3b82f6 !important;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1) !important;
+    outline: none !important;
+}
+
+.form-control::placeholder {
+    color: #9ca3af !important;
+}
+
+.form-label,
+label {
+    font-size: 12px !important;
+    font-weight: 600 !important;
+    color: #374151 !important;
+    margin-bottom: 6px !important;
+}
+
+.input-group-text {
+    background-color: #f9fafb !important;
+    border: 1px solid #d1d5db !important;
+    color: #6b7280 !important;
+    font-size: 13px !important;
+}
+
+
+/* ============================================
+   FILTERS - Quick Access
+   ============================================ */
+
+.filters-bar {
+    background: #ffffff !important;
+    border: 1px solid #e5e7eb !important;
+    border-radius: 6px !important;
+    padding: 12px 16px !important;
+    margin-bottom: 16px !important;
+    display: flex !important;
+    gap: 12px !important;
+    flex-wrap: wrap !important;
+    align-items: center !important;
+}
+
+.filter-group {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+}
+
+.filter-label {
+    font-size: 12px !important;
+    font-weight: 600 !important;
+    color: #6b7280 !important;
+    white-space: nowrap !important;
+}
+
+
+/* ============================================
+   BREADCRUMBS - Context Navigation
+   ============================================ */
+
+.breadcrumb {
+    background: transparent !important;
+    padding: 0 !important;
+    margin-bottom: 16px !important;
+    font-size: 12px !important;
+}
+
+.breadcrumb-item {
+    color: #6b7280 !important;
+}
+
+.breadcrumb-item.active {
+    color: #111827 !important;
+    font-weight: 600 !important;
+}
+
+.breadcrumb-item + .breadcrumb-item::before {
+    content: "/" !important;
+    color: #d1d5db !important;
+}
+
+
+/* ============================================
+   ALERTS - Informational Messages
+   ============================================ */
+
+.alert {
+    border-radius: 6px !important;
+    border: 1px solid !important;
+    padding: 12px 16px !important;
+    font-size: 13px !important;
+    margin-bottom: 16px !important;
+}
+
+.alert-success {
+    background-color: #f0fdf4 !important;
+    border-color: #86efac !important;
+    color: #166534 !important;
+}
+
+.alert-danger {
+    background-color: #fef2f2 !important;
+    border-color: #fca5a5 !important;
+    color: #991b1b !important;
+}
+
+.alert-warning {
+    background-color: #fffbeb !important;
+    border-color: #fcd34d !important;
+    color: #92400e !important;
+}
+
+.alert-info {
+    background-color: #f0f9ff !important;
+    border-color: #7dd3fc !important;
+    color: #075985 !important;
+}
+
+
+/* ============================================
+   PAGINATION - Compact
+   ============================================ */
+
+.pagination {
+    margin: 16px 0 0 0 !important;
+}
+
+.page-link {
+    font-size: 12px !important;
+    padding: 6px 12px !important;
+    border: 1px solid #e5e7eb !important;
+    color: #374151 !important;
+    background-color: #ffffff !important;
+}
+
+.page-link:hover {
+    background-color: #f9fafb !important;
+    border-color: #d1d5db !important;
+    color: #111827 !important;
+}
+
+.page-item.active .page-link {
+    background-color: #3b82f6 !important;
+    border-color: #3b82f6 !important;
+    color: #ffffff !important;
+}
+
+
+/* ============================================
+   DROPDOWNS - Clean Menus
+   ============================================ */
+
+.dropdown-menu {
+    border: 1px solid #e5e7eb !important;
+    border-radius: 6px !important;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
+    padding: 4px !important;
+    font-size: 13px !important;
+}
+
+.dropdown-item {
+    padding: 8px 12px !important;
+    border-radius: 4px !important;
+    color: #374151 !important;
+}
+
+.dropdown-item:hover {
+    background-color: #f3f4f6 !important;
+    color: #111827 !important;
+}
+
+.dropdown-divider {
+    margin: 4px 0 !important;
+    border-top: 1px solid #e5e7eb !important;
+}
+
+
+/* ============================================
+   TABS - Subtle Navigation
+   ============================================ */
+
+.nav-tabs {
+    border-bottom: 1px solid #e5e7eb !important;
+    margin-bottom: 16px !important;
+}
+
+.nav-tabs .nav-link {
+    border: none !important;
+    color: #6b7280 !important;
+    font-size: 13px !important;
+    font-weight: 500 !important;
+    padding: 12px 16px !important;
+    border-bottom: 2px solid transparent !important;
+}
+
+.nav-tabs .nav-link:hover {
+    color: #111827 !important;
+    border-bottom-color: #d1d5db !important;
+}
+
+.nav-tabs .nav-link.active {
+    color: #3b82f6 !important;
+    border-bottom-color: #3b82f6 !important;
+    background: transparent !important;
+}
+
+
+/* ============================================
+   UTILITIES - Helper Classes
+   ============================================ */
+
+/* Text colors */
+.text-muted { color: #6b7280 !important; }
+.text-primary { color: #3b82f6 !important; }
+.text-success { color: #10b981 !important; }
+.text-danger { color: #ef4444 !important; }
+.text-warning { color: #f59e0b !important; }
+.text-info { color: #06b6d4 !important; }
+
+/* Background colors */
+.bg-light { background-color: #f9fafb !important; }
+.bg-white { background-color: #ffffff !important; }
+.bg-dark { background-color: #111827 !important; }
+
+/* Spacing (compact) */
+.mb-1 { margin-bottom: 4px !important; }
+.mb-2 { margin-bottom: 8px !important; }
+.mb-3 { margin-bottom: 16px !important; }
+.mb-4 { margin-bottom: 24px !important; }
+
+.mt-1 { margin-top: 4px !important; }
+.mt-2 { margin-top: 8px !important; }
+.mt-3 { margin-top: 16px !important; }
+.mt-4 { margin-top: 24px !important; }
+
+.p-1 { padding: 4px !important; }
+.p-2 { padding: 8px !important; }
+.p-3 { padding: 16px !important; }
+.p-4 { padding: 24px !important; }
+
+/* Font weights */
+.font-weight-normal { font-weight: 400 !important; }
+.font-weight-medium { font-weight: 500 !important; }
+.font-weight-semibold { font-weight: 600 !important; }
+.font-weight-bold { font-weight: 700 !important; }
+
+/* Font sizes */
+.text-xs { font-size: 11px !important; }
+.text-sm { font-size: 12px !important; }
+.text-base { font-size: 13px !important; }
+.text-lg { font-size: 14px !important; }
+.text-xl { font-size: 16px !important; }
+
+
+/* ============================================
+   CHART/DATA VIZ CONTAINERS
+   ============================================ */
+
+.chart-container {
+    background: #ffffff !important;
+    border: 1px solid #e5e7eb !important;
+    border-radius: 6px !important;
+    padding: 16px !important;
+}
+
+.chart-title {
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    color: #111827 !important;
+    margin-bottom: 12px !important;
+}
+
+
+/* ============================================
+   RESPONSIVE TWEAKS
+   ============================================ */
+
+@media (max-width: 768px) {
+    .content-wrapper {
+        padding: 12px !important;
+    }
+    
+    .card-body {
+        padding: 12px !important;
+    }
+    
+    .table {
+        font-size: 12px !important;
+    }
+    
+    .info-box-number {
+        font-size: 20px !important;
+    }
+}
+
+
+/* ============================================
+   REMOVE ALL ANIMATIONS (Fast & Snappy)
+   ============================================ */
+
+* {
+    animation-duration: 0s !important;
+    animation-delay: 0s !important;
+    transition-duration: 0.15s !important;
+}

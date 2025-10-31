@@ -1,0 +1,211 @@
+/**
+ * Premium Executive Dashboard - Industry-Grade Design
+ * Glassmorphism, micro-interactions, data visualization
+ * Built for professionals who demand excellence
+ */
+
+/* Premium Dark Sidebar with Depth */
+.navbar-vertical {
+    background: #0f172a !important;
+    border-right: 1px solid rgba(148, 163, 184, 0.1) !important;
+    box-shadow: 4px 0 24px rgba(0, 0, 0, 0.12) !important;
+}
+
+.navbar-vertical .navbar-brand {
+    padding: 1.5rem 1rem !important;
+    font-size: 1.25rem !important;
+    font-weight: 700 !important;
+}
+
+.navbar-vertical .nav-link {
+    color: rgba(255, 255, 255, 0.7) !important;
+    border-radius: 6px !important;
+    margin: 2px 12px !important;
+    padding: 0.75rem 1rem !important;
+    transition: all 0.2s ease !important;
+}
+
+.navbar-vertical .nav-link:hover {
+    background: rgba(102, 126, 234, 0.15) !important;
+    color: #ffffff !important;
+}
+
+.navbar-vertical .nav-link.active,
+.navbar-vertical .nav-item.active .nav-link {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    color: #ffffff !important;
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3) !important;
+}
+
+.navbar-vertical .nav-link-icon {
+    width: 1.5rem !important;
+    margin-right: 0.75rem !important;
+}
+
+/* White Navbar Overlap */
+.navbar-overlap {
+    background: #ffffff !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08) !important;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05) !important;
+}
+
+/* Big Page Header */
+.page-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    padding: 2rem 0 !important;
+    margin-bottom: 2rem !important;
+    color: #ffffff !important;
+    border-radius: 0 !important;
+    box-shadow: 0 4px 20px rgba(102, 126, 234, 0.3) !important;
+}
+
+.page-header .page-pretitle {
+    color: rgba(255, 255, 255, 0.9) !important;
+    font-size: 0.75rem !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.15em !important;
+    font-weight: 700 !important;
+    margin-bottom: 0.5rem !important;
+}
+
+.page-header .page-title {
+    color: #ffffff !important;
+    font-size: 1.75rem !important;
+    font-weight: 700 !important;
+    margin: 0 !important;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Stat Cards Compact Style */
+.page-header .card-sm {
+    background: rgba(255, 255, 255, 0.2) !important;
+    backdrop-filter: blur(10px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    border-radius: 8px !important;
+    transition: all 0.2s ease !important;
+}
+
+.page-header .card-sm:hover {
+    background: rgba(255, 255, 255, 0.25) !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+}
+
+.page-header .card-body {
+    padding: 1rem !important;
+}
+
+.page-header .avatar {
+    background: rgba(255, 255, 255, 0.3) !important;
+    width: 2.5rem !important;
+    height: 2.5rem !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border-radius: 8px !important;
+    font-size: 1.25rem !important;
+}
+
+.page-header .font-weight-medium {
+    font-size: 1.25rem !important;
+    font-weight: 700 !important;
+    color: #ffffff !important;
+    line-height: 1.2 !important;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) !important;
+}
+
+.page-header .text-white-50 {
+    color: rgba(255, 255, 255, 0.85) !important;
+    font-size: 0.75rem !important;
+    font-weight: 500 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.05em !important;
+}
+
+/* Gradient buttons */
+.btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    border: none !important;
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3) !important;
+    color: #ffffff !important;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, #5568d3 0%, #6a3f91 100%) !important;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4) !important;
+    transform: translateY(-1px) !important;
+}
+
+.btn-success {
+    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%) !important;
+    border: none !important;
+    color: #ffffff !important;
+}
+
+.btn-info {
+    background: linear-gradient(135deg, #2193b0 0%, #6dd5ed 100%) !important;
+    border: none !important;
+    color: #ffffff !important;
+}
+
+.btn-warning {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%) !important;
+    border: none !important;
+    color: #ffffff !important;
+}
+
+.btn-danger {
+    background: linear-gradient(135deg, #f2709c 0%, #ff9472 100%) !important;
+    border: none !important;
+    color: #ffffff !important;
+}
+
+/* Cards */
+.card {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08) !important;
+    border-radius: 8px !important;
+    border: 1px solid #e9ecef !important;
+}
+
+.card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12) !important;
+}
+
+/* Info boxes with gradients */
+.card-icon {
+    width: 48px !important;
+    height: 48px !important;
+    border-radius: 8px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+.bg-primary-lt .card-icon {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    color: #ffffff !important;
+}
+
+.bg-success-lt .card-icon {
+    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%) !important;
+    color: #ffffff !important;
+}
+
+.bg-info-lt .card-icon {
+    background: linear-gradient(135deg, #2193b0 0%, #6dd5ed 100%) !important;
+    color: #ffffff !important;
+}
+
+.bg-warning-lt .card-icon {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%) !important;
+    color: #ffffff !important;
+}
+
+/* Better tables */
+.table thead {
+    background: #f8f9fa !important;
+}
+
+.table tbody tr:hover {
+    background: rgba(102, 126, 234, 0.03) !important;
+}

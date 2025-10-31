@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Premium Flip Cards</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #ffffff;
+            color: #1e293b;
+            font-family: 'Outfit', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            min-height: 100vh;
+            padding: 3rem 2rem;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            background: linear-gradient(135deg, #00d9ff, #0099ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+            font-weight: 900;
+            text-align: center;
+            font-size: 2.5rem;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #64748b;
+            margin-bottom: 3rem;
+            font-size: 1rem;
+            letter-spacing: 0.05em;
+        }
+
+        /* ============================================================================
+           GRID LAYOUT - 3 COLUMNS, CENTERED
+           ============================================================================ */
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            margin-bottom: 2rem;
+            max-width: 1200px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* ============================================================================
+           FLIP CARD - 3D IN PLACE FLIP (ABSOLUTE POSITIONING)
+           ============================================================================ */
+
+        .flip-container {
+            height: 200px;
+            cursor: pointer;
+        }
+
+        .flip-card {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            transform-style: preserve-3d;
+            perspective: 1200px;
+        }
+
+        .flip-container:hover .flip-card {
+            transform: rotateY(180deg);
+        }
+
+        .flip-front, .flip-back {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+            border-radius: 20px;
+            padding: 1.75rem;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            border: none;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+        }
+
+        .flip-back {
+            transform: rotateY(180deg);
+            background: linear-gradient(135deg, #f0f4f8 0%, #ffffff 100%);
+            box-shadow: 0 10px 40px rgba(0, 217, 255, 0.15);
+        }
+
+        .flip-back:hover {
+            box-shadow: 0 15px 50px rgba(0, 217, 255, 0.2);
+        }
+
+        /* ============================================================================
+           FRONT SIDE - METRIC WITH GRAPH
+           ============================================================================ */
+
+        .metric-front {
+            position: relative;
+            background-size: 200% 200%;
+            animation: gradientShift 8s ease infinite;
+        }
+
+        .metric-front::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, transparent 100%);
+            pointer-events: none;
+            border-radius: 20px;
+        }
+
+        /* SEXY VIBRANT GRADIENTS */
+        .color-cyan {
+            background: linear-gradient(-45deg, #00d9ff, #0099cc, #00d9ff);
+            background-size: 400% 400%;
+        }
+
+        .color-magenta {
+            background: linear-gradient(-45deg, #ff0080, #ff6699, #ff0080);
+            background-size: 400% 400%;
+        }
+
+        .color-lime {
+            background: linear-gradient(-45deg, #00ff88, #00cc66, #00ff88);
+            background-size: 400% 400%;
+        }
+
+        .color-gold {
+            background: linear-gradient(-45deg, #ffd700, #ffaa00, #ff9500);
+            background-size: 400% 400%;
+        }
+
+        .color-violet {
+            background: linear-gradient(-45deg, #aa00ff, #7700cc, #9900ff);
+            background-size: 400% 400%;
+        }
+
+        .color-coral {
+            background: linear-gradient(-45deg, #ff4444, #ff6b6b, #ff8888);
+            background-size: 400% 400%;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .metric-content {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 100%;
+            color: white;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .metric-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .metric-label {
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            opacity: 0.95;
+        }
+
+        .metric-icon {
+            font-size: 1.8rem;
+            opacity: 0.25;
+        }
+
+        .metric-value {
+            font-size: 2.5rem;
+            font-weight: 900;
+            line-height: 1;
+            margin-bottom: 0.4rem;
+            text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .metric-trend {
+            font-size: 0.85rem;
+            font-weight: 600;
+            opacity: 0.95;
+        }
+
+        .trend-up { color: #00ff88; }
+        .trend-down { color: #ffff00; }
+        .trend-stable { color: #ffffff; }
+
+        .sparkline-canvas {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 80px;
+            opacity: 0.35;
+            z-index: 1;
+        }
+
+        /* ============================================================================
+           BACK SIDE - AI INSIGHTS
+           ============================================================================ */
+
+        .insight-content {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 0.75rem;
+            height: 100%;
+        }
+
+        .insight-emoji {
+            font-size: 2rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .insight-stat {
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: #0099cc;
+        }
+
+        .insight-text {
+            font-size: 1rem;
+            line-height: 1.5;
+            color: #1e293b;
+            font-weight: 500;
+        }
+
+        /* ============================================================================
+           RESPONSIVE
+           ============================================================================ */
+
+        @media (max-width: 1200px) {
+            .metrics-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1.5rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .metrics-grid {
+                grid-template-columns: 1fr;
+                gap: 1.25rem;
+            }
+
+            .flip-container {
+                height: 180px;
+            }
+
+            .flip-front, .flip-back {
+                padding: 1.5rem;
+            }
+
+            .metric-value {
+                font-size: 2rem;
+            }
+
+            .metric-label {
+                font-size: 0.75rem;
+            }
+
+            .insight-text {
+                font-size: 0.95rem;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>💎 Dashboard Metrics</h1>
+        <p class="subtitle">HOVER ANY CARD TO FLIP • Real-time Performance Insights</p>
+
+        <div class="metrics-grid">
+            <!-- Card 1: Orders -->
+            <div class="flip-container">
+                <div class="flip-card">
+                    <!-- Front -->
+                    <div class="flip-front metric-front color-cyan">
+                        <canvas class="sparkline-canvas" id="chart-1"></canvas>
+                        <div class="metric-content">
+                            <div class="metric-top">
+                                <div>
+                                    <div class="metric-label">Total Orders (30d)</div>
+                                </div>
+                                <div class="metric-icon">
+                                    <i class="fas fa-shopping-cart"></i>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="metric-value">18</div>
+                                <div class="metric-trend trend-up">↑ 12% vs last period</div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Back -->
+                    <div class="flip-back">
+                        <div class="insight-content">
+                            <div class="insight-emoji">📈</div>
+                            <div class="insight-stat">Order Velocity</div>
+                            <div class="insight-text">18 orders trending UP by 12%! Excellent momentum.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 2: Products -->
+            <div class="flip-container">
+                <div class="flip-card">
+                    <!-- Front -->
+                    <div class="flip-front metric-front color-gold">
+                        <canvas class="sparkline-canvas" id="chart-2"></canvas>
+                        <div class="metric-content">
+                            <div class="metric-top">
+                                <div>
+                                    <div class="metric-label">Active Products</div>
+                                </div>
+                                <div class="metric-icon">
+                                    <i class="fas fa-cube"></i>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="metric-value">50</div>
+                                <div class="metric-trend trend-stable">100% availability</div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Back -->
+                    <div class="flip-back">
+                        <div class="insight-content">
+                            <div class="insight-emoji">🌟</div>
+                            <div class="insight-stat">Star Product</div>
+                            <div class="insight-text">Premium Vape Kit top performer - 12 orders this month!</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 3: Claims -->
+            <div class="flip-container">
+                <div class="flip-card">
+                    <!-- Front -->
+                    <div class="flip-front metric-front color-lime">
+                        <canvas class="sparkline-canvas" id="chart-3"></canvas>
+                        <div class="metric-content">
+                            <div class="metric-top">
+                                <div>
+                                    <div class="metric-label">Pending Claims</div>
+                                </div>
+                                <div class="metric-icon">
+                                    <i class="fas fa-check-circle"></i>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="metric-value">0</div>
+                                <div class="metric-trend trend-up">✓ Excellent</div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Back -->
+                    <div class="flip-back">
+                        <div class="insight-content">
+                            <div class="insight-emoji">🏆</div>
+                            <div class="insight-stat">Quality Score</div>
+                            <div class="insight-text">Exceptional! Only 2% claim rate. Top 5% of suppliers!</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 4: Order Value -->
+            <div class="flip-container">
+                <div class="flip-card">
+                    <!-- Front -->
+                    <div class="flip-front metric-front color-magenta">
+                        <canvas class="sparkline-canvas" id="chart-4"></canvas>
+                        <div class="metric-content">
+                            <div class="metric-top">
+                                <div>
+                                    <div class="metric-label">Avg Order Value</div>
+                                </div>
+                                <div class="metric-icon">
+                                    <i class="fas fa-dollar-sign"></i>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="metric-value">$0</div>
+                                <div class="metric-trend trend-stable">Steady</div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Back -->
+                    <div class="flip-back">
+                        <div class="insight-content">
+                            <div class="insight-emoji">📊</div>
+                            <div class="insight-stat">Forecast</div>
+                            <div class="insight-text">Projected $X,XXX next month based on trends. On track!</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 5: Units Sold -->
+            <div class="flip-container">
+                <div class="flip-card">
+                    <!-- Front -->
+                    <div class="flip-front metric-front color-violet">
+                        <canvas class="sparkline-canvas" id="chart-5"></canvas>
+                        <div class="metric-content">
+                            <div class="metric-top">
+                                <div>
+                                    <div class="metric-label">Units Sold (30d)</div>
+                                </div>
+                                <div class="metric-icon">
+                                    <i class="fas fa-boxes"></i>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="metric-value">0</div>
+                                <div class="metric-trend trend-down">↓ -5%</div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Back -->
+                    <div class="flip-back">
+                        <div class="insight-content">
+                            <div class="insight-emoji">⚡</div>
+                            <div class="insight-stat">Activity Level</div>
+                            <div class="insight-text">45 active days this quarter. Highly engaged partner!</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 6: Revenue -->
+            <div class="flip-container">
+                <div class="flip-card">
+                    <!-- Front -->
+                    <div class="flip-front metric-front color-coral">
+                        <canvas class="sparkline-canvas" id="chart-6"></canvas>
+                        <div class="metric-content">
+                            <div class="metric-top">
+                                <div>
+                                    <div class="metric-label">Revenue (30d)</div>
+                                </div>
+                                <div class="metric-icon">
+                                    <i class="fas fa-chart-line"></i>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="metric-value">$0</div>
+                                <div class="metric-trend trend-stable">Target: $10K</div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Back -->
+                    <div class="flip-back">
+                        <div class="insight-content">
+                            <div class="insight-emoji">💡</div>
+                            <div class="insight-stat">You're Crushing It</div>
+                            <div class="insight-text">Top 10% of suppliers! Your consistency is unmatched. 🚀</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // =========================================================================
+        // ENHANCED SPARKLINE CHARTS - BIGGER, MORE VISIBLE
+        // =========================================================================
+
+        function generateSparkline(canvasElement, colorHex) {
+            // Smooth uptrend data
+            const data = [18, 22, 20, 32, 28, 45, 52];
+
+            const ctx = canvasElement.getContext('2d');
+
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                    datasets: [{
+                        label: 'Trend',
+                        data: data,
+                        borderColor: colorHex,
+                        backgroundColor: colorHex + '55',
+                        fill: true,
+                        tension: 0.5,
+                        pointRadius: 0,
+                        pointHoverRadius: 0,
+                        borderWidth: 2.5,
+                        clip: false
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: { enabled: false },
+                        filler: { propagate: true }
+                    },
+                    scales: {
+                        x: {
+                            display: false,
+                            beginAtZero: true
+                        },
+                        y: {
+                            display: false,
+                            beginAtZero: true,
+                            min: 0,
+                            max: 60
+                        }
+                    }
+                }
+            });
+        }
+
+        // Initialize all charts
+        const charts = [
+            { id: 'chart-1', color: '#00d9ff' },
+            { id: 'chart-2', color: '#ffd700' },
+            { id: 'chart-3', color: '#00ff88' },
+            { id: 'chart-4', color: '#ff0080' },
+            { id: 'chart-5', color: '#aa00ff' },
+            { id: 'chart-6', color: '#ff4444' }
+        ];
+
+        window.addEventListener('load', () => {
+            charts.forEach(chart => {
+                const canvas = document.getElementById(chart.id);
+                if (canvas) {
+                    canvas.height = 80;
+                    canvas.width = canvas.parentElement.offsetWidth;
+                    generateSparkline(canvas, chart.color);
+                }
+            });
+        });
+
+        // Add entrance animation
+        setTimeout(() => {
+            document.querySelectorAll('.flip-container').forEach((container, index) => {
+                container.style.animation = `fadeInUp 0.6s ease-out ${index * 0.08}s both`;
+            });
+        }, 100);
+
+        // Add animation keyframe
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes fadeInUp {
+                from {
+                    opacity: 0;
+                    transform: translateY(30px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+        `;
+        document.head.appendChild(style);
+
+    </script>
+</body>
+</html>

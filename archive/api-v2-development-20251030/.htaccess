@@ -1,0 +1,22 @@
+# API v2 Directory - Supplier Portal
+# Protect API endpoints from direct access
+RewriteEngine On
+
+# Only allow PHP files to be accessed
+<Files "*.php">
+    Order allow,deny
+    Allow from all
+</Files>
+
+# Block direct access to other file types
+<FilesMatch "\.(json|txt|log|md)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# Set proper headers for API responses
+<IfModule mod_headers.c>
+    Header always set X-Content-Type-Options nosniff
+    Header always set X-Frame-Options DENY
+    Header always set X-XSS-Protection "1; mode=block"
+</IfModule>

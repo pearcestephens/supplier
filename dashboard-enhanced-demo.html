@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Premium Dashboard Cards - Enhanced</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            color: #1e293b;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            min-height: 100vh;
+            padding: 2rem 1rem;
+        }
+
+        .container-xl {
+            max-width: 1400px;
+        }
+
+        h1 {
+            background: linear-gradient(135deg, #3b82f6, #7c3aed);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+            font-weight: 800;
+            text-align: center;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #64748b;
+            margin-bottom: 3rem;
+            font-size: 1.1rem;
+        }
+
+        /* ============================================================================
+           METRIC CARD - PREMIUM ENHANCED VERSION
+           ============================================================================ */
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .metric-card {
+            position: relative;
+            border-radius: 16px;
+            padding: 1.5rem;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            backdrop-filter: blur(10px);
+            min-height: 220px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        /* Background sparkline canvas - positioned absolutely */
+        .metric-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 0;
+            opacity: 0.15;
+            pointer-events: none;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+            border-color: rgba(255, 255, 255, 0.8);
+        }
+
+        .metric-card:hover .tooltip-bubble {
+            opacity: 1;
+            visibility: visible;
+            transform: scale(1) translateY(0);
+        }
+
+        .metric-card-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .metric-label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            opacity: 0.9;
+            margin-bottom: 0.75rem;
+        }
+
+        .metric-value {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            line-height: 1.2;
+        }
+
+        .metric-sublabel {
+            font-size: 0.8rem;
+            opacity: 0.85;
+            margin-bottom: 0.5rem;
+        }
+
+        .metric-icon {
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            opacity: 0.3;
+            z-index: 1;
+        }
+
+        .sparkline-background {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 150px;
+            height: 100px;
+            z-index: 1;
+            opacity: 0.2;
+        }
+
+        /* ============================================================================
+           CARD COLOR VARIANTS - ENHANCED WITH METALLIC SHEEN
+           ============================================================================ */
+
+        /* Card 1: BLUE - Brighter, with metallic sheen */
+        .metric-card.card-blue {
+            background: linear-gradient(135deg, #0ea5e9 0%, #06b6d4 50%, #0891b2 100%);
+            color: #fff;
+            box-shadow:
+                0 4px 20px rgba(6, 182, 212, 0.2),
+                inset -1px -1px 2px rgba(255, 255, 255, 0.2),
+                inset 1px 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        .metric-card.card-blue::before {
+            background: linear-gradient(to bottom, rgba(255, 255, 255, 0.1) 0%, transparent 100%);
+        }
+
+        .metric-card.card-blue:hover {
+            box-shadow:
+                0 20px 40px rgba(6, 182, 212, 0.3),
+                inset -1px -1px 2px rgba(255, 255, 255, 0.3),
+                inset 1px 1px 2px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Card 2: TEAL - Active Products */
+        .metric-card.card-teal {
+            background: linear-gradient(135deg, #14b8a6 0%, #0f766e 100%);
+            color: #fff;
+            box-shadow:
+                0 4px 20px rgba(20, 184, 166, 0.2),
+                inset -1px -1px 2px rgba(255, 255, 255, 0.15),
+                inset 1px 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        .metric-card.card-teal:hover {
+            box-shadow:
+                0 20px 40px rgba(20, 184, 166, 0.3),
+                inset -1px -1px 2px rgba(255, 255, 255, 0.25),
+                inset 1px 1px 2px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Card 3: AMBER - Claims */
+        .metric-card.card-amber {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: #fff;
+            box-shadow:
+                0 4px 20px rgba(245, 158, 11, 0.2),
+                inset -1px -1px 2px rgba(255, 255, 255, 0.15),
+                inset 1px 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        .metric-card.card-amber:hover {
+            box-shadow:
+                0 20px 40px rgba(245, 158, 11, 0.3),
+                inset -1px -1px 2px rgba(255, 255, 255, 0.25),
+                inset 1px 1px 2px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Card 4: EMERALD - Order Value */
+        .metric-card.card-emerald {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: #fff;
+            box-shadow:
+                0 4px 20px rgba(16, 185, 129, 0.2),
+                inset -1px -1px 2px rgba(255, 255, 255, 0.15),
+                inset 1px 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        .metric-card.card-emerald:hover {
+            box-shadow:
+                0 20px 40px rgba(16, 185, 129, 0.3),
+                inset -1px -1px 2px rgba(255, 255, 255, 0.25),
+                inset 1px 1px 2px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Card 5: BLUE LIGHTER - Units Sold */
+        .metric-card.card-blue-light {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            color: #fff;
+            box-shadow:
+                0 4px 20px rgba(59, 130, 246, 0.2),
+                inset -1px -1px 2px rgba(255, 255, 255, 0.15),
+                inset 1px 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        .metric-card.card-blue-light:hover {
+            box-shadow:
+                0 20px 40px rgba(59, 130, 246, 0.3),
+                inset -1px -1px 2px rgba(255, 255, 255, 0.25),
+                inset 1px 1px 2px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Card 6: VIOLET - Revenue */
+        .metric-card.card-violet {
+            background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
+            color: #fff;
+            box-shadow:
+                0 4px 20px rgba(139, 92, 246, 0.2),
+                inset -1px -1px 2px rgba(255, 255, 255, 0.15),
+                inset 1px 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        .metric-card.card-violet:hover {
+            box-shadow:
+                0 20px 40px rgba(139, 92, 246, 0.3),
+                inset -1px -1px 2px rgba(255, 255, 255, 0.25),
+                inset 1px 1px 2px rgba(0, 0, 0, 0.15);
+        }
+
+        /* ============================================================================
+           HOVER TOOLTIP WITH AI INSIGHTS
+           ============================================================================ */
+
+        .tooltip-bubble {
+            position: absolute;
+            bottom: 1.5rem;
+            left: 1.5rem;
+            right: 1.5rem;
+            background: rgba(255, 255, 255, 0.95);
+            color: #1e293b;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            line-height: 1.4;
+            z-index: 10;
+            opacity: 0;
+            visibility: hidden;
+            transform: scale(0.95) translateY(10px);
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            border-left: 3px solid;
+        }
+
+        .metric-card.card-blue .tooltip-bubble { border-left-color: #0ea5e9; }
+        .metric-card.card-teal .tooltip-bubble { border-left-color: #14b8a6; }
+        .metric-card.card-amber .tooltip-bubble { border-left-color: #f59e0b; }
+        .metric-card.card-emerald .tooltip-bubble { border-left-color: #10b981; }
+        .metric-card.card-blue-light .tooltip-bubble { border-left-color: #3b82f6; }
+        .metric-card.card-violet .tooltip-bubble { border-left-color: #8b5cf6; }
+
+        .tooltip-title {
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            opacity: 0.7;
+        }
+
+        .tooltip-content {
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        /* ============================================================================
+           STATUS BADGES & TREND INDICATORS
+           ============================================================================ */
+
+        .trend-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-top: 0.5rem;
+        }
+
+        .trend-up {
+            color: #10b981;
+        }
+
+        .trend-down {
+            color: #ef4444;
+        }
+
+        .trend-stable {
+            color: #8b5cf6;
+        }
+
+        .status-badge {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.3);
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-top: 0.5rem;
+        }
+
+        /* ============================================================================
+           RESPONSIVE DESIGN
+           ============================================================================ */
+
+        @media (max-width: 768px) {
+            .metrics-grid {
+                grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+                gap: 1rem;
+            }
+
+            .metric-value {
+                font-size: 2rem;
+            }
+
+            .metric-icon {
+                width: 40px;
+                height: 40px;
+                font-size: 1.25rem;
+            }
+
+            .tooltip-bubble {
+                font-size: 0.8rem;
+                padding: 0.6rem 0.8rem;
+            }
+        }
+
+        /* Loading animation */
+        @keyframes shimmer {
+            0% { opacity: 0.6; }
+            50% { opacity: 0.8; }
+            100% { opacity: 0.6; }
+        }
+
+        .loading {
+            animation: shimmer 1.5s infinite;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container-xl">
+        <h1>✨ Premium Dashboard Cards - Enhanced</h1>
+        <p class="subtitle">With background sparklines, AI insights, and metallic sheen</p>
+
+        <div class="metrics-grid">
+            <!-- Card 1: Orders -->
+            <div class="metric-card card-blue" data-metric="orders">
+                <div class="metric-card-content">
+                    <div class="metric-label">Total Orders (30d)</div>
+                    <div class="metric-value">18</div>
+                    <div class="metric-sublabel">↑ 12% vs last period</div>
+                    <div class="trend-indicator trend-up">
+                        <i class="fas fa-arrow-up"></i> Strong momentum
+                    </div>
+                </div>
+                <canvas class="sparkline-background"></canvas>
+                <div class="metric-icon">
+                    <i class="fas fa-shopping-cart"></i>
+                </div>
+                <div class="tooltip-bubble">
+                    <div class="tooltip-title">💡 Insight</div>
+                    <div class="tooltip-content">Orders trending up - keep momentum!</div>
+                </div>
+            </div>
+
+            <!-- Card 2: Products -->
+            <div class="metric-card card-teal" data-metric="products">
+                <div class="metric-card-content">
+                    <div class="metric-label">Active Products</div>
+                    <div class="metric-value">50</div>
+                    <div class="metric-sublabel">50 in stock, 3 low stock</div>
+                    <div class="status-badge">100% availability</div>
+                </div>
+                <canvas class="sparkline-background"></canvas>
+                <div class="metric-icon">
+                    <i class="fas fa-box"></i>
+                </div>
+                <div class="tooltip-bubble">
+                    <div class="tooltip-title">🌟 Star Product</div>
+                    <div class="tooltip-content">Product ABC leading with 12 orders</div>
+                </div>
+            </div>
+
+            <!-- Card 3: Claims -->
+            <div class="metric-card card-amber" data-metric="claims">
+                <div class="metric-card-content">
+                    <div class="metric-label">Pending Claims</div>
+                    <div class="metric-value">0</div>
+                    <div class="metric-sublabel">Good - 0 awaiting inspection</div>
+                    <div class="status-badge">✓ Excellent</div>
+                </div>
+                <canvas class="sparkline-background"></canvas>
+                <div class="metric-icon">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <div class="tooltip-bubble">
+                    <div class="tooltip-title">🏆 Quality Score</div>
+                    <div class="tooltip-content">Exceptional quality - only 2% claim rate</div>
+                </div>
+            </div>
+
+            <!-- Card 4: Order Value -->
+            <div class="metric-card card-emerald" data-metric="order-value">
+                <div class="metric-card-content">
+                    <div class="metric-label">Avg Order Value</div>
+                    <div class="metric-value">$0.00</div>
+                    <div class="metric-sublabel">Healthy order value</div>
+                    <div class="trend-indicator trend-stable">
+                        <i class="fas fa-minus"></i> Stable
+                    </div>
+                </div>
+                <canvas class="sparkline-background"></canvas>
+                <div class="metric-icon">
+                    <i class="fas fa-dollar-sign"></i>
+                </div>
+                <div class="tooltip-bubble">
+                    <div class="tooltip-title">📊 Forecast</div>
+                    <div class="tooltip-content">Expect $X,XXX next month</div>
+                </div>
+            </div>
+
+            <!-- Card 5: Units Sold -->
+            <div class="metric-card card-blue-light" data-metric="units">
+                <div class="metric-card-content">
+                    <div class="metric-label">Units Sold (30d)</div>
+                    <div class="metric-value">0</div>
+                    <div class="metric-sublabel">On track this month</div>
+                    <div class="trend-indicator trend-down">
+                        <i class="fas fa-arrow-down"></i> -5%
+                    </div>
+                </div>
+                <canvas class="sparkline-background"></canvas>
+                <div class="metric-icon">
+                    <i class="fas fa-boxes"></i>
+                </div>
+                <div class="tooltip-bubble">
+                    <div class="tooltip-title">⚡ Activity</div>
+                    <div class="tooltip-content">45 active days - Highly engaged!</div>
+                </div>
+            </div>
+
+            <!-- Card 6: Revenue -->
+            <div class="metric-card card-violet" data-metric="revenue">
+                <div class="metric-card-content">
+                    <div class="metric-label">Revenue (30d)</div>
+                    <div class="metric-value">$0</div>
+                    <div class="metric-sublabel">Target: $10,000</div>
+                    <div class="status-badge">0% of goal</div>
+                </div>
+                <canvas class="sparkline-background"></canvas>
+                <div class="metric-icon">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <div class="tooltip-bubble">
+                    <div class="tooltip-title">💡 Keep It Up</div>
+                    <div class="tooltip-content">You're in top 10% of active suppliers!</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // =========================================================================
+        // GENERATE SPARKLINE CHARTS FOR BACKGROUND
+        // =========================================================================
+
+        function generateSparkline(canvasElement, color) {
+            // Generate mock 7-day trend data
+            const data = [
+                Math.random() * 100,
+                Math.random() * 100,
+                Math.random() * 100 + 10,
+                Math.random() * 100 + 5,
+                Math.random() * 100 + 15,
+                Math.random() * 100 + 20,
+                Math.random() * 100 + 25
+            ];
+
+            const ctx = canvasElement.getContext('2d');
+
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                    datasets: [{
+                        label: 'Trend',
+                        data: data,
+                        borderColor: color,
+                        backgroundColor: color + '33',
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 0,
+                        borderWidth: 2.5
+                    }]
+                },
+                options: {
+                    responsive: false,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: { enabled: false }
+                    },
+                    scales: {
+                        x: { display: false },
+                        y: { display: false }
+                    }
+                }
+            });
+        }
+
+        // Initialize sparklines for each card
+        document.querySelectorAll('.metric-card').forEach((card, index) => {
+            const canvas = card.querySelector('canvas.sparkline-background');
+            if (canvas) {
+                // Set canvas size
+                canvas.height = 80;
+                canvas.width = 120;
+
+                // Color map for sparklines
+                const colors = [
+                    '#0ea5e9', // blue
+                    '#14b8a6', // teal
+                    '#f59e0b', // amber
+                    '#10b981', // emerald
+                    '#3b82f6', // blue-light
+                    '#8b5cf6'  // violet
+                ];
+
+                generateSparkline(canvas, colors[index]);
+            }
+        });
+
+        // =========================================================================
+        // LOAD AI INSIGHTS ON HOVER
+        // =========================================================================
+
+        let insightCache = {};
+
+        async function loadInsights() {
+            try {
+                // In production, call: /supplier/api/dashboard-insights.php
+                // For now, using mock data
+                const response = {
+                    insights: [
+                        {
+                            type: 'trend',
+                            title: 'Order Velocity',
+                            stat: '18 orders',
+                            insight: '📈 Orders are trending UP by 12% this week',
+                            color: '#10b981'
+                        },
+                        {
+                            type: 'top_product',
+                            title: '🌟 Star Product',
+                            stat: '12x ordered',
+                            insight: 'Premium Vape Kit is your top performer',
+                            color: '#f59e0b'
+                        },
+                        {
+                            type: 'quality',
+                            title: '🏆 Quality Score',
+                            stat: '98% resolved',
+                            insight: '✨ Only 2% claim rate - Excellent work!',
+                            color: '#06b6d4'
+                        },
+                        {
+                            type: 'activity',
+                            title: '⚡ Activity Level',
+                            stat: '45 days active',
+                            insight: 'Highly Active supplier - consistent performer!',
+                            color: '#8b5cf6'
+                        },
+                        {
+                            type: 'prediction',
+                            title: '🔮 Forecast',
+                            stat: 'Trending to ~22 orders',
+                            insight: 'Based on patterns, expect ~22 orders next week',
+                            color: '#06b6d4'
+                        },
+                        {
+                            type: 'motivational',
+                            title: '💡 Keep It Up',
+                            stat: '',
+                            insight: '🎯 You\'re in the top 10% of active suppliers!',
+                            color: '#ec4899'
+                        }
+                    ]
+                };
+
+                insightCache = response.insights;
+                return insightCache;
+
+            } catch (error) {
+                console.error('Failed to load insights:', error);
+                return [];
+            }
+        }
+
+        // Load insights on page load
+        loadInsights();
+
+        // Update tooltip on hover
+        document.querySelectorAll('.metric-card').forEach((card, index) => {
+            card.addEventListener('mouseenter', () => {
+                const tooltipBubble = card.querySelector('.tooltip-bubble');
+                if (insightCache[index] && tooltipBubble) {
+                    const insight = insightCache[index];
+                    tooltipBubble.innerHTML = `
+                        <div class="tooltip-title">${insight.title}</div>
+                        <div class="tooltip-content">${insight.insight}</div>
+                    `;
+                }
+            });
+        });
+
+        // Add slight animation on load
+        setTimeout(() => {
+            document.querySelectorAll('.metric-card').forEach((card, index) => {
+                card.style.animation = `slideIn 0.5s ease-out ${index * 0.1}s both`;
+            });
+        }, 100);
+
+        // Add animation keyframe
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from {
+                    opacity: 0;
+                    transform: translateY(20px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+        `;
+        document.head.appendChild(style);
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,923 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Fresh Clean Design Enhanced</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #fafafa 0%, #f5f5f5 100%);
+            font-family: 'Trebuchet MS', 'Lucida Grande', 'Lucida Sans Unicode', 'Lucida Sans', sans-serif;
+            padding: 40px 20px;
+            min-height: 100vh;
+        }
+
+        .dashboard-container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .dashboard-header {
+            margin-bottom: 50px;
+            text-align: center;
+            animation: fadeInDown 0.8s ease;
+        }
+
+        .dashboard-header h1 {
+            font-size: 56px;
+            font-weight: 900;
+            background: linear-gradient(135deg, #1a1a1a 0%, #333 40%, #d4af37 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 12px;
+            letter-spacing: -2px;
+        }
+
+        .dashboard-header p {
+            font-size: 16px;
+            color: #999;
+            font-weight: 400;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+
+        /* Flip Card Container */
+        .flip-card-container {
+            perspective: 1000px;
+            height: 160px;
+            cursor: pointer;
+            animation: fadeInUp 0.8s ease;
+            animation-fill-mode: both;
+        }
+
+        .flip-card-container:nth-child(1) { animation-delay: 0.1s; }
+        .flip-card-container:nth-child(2) { animation-delay: 0.2s; }
+        .flip-card-container:nth-child(3) { animation-delay: 0.3s; }
+        .flip-card-container:nth-child(4) { animation-delay: 0.4s; }
+        .flip-card-container:nth-child(5) { animation-delay: 0.5s; }
+        .flip-card-container:nth-child(6) { animation-delay: 0.6s; }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .flip-card {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.7s cubic-bezier(0.68, -0.55, 0.265, 1.55),
+                        box-shadow 0.7s ease;
+            transform-style: preserve-3d;
+        }
+
+        .flip-card-container:hover .flip-card {
+            transform: rotateX(180deg) scale(1.02);
+            box-shadow: 0 40px 120px rgba(212, 175, 55, 0.4),
+                        0 0 100px rgba(212, 175, 55, 0.25),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.6);
+        }
+
+        .flip-front, .flip-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 14px;
+            border-radius: 14px;
+        }
+
+        .flip-front {
+            background: linear-gradient(180deg, #ffffff 0%, #fafafa 100%);
+            border: 2px solid #e8e8e8;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12),
+                        0 0 2px rgba(212, 175, 55, 0.5),
+                        inset 0 1px 0 rgba(255, 255, 255, 1);
+            z-index: 2;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .flip-front::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 10px;
+            background: linear-gradient(90deg, #d4af37 0%, #ffd700 50%, #c49a1e 100%);
+            border-radius: 16px 16px 0 0;
+            box-shadow: 0 4px 16px rgba(212, 175, 55, 0.6);
+        }
+
+        .flip-front::after {
+            content: '';
+            position: absolute;
+            bottom: -40px;
+            right: -40px;
+            width: 220px;
+            height: 220px;
+            background: radial-gradient(circle, rgba(212, 175, 55, 0.1) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .flip-back {
+            background: linear-gradient(135deg, #d4af37 0%, #c49a1e 50%, #b8860b 100%);
+            transform: rotateX(180deg);
+            color: white;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .flip-back::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.18) 0%, transparent 70%);
+            animation: shimmer 3s infinite;
+        }
+
+        @keyframes shimmer {
+            0%, 100% { transform: translate(-20%, -20%); }
+            50% { transform: translate(-10%, -10%); }
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            position: relative;
+            z-index: 1;
+            margin-bottom: 12px;
+        }
+
+        .card-label {
+            font-size: 9px;
+            font-weight: 800;
+            color: #999;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-family: 'Trebuchet MS', sans-serif;
+        }
+
+        .card-icon {
+            font-size: 24px;
+            background: linear-gradient(135deg, #d4af37 0%, #ffd700 50%, #c49a1e 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            filter: drop-shadow(0 2px 4px rgba(212, 175, 55, 0.3));
+        }
+
+        .card-content {
+            flex: 1;
+            position: relative;
+            z-index: 1;
+            margin-bottom: 16px;
+        }
+
+        .card-value {
+            font-size: 32px;
+            font-weight: 950;
+            background: linear-gradient(135deg, #1a1a1a 0%, #333 40%, #d4af37 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1;
+            margin: 2px 0;
+            letter-spacing: -1px;
+            font-family: 'Trebuchet MS', 'Lucida Sans Unicode', sans-serif;
+        }
+
+        .card-subtitle {
+            font-size: 10px;
+            color: #777;
+            margin-bottom: 6px;
+            font-weight: 500;
+            font-family: 'Trebuchet MS', sans-serif;
+        }
+
+        .card-stats {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 6px;
+            flex-wrap: wrap;
+            position: relative;
+            z-index: 1;
+        }
+
+        .stat-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 2px;
+            padding: 3px 8px;
+            background: linear-gradient(135deg, rgba(76, 175, 80, 0.1) 0%, rgba(76, 175, 80, 0.05) 100%);
+            border: 1px solid rgba(76, 175, 80, 0.3);
+            border-radius: 14px;
+            font-size: 8px;
+            font-weight: 700;
+            color: #2e7d32;
+        }
+
+        .stat-badge.warning {
+            background: linear-gradient(135deg, rgba(255, 152, 0, 0.1) 0%, rgba(255, 152, 0, 0.05) 100%);
+            border-color: rgba(255, 152, 0, 0.3);
+            color: #f57c00;
+        }
+
+        .stat-badge.danger {
+            background: linear-gradient(135deg, rgba(244, 67, 54, 0.1) 0%, rgba(244, 67, 54, 0.05) 100%);
+            border-color: rgba(244, 67, 54, 0.3);
+            color: #c62828;
+        }
+
+        .card-change {
+            font-size: 13px;
+            color: #4caf50;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .card-change.negative {
+            color: #f44336;
+        }
+
+        .card-progress {
+            position: relative;
+            z-index: 1;
+        }
+
+        .progress-bar-container {
+            height: 8px;
+            background: linear-gradient(90deg, #e0e0e0 0%, #f0f0f0 100%);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 8px;
+            box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #d4af37 0%, #ffd700 100%);
+            border-radius: 4px;
+            box-shadow: 0 2px 6px rgba(212, 175, 55, 0.4);
+            animation: pulse-width 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse-width {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
+        }
+
+        .card-chart {
+            height: 40px;
+            margin-top: 4px;
+            position: relative;
+            z-index: 1;
+            opacity: 0.95;
+        }
+
+        .flip-back-content {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            justify-content: space-between;
+        }
+
+        .flip-back-header {
+            margin-bottom: 16px;
+        }
+
+        .emoji-icon {
+            font-size: 28px;
+            margin-bottom: 6px;
+            display: inline-block;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+        }
+
+        .flip-back h3 {
+            font-size: 16px;
+            font-weight: 900;
+            margin-bottom: 6px;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+            letter-spacing: -0.5px;
+            font-family: 'Trebuchet MS', 'Lucida Grande', sans-serif;
+        }
+
+        .flip-back p {
+            font-size: 11px;
+            line-height: 1.5;
+            opacity: 0.99;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+            font-family: 'Trebuchet MS', sans-serif;
+        }
+
+        .flip-back-footer {
+            margin-top: 8px;
+            padding-top: 8px;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .flip-back-action {
+            font-size: 11px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            color: rgba(255, 255, 255, 0.95);
+        }
+
+        /* Tooltip */
+        .tooltip-text {
+            display: inline-block;
+            position: relative;
+        }
+
+        .tooltip-text .tooltiptext {
+            visibility: hidden;
+            width: 200px;
+            background-color: rgba(0, 0, 0, 0.8);
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 8px;
+            position: absolute;
+            z-index: 1000;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -100px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 12px;
+        }
+
+        .tooltip-text .tooltiptext::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: rgba(0, 0, 0, 0.8) transparent transparent transparent;
+        }
+
+        .tooltip-text:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        @media (max-width: 1200px) {
+            .cards-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 28px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .cards-grid {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+
+            .flip-card-container {
+                height: 150px;
+            }
+
+            .dashboard-header h1 {
+                font-size: 32px;
+            }
+
+            .card-value {
+                font-size: 28px;
+            }
+
+            .card-chart {
+                height: 35px;
+            }
+
+            .flip-back h3 {
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Header -->
+        <div class="dashboard-header">
+            <h1>✨ Supplier Dashboard</h1>
+            <p>Real-time performance metrics and insights - Hover to flip for insights!</p>
+        </div>
+
+        <!-- Cards Grid -->
+        <div class="cards-grid">
+            <!-- Card 1: Total Orders (30d) -->
+            <div class="flip-card-container">
+                <div class="flip-card">
+                    <!-- Front -->
+                    <div class="flip-front">
+                        <div class="card-header">
+                            <div class="card-label">📊 Total Orders (30d)</div>
+                            <div class="card-icon"><i class="fas fa-shopping-cart"></i></div>
+                        </div>
+                        <div class="card-content">
+                            <div class="card-value">18</div>
+                            <div class="card-subtitle">Orders This Month</div>
+                            <div class="card-stats">
+                                <span class="stat-badge">
+                                    <i class="fas fa-arrow-up"></i> 0% vs last period
+                                </span>
+                            </div>
+                            <div class="card-progress">
+                                <div class="progress-bar-container">
+                                    <div class="progress-bar" style="width: 65%"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-chart">
+                            <canvas id="chart-orders"></canvas>
+                        </div>
+                    </div>
+                    <!-- Back -->
+                    <div class="flip-back">
+                        <div class="flip-back-content">
+                            <div class="flip-back-header">
+                                <div class="emoji-icon">📦</div>
+                                <h3>Order Volume</h3>
+                                <p>You have 18 active orders this month. Steady performance with consistent order flow across all product categories.</p>
+                            </div>
+                            <div class="flip-back-footer">
+                                <div class="flip-back-action">
+                                    <i class="fas fa-arrow-right"></i> View all orders →
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 2: Active Products -->
+            <div class="flip-card-container">
+                <div class="flip-card">
+                    <!-- Front -->
+                    <div class="flip-front">
+                        <div class="card-header">
+                            <div class="card-label">📈 Active Products</div>
+                            <div class="card-icon"><i class="fas fa-boxes"></i></div>
+                        </div>
+                        <div class="card-content">
+                            <div class="card-value">50</div>
+                            <div class="card-subtitle">Products Available</div>
+                            <div class="card-stats">
+                                <span class="stat-badge">
+                                    <i class="fas fa-check-circle"></i> 50 in stock
+                                </span>
+                                <span class="stat-badge warning">
+                                    <i class="fas fa-exclamation-circle"></i> 3 low stock
+                                </span>
+                            </div>
+                            <div class="card-progress">
+                                <div class="progress-bar-container">
+                                    <div class="progress-bar" style="width: 94%"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-chart">
+                            <canvas id="chart-products"></canvas>
+                        </div>
+                    </div>
+                    <!-- Back -->
+                    <div class="flip-back">
+                        <div class="flip-back-content">
+                            <div class="flip-back-header">
+                                <div class="emoji-icon">🎯</div>
+                                <h3>Stock Health</h3>
+                                <p>50 products fully in stock with 100% availability. 3 items approaching reorder point - consider restocking soon!</p>
+                            </div>
+                            <div class="flip-back-footer">
+                                <div class="flip-back-action">
+                                    <i class="fas fa-arrow-right"></i> Manage inventory →
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 3: Pending Claims -->
+            <div class="flip-card-container">
+                <div class="flip-card">
+                    <!-- Front -->
+                    <div class="flip-front">
+                        <div class="card-header">
+                            <div class="card-label">⚠️ Pending Claims</div>
+                            <div class="card-icon"><i class="fas fa-wrench"></i></div>
+                        </div>
+                        <div class="card-content">
+                            <div class="card-value">0</div>
+                            <div class="card-subtitle">Claims Requiring Action</div>
+                            <div class="card-stats">
+                                <span class="stat-badge danger">
+                                    <i class="fas fa-times-circle"></i> 0 awaiting inspection
+                                </span>
+                                <span class="stat-badge">
+                                    <i class="fas fa-zap"></i> Immediate action required
+                                </span>
+                            </div>
+                            <div class="card-progress">
+                                <div class="progress-bar-container">
+                                    <div class="progress-bar" style="width: 100%"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-chart">
+                            <canvas id="chart-claims"></canvas>
+                        </div>
+                    </div>
+                    <!-- Back -->
+                    <div class="flip-back">
+                        <div class="flip-back-content">
+                            <div class="flip-back-header">
+                                <div class="emoji-icon">✅</div>
+                                <h3>Claims Status</h3>
+                                <p>Outstanding! Zero claims requiring action. Your quality and fulfillment are performing excellently. Keep maintaining these standards!</p>
+                            </div>
+                            <div class="flip-back-footer">
+                                <div class="flip-back-action">
+                                    <i class="fas fa-arrow-right"></i> View claim details →
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 4: Avg Order Value -->
+            <div class="flip-card-container">
+                <div class="flip-card">
+                    <!-- Front -->
+                    <div class="flip-front">
+                        <div class="card-header">
+                            <div class="card-label">💰 Avg Order Value</div>
+                            <div class="card-icon"><i class="fas fa-dollar-sign"></i></div>
+                        </div>
+                        <div class="card-content">
+                            <div class="card-value">$0.00</div>
+                            <div class="card-subtitle">Average Per Order</div>
+                            <div class="card-stats">
+                                <span class="stat-badge">
+                                    <i class="fas fa-check-circle"></i> Healthy order value
+                                </span>
+                            </div>
+                            <div class="card-progress">
+                                <div class="progress-bar-container">
+                                    <div class="progress-bar" style="width: 78%"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-chart">
+                            <canvas id="chart-value"></canvas>
+                        </div>
+                    </div>
+                    <!-- Back -->
+                    <div class="flip-back">
+                        <div class="flip-back-content">
+                            <div class="flip-back-header">
+                                <div class="emoji-icon">📊</div>
+                                <h3>Revenue Performance</h3>
+                                <p>Average order value indicates healthy purchasing patterns. Customers are buying a good product mix - maintain quality and service!</p>
+                            </div>
+                            <div class="flip-back-footer">
+                                <div class="flip-back-action">
+                                    <i class="fas fa-arrow-right"></i> Revenue details →
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 5: Units Sold (30d) -->
+            <div class="flip-card-container">
+                <div class="flip-card">
+                    <!-- Front -->
+                    <div class="flip-front">
+                        <div class="card-header">
+                            <div class="card-label">📦 Units Sold (30d)</div>
+                            <div class="card-icon"><i class="fas fa-chart-line"></i></div>
+                        </div>
+                        <div class="card-content">
+                            <div class="card-value">0</div>
+                            <div class="card-subtitle">Units This Month</div>
+                            <div class="card-stats">
+                                <span class="stat-badge">
+                                    <i class="fas fa-calendar-check"></i> On track this month
+                                </span>
+                            </div>
+                            <div class="card-progress">
+                                <div class="progress-bar-container">
+                                    <div class="progress-bar" style="width: 45%"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-chart">
+                            <canvas id="chart-units"></canvas>
+                        </div>
+                    </div>
+                    <!-- Back -->
+                    <div class="flip-back">
+                        <div class="flip-back-content">
+                            <div class="flip-back-header">
+                                <div class="emoji-icon">🚀</div>
+                                <h3>Sales Velocity</h3>
+                                <p>Unit sales are tracking well for the month. Steady distribution across product lines shows balanced customer demand. Monitor trending items!</p>
+                            </div>
+                            <div class="flip-back-footer">
+                                <div class="flip-back-action">
+                                    <i class="fas fa-arrow-right"></i> Sales details →
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 6: Revenue (30d) -->
+            <div class="flip-card-container">
+                <div class="flip-card">
+                    <!-- Front -->
+                    <div class="flip-front">
+                        <div class="card-header">
+                            <div class="card-label">💹 Revenue (30d)</div>
+                            <div class="card-icon"><i class="fas fa-chart-bar"></i></div>
+                        </div>
+                        <div class="card-content">
+                            <div class="card-value">$0.00</div>
+                            <div class="card-subtitle">Target: $10,000</div>
+                            <div class="card-stats">
+                                <span class="stat-badge warning">
+                                    <i class="fas fa-hourglass-half"></i> Below target this month
+                                </span>
+                            </div>
+                            <div class="card-progress">
+                                <div class="progress-bar-container">
+                                    <div class="progress-bar" style="width: 35%"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-chart">
+                            <canvas id="chart-revenue"></canvas>
+                        </div>
+                    </div>
+                    <!-- Back -->
+                    <div class="flip-back">
+                        <div class="flip-back-content">
+                            <div class="flip-back-header">
+                                <div class="emoji-icon">🎯</div>
+                                <h3>Revenue Goals</h3>
+                                <p>Current revenue is 35% toward your $10,000 monthly target. Opportunities to grow by promoting top-performing products and bundle offers!</p>
+                            </div>
+                            <div class="flip-back-footer">
+                                <div class="flip-back-action">
+                                    <i class="fas fa-arrow-right"></i> Growth opportunities →
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Chart.js Configuration with enhanced styling
+        const chartOptions = {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: {
+                        display: false
+                    },
+                    ticks: {
+                        display: false
+                    }
+                },
+                x: {
+                    grid: {
+                        display: false
+                    },
+                    ticks: {
+                        display: false
+                    }
+                }
+            }
+        };
+
+        // Initialize Charts
+        function initCharts() {
+            // Chart 1: Orders Trend
+            new Chart(document.getElementById('chart-orders'), {
+                type: 'line',
+                data: {
+                    labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+                    datasets: [{
+                        label: 'Orders',
+                        data: [4, 6, 5, 3],
+                        borderColor: '#d4af37',
+                        backgroundColor: 'rgba(212, 175, 55, 0.12)',
+                        borderWidth: 3,
+                        fill: true,
+                        pointRadius: 5,
+                        pointBackgroundColor: '#d4af37',
+                        pointBorderColor: '#ffffff',
+                        pointBorderWidth: 3,
+                        tension: 0.4,
+                        pointHoverRadius: 7,
+                        pointHoverBorderWidth: 4
+                    }]
+                },
+                options: chartOptions
+            });
+
+            // Chart 2: Products In Stock
+            new Chart(document.getElementById('chart-products'), {
+                type: 'bar',
+                data: {
+                    labels: ['In Stock', 'Low Stock', 'Available'],
+                    datasets: [{
+                        label: 'Products',
+                        data: [50, 3, 47],
+                        backgroundColor: [
+                            'rgba(76, 175, 80, 0.8)',
+                            'rgba(255, 152, 0, 0.8)',
+                            'rgba(33, 150, 243, 0.8)'
+                        ],
+                        borderColor: [
+                            '#4caf50',
+                            '#ff9800',
+                            '#2196f3'
+                        ],
+                        borderWidth: 2,
+                        borderRadius: 6,
+                        hoverBackgroundColor: [
+                            'rgba(76, 175, 80, 1)',
+                            'rgba(255, 152, 0, 1)',
+                            'rgba(33, 150, 243, 1)'
+                        ]
+                    }]
+                },
+                options: chartOptions
+            });
+
+            // Chart 3: Claims Status
+            new Chart(document.getElementById('chart-claims'), {
+                type: 'doughnut',
+                data: {
+                    labels: ['Resolved', 'Pending', 'Clear'],
+                    datasets: [{
+                        data: [5, 0, 18],
+                        backgroundColor: [
+                            'rgba(76, 175, 80, 0.8)',
+                            'rgba(244, 67, 54, 0.8)',
+                            'rgba(33, 150, 243, 0.8)'
+                        ],
+                        borderColor: [
+                            '#4caf50',
+                            '#f44336',
+                            '#2196f3'
+                        ],
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+
+            // Chart 4: Order Value Trend
+            new Chart(document.getElementById('chart-value'), {
+                type: 'line',
+                data: {
+                    labels: ['Mon', 'Tue', 'Wed', 'Thu'],
+                    datasets: [{
+                        label: 'Avg Value',
+                        data: [0, 0, 0, 0],
+                        borderColor: '#4caf50',
+                        backgroundColor: 'rgba(76, 175, 80, 0.12)',
+                        borderWidth: 3,
+                        fill: true,
+                        pointRadius: 5,
+                        pointBackgroundColor: '#4caf50',
+                        pointBorderColor: '#ffffff',
+                        pointBorderWidth: 3,
+                        tension: 0.4
+                    }]
+                },
+                options: chartOptions
+            });
+
+            // Chart 5: Units Sold Trend
+            new Chart(document.getElementById('chart-units'), {
+                type: 'line',
+                data: {
+                    labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+                    datasets: [{
+                        label: 'Units',
+                        data: [0, 0, 0, 0],
+                        borderColor: '#2196f3',
+                        backgroundColor: 'rgba(33, 150, 243, 0.12)',
+                        borderWidth: 3,
+                        fill: true,
+                        pointRadius: 5,
+                        pointBackgroundColor: '#2196f3',
+                        pointBorderColor: '#ffffff',
+                        pointBorderWidth: 3,
+                        tension: 0.4
+                    }]
+                },
+                options: chartOptions
+            });
+
+            // Chart 6: Revenue Trend
+            new Chart(document.getElementById('chart-revenue'), {
+                type: 'bar',
+                data: {
+                    labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+                    datasets: [{
+                        label: 'Revenue',
+                        data: [0, 0, 0, 0],
+                        backgroundColor: 'rgba(212, 175, 55, 0.8)',
+                        borderColor: '#d4af37',
+                        borderWidth: 2,
+                        borderRadius: 6,
+                        hoverBackgroundColor: 'rgba(212, 175, 55, 1)'
+                    }]
+                },
+                options: chartOptions
+            });
+        }
+
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', initCharts);
+    </script>
+</body>
+</html>

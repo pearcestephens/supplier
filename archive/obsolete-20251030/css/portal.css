@@ -1,0 +1,370 @@
+/**
+ * Supplier Portal - Main Stylesheet
+ * 
+ * @package CIS\Supplier\Assets
+ * @version 2.0.0
+ */
+
+/* ============================================================================
+   ROOT VARIABLES
+   ========================================================================= */
+:root {
+    --vs-primary: #1a252f;
+    --vs-secondary: #2c3e50;
+    --vs-accent: #3498db;
+    --vs-success: #1cc88a;
+    --vs-warning: #f6c23e;
+    --vs-danger: #e74a3b;
+    --vs-info: #36b9cc;
+    --vs-light: #f8f9fc;
+    --vs-dark: #5a5c69;
+    --vs-sidebar-width: 250px;
+    --vs-header-height: 56px;
+}
+
+/* ============================================================================
+   GLOBAL STYLES
+   ========================================================================= */
+body.supplier-portal {
+    font-family: "Nunito", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5;
+    color: #858796;
+    background-color: var(--vs-light);
+}
+
+h1, h2, h3, h4, h5, h6 {
+    color: var(--vs-dark);
+    font-weight: 600;
+}
+
+a {
+    color: var(--vs-accent);
+    text-decoration: none;
+}
+
+a:hover {
+    color: #2980b9;
+    text-decoration: none;
+}
+
+/* ============================================================================
+   LAYOUT
+   ========================================================================= */
+#wrapper {
+    display: flex;
+}
+
+#content-wrapper {
+    background-color: var(--vs-light);
+    width: 100%;
+    overflow-x: hidden;
+}
+
+#content {
+    flex: 1 0 auto;
+}
+
+.container-fluid {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+}
+
+/* ============================================================================
+   SIDEBAR
+   ========================================================================= */
+.sidebar {
+    width: var(--vs-sidebar-width);
+    min-height: 100vh;
+    background: linear-gradient(180deg, var(--vs-primary) 0%, var(--vs-secondary) 100%);
+}
+
+.sidebar .nav-item {
+    position: relative;
+}
+
+.sidebar .nav-item .nav-link {
+    text-align: left;
+    padding: 1rem;
+    width: var(--vs-sidebar-width);
+    color: rgba(255, 255, 255, 0.8);
+    transition: all 0.3s;
+}
+
+.sidebar .nav-item .nav-link:hover {
+    color: white;
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.sidebar .nav-item .nav-link i {
+    font-size: 0.85rem;
+    margin-right: 0.5rem;
+}
+
+.sidebar .nav-item.active .nav-link {
+    color: white;
+    font-weight: 700;
+    background-color: rgba(255, 255, 255, 0.15);
+    border-left: 4px solid var(--vs-accent);
+}
+
+.sidebar-brand {
+    height: 4.375rem;
+    text-decoration: none;
+    font-size: 1rem;
+    font-weight: 800;
+    padding: 1.5rem 1rem;
+    text-align: center;
+    letter-spacing: 0.05rem;
+    z-index: 1;
+    color: white;
+}
+
+.sidebar-brand-icon i {
+    font-size: 2rem;
+}
+
+.sidebar-brand-text {
+    display: block;
+}
+
+.sidebar-heading {
+    text-align: center;
+    padding: 0 1rem;
+    font-weight: 800;
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1rem;
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.sidebar-footer {
+    position: absolute;
+    bottom: 60px;
+    width: 100%;
+}
+
+/* Sidebar Toggler */
+#sidebarToggle {
+    width: 2.5rem;
+    height: 2.5rem;
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+#sidebarToggle:hover {
+    background-color: rgba(255, 255, 255, 0.25);
+}
+
+#sidebarToggle:active {
+    background-color: rgba(255, 255, 255, 0.3);
+}
+
+/* ============================================================================
+   TOPBAR
+   ========================================================================= */
+.topbar {
+    height: var(--vs-header-height);
+}
+
+.topbar .navbar-search {
+    width: 25rem;
+}
+
+.topbar-info {
+    display: flex;
+    align-items: center;
+}
+
+.topbar-info i {
+    margin-right: 0.5rem;
+}
+
+/* ============================================================================
+   CARDS
+   ========================================================================= */
+.card {
+    border: none;
+    border-radius: 0.35rem;
+}
+
+.card .card-header {
+    background-color: var(--vs-light);
+    border-bottom: 1px solid #e3e6f0;
+}
+
+.shadow {
+    box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15) !important;
+}
+
+/* Border Left Utility */
+.border-left-primary {
+    border-left: 0.25rem solid var(--vs-accent) !important;
+}
+
+.border-left-success {
+    border-left: 0.25rem solid var(--vs-success) !important;
+}
+
+.border-left-info {
+    border-left: 0.25rem solid var(--vs-info) !important;
+}
+
+.border-left-warning {
+    border-left: 0.25rem solid var(--vs-warning) !important;
+}
+
+.border-left-danger {
+    border-left: 0.25rem solid var(--vs-danger) !important;
+}
+
+/* ============================================================================
+   BUTTONS
+   ========================================================================= */
+.btn {
+    border-radius: 0.35rem;
+    font-weight: 600;
+}
+
+.btn-xs {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+}
+
+.btn-primary {
+    background-color: var(--vs-accent);
+    border-color: var(--vs-accent);
+}
+
+.btn-primary:hover {
+    background-color: #2980b9;
+    border-color: #2980b9;
+}
+
+.btn-success {
+    background-color: var(--vs-success);
+    border-color: var(--vs-success);
+}
+
+.btn-warning {
+    background-color: var(--vs-warning);
+    border-color: var(--vs-warning);
+}
+
+.btn-danger {
+    background-color: var(--vs-danger);
+    border-color: var(--vs-danger);
+}
+
+.btn-info {
+    background-color: var(--vs-info);
+    border-color: var(--vs-info);
+}
+
+/* ============================================================================
+   TABLES
+   ========================================================================= */
+.table {
+    color: #858796;
+}
+
+.table thead th {
+    vertical-align: bottom;
+    border-bottom: 2px solid #e3e6f0;
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    color: var(--vs-dark);
+}
+
+.table td {
+    vertical-align: middle;
+}
+
+.table-hover tbody tr:hover {
+    background-color: rgba(0, 0, 0, 0.03);
+}
+
+/* ============================================================================
+   BADGES
+   ========================================================================= */
+.badge {
+    padding: 0.35rem 0.65rem;
+    font-weight: 600;
+}
+
+/* ============================================================================
+   FOOTER
+   ========================================================================= */
+.sticky-footer {
+    padding: 2rem 0;
+    flex-shrink: 0;
+}
+
+.sticky-footer .copyright {
+    line-height: 1;
+    font-size: 0.8rem;
+}
+
+/* ============================================================================
+   SCROLL TO TOP BUTTON
+   ========================================================================= */
+.scroll-to-top {
+    position: fixed;
+    right: 1rem;
+    bottom: 1rem;
+    display: none;
+    width: 2.75rem;
+    height: 2.75rem;
+    text-align: center;
+    color: white;
+    background: rgba(90, 92, 105, 0.5);
+    line-height: 46px;
+    z-index: 1000;
+}
+
+.scroll-to-top:hover {
+    background: rgba(90, 92, 105, 0.8);
+}
+
+.scroll-to-top.show {
+    display: block;
+}
+
+/* ============================================================================
+   UTILITIES
+   ========================================================================= */
+.text-xs {
+    font-size: 0.7rem;
+}
+
+.text-gray-600 {
+    color: #858796 !important;
+}
+
+.text-gray-800 {
+    color: var(--vs-dark) !important;
+}
+
+.bg-gradient-primary {
+    background: linear-gradient(180deg, var(--vs-primary) 0%, var(--vs-secondary) 100%);
+}
+
+/* ============================================================================
+   RESPONSIVE
+   ========================================================================= */
+@media (max-width: 768px) {
+    .sidebar {
+        width: 0;
+        position: fixed;
+        z-index: 1000;
+    }
+    
+    .sidebar.toggled {
+        width: var(--vs-sidebar-width);
+    }
+    
+    #content-wrapper {
+        width: 100%;
+    }
+}

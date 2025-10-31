@@ -1,0 +1,154 @@
+[2025-10-25 16:12:02] === Starting Transfer → Consignment Rename ===
+[2025-10-25 16:12:02] Mode: EXECUTE
+[2025-10-25 16:12:02] Backup: NO
+[2025-10-25 16:12:02] Database connected successfully
+[2025-10-25 16:12:02] 
+=== PHASE 2: Updating Code Files ===
+[2025-10-25 16:12:02] ✓ modules/consignments/database/critical-queue-tables-fix.php: 17 replacements
+[2025-10-25 16:12:02] ✓ modules/consignments/shared/functions/transfers.php: 8 replacements
+[2025-10-25 16:12:02] ✓ modules/consignments/stock-transfers/pack_integration.php: 1 replacements
+[2025-10-25 16:12:02] ✓ assets/services/queue/app/Services/Consignments/Commands/CreateConsignmentFullyAudited.php: 9 replacements
+[2025-10-25 16:12:02] ✓ assets/services/queue/app/Services/Consignments/Commands/CancelConsignmentCommandFullyAudited.php: 2 replacements
+[2025-10-25 16:12:02] ✓ assets/services/queue/app/Support/ComprehensiveLogger.php: 20 replacements
+[2025-10-25 16:12:02] ✓ assets/services/queue/migrate_comprehensive_transfers.php: 20 replacements
+[2025-10-25 16:12:02] ✓ assets/services/queue/migrate_stock_to_queue.php: 1 replacements
+[2025-10-25 16:12:02] ✓ assets/services/queue/migrate_stock_transfers.php: 1 replacements
+[2025-10-25 16:12:02] ✓ assets/services/queue/migrate_ultra_comprehensive.php: 17 replacements
+[2025-10-25 16:12:02] ✓ assets/services/queue/migrations/create_transfer_audit_log.php: 6 replacements
+[2025-10-25 16:12:02] ✓ assets/services/queue/public/api/complete-transfer-actions.php: 2 replacements
+[2025-10-25 16:12:02] ✓ assets/services/queue/public/api/pipeline.php: 4 replacements
+[2025-10-25 16:12:02] SKIP: File not found: assets/services/queue/public/api/transfer-actions.php
+[2025-10-25 16:12:02] ✓ assets/services/queue/public/index.php: 1 replacements
+[2025-10-25 16:12:02] ✓ assets/services/queue/public/index-proper.php: 1 replacements
+[2025-10-25 16:12:02] ✓ assets/services/queue/public/index-wrong.php: 1 replacements
+[2025-10-25 16:12:02] ✓ assets/services/queue/public/new-index.php: 1 replacements
+[2025-10-25 16:12:02] ✓ assets/services/queue/src/Integration/CliIntegration.php: 4 replacements
+[2025-10-25 16:12:02] ✓ assets/services/queue/tests/Consignments/comprehensive_test.php: 20 replacements
+[2025-10-25 16:12:02] ✓ assets/services/queue/tests/Consignments/error_injection_test.php: 10 replacements
+[2025-10-25 16:12:02] ✓ assets/services/queue/tests/Consignments/full_lifecycle_test.php: 8 replacements
+[2025-10-25 16:12:02] ✓ assets/services/queue/tests/Consignments/view_notifications.php: 2 replacements
+[2025-10-25 16:12:02] ✓ assets/services/webhooks/webhook_handler_new.php: 3 replacements
+[2025-10-25 16:12:02] ✓ assets/services/transfers/TransferQueueWorker.php: 2 replacements
+[2025-10-25 16:12:02] ✓ assets/services/neuro/neuro_/enterprise_transfer_engine/app/Controllers/DashboardController.php: 6 replacements
+[2025-10-25 16:12:02] ✓ assets/services/neuro/neuro_/enterprise_transfer_engine/app/Controllers/HealthController.php: 2 replacements
+[2025-10-25 16:12:02] SKIP: File not found: assets/services/neuro/neuro_/enterprise_transfer_engine/app/Controllers/RecentRunsController.php
+[2025-10-25 16:12:02] ✓ assets/services/neuro/neuro_/enterprise_transfer_engine/app/Controllers/ReportsController.php: 2 replacements
+[2025-10-25 16:12:02] SKIP: File not found: assets/services/neuro/neuro_/enterprise_transfer_engine/app/Database/DatabaseManager.php
+[2025-10-25 16:12:02] SKIP: File not found: assets/services/neuro/neuro_/enterprise_transfer_engine/app/Services/ExecutionService.php
+[2025-10-25 16:12:02] ✓ assets/services/neuro/neuro_/enterprise_transfer_engine/public/ai_dashboard.php: 4 replacements
+[2025-10-25 16:12:02] ✓ assets/services/neuro/neuro_/enterprise_transfer_engine/public/dashboard.php: 1 replacements
+[2025-10-25 16:12:02]   assets/services/neuro/neuro_/enterprise_transfer_engine/public/index.php: No changes needed
+[2025-10-25 16:12:02] ✓ assets/services/neuro/neuro_/VAPESHED_ENTERPRISE_SYSTEM/app/Controllers/DashboardController.php: 6 replacements
+[2025-10-25 16:12:02] ✓ assets/services/neuro/neuro_/VAPESHED_ENTERPRISE_SYSTEM/app/Controllers/HealthController.php: 2 replacements
+[2025-10-25 16:12:02] SKIP: File not found: assets/services/neuro/neuro_/VAPESHED_ENTERPRISE_SYSTEM/app/Controllers/RecentRunsController.php
+[2025-10-25 16:12:02] ✓ assets/services/neuro/neuro_/VAPESHED_ENTERPRISE_SYSTEM/app/Controllers/ReportsController.php: 2 replacements
+[2025-10-25 16:12:02] SKIP: File not found: assets/services/neuro/neuro_/VAPESHED_ENTERPRISE_SYSTEM/app/Database/DatabaseManager.php
+[2025-10-25 16:12:02] SKIP: File not found: assets/services/neuro/neuro_/VAPESHED_ENTERPRISE_SYSTEM/app/Engines/AutoBalancer/AutoBalancer.php
+[2025-10-25 16:12:02] SKIP: File not found: assets/services/neuro/neuro_/VAPESHED_ENTERPRISE_SYSTEM/app/Services/ExecutionService.php
+[2025-10-25 16:12:02] ✓ assets/services/neuro/neuro_/VAPESHED_ENTERPRISE_SYSTEM/public/ai_dashboard.php: 4 replacements
+[2025-10-25 16:12:02] ✓ assets/services/neuro/neuro_/VAPESHED_ENTERPRISE_SYSTEM/public/auto_balancer_dashboard.php: 6 replacements
+[2025-10-25 16:12:02] ✓ assets/services/neuro/neuro_/VAPESHED_ENTERPRISE_SYSTEM/public/dashboard.php: 1 replacements
+[2025-10-25 16:12:02]   assets/services/neuro/neuro_/VAPESHED_ENTERPRISE_SYSTEM/public/index.php: No changes needed
+[2025-10-25 16:12:02] ✓ assets/services/neuro/neuro_/vapeshed_transfer/transfer_engine/app/Controllers/DashboardController.php: 6 replacements
+[2025-10-25 16:12:02] ✓ assets/services/neuro/neuro_/vapeshed_transfer/transfer_engine/app/Controllers/HealthController.php: 2 replacements
+[2025-10-25 16:12:02] SKIP: File not found: assets/services/neuro/neuro_/vapeshed_transfer/transfer_engine/app/Controllers/RecentRunsController.php
+[2025-10-25 16:12:02] ✓ assets/services/neuro/neuro_/vapeshed_transfer/transfer_engine/app/Controllers/ReportsController.php: 2 replacements
+[2025-10-25 16:12:02] SKIP: File not found: assets/services/neuro/neuro_/vapeshed_transfer/transfer_engine/app/Database/DatabaseManager.php
+[2025-10-25 16:12:02] SKIP: File not found: assets/services/neuro/neuro_/vapeshed_transfer/transfer_engine/app/Services/ExecutionService.php
+[2025-10-25 16:12:02] ✓ assets/services/neuro/neuro_/vapeshed_transfer/transfer_engine/public/dashboard.php: 1 replacements
+[2025-10-25 16:12:02]   assets/services/neuro/neuro_/vapeshed_transfer/transfer_engine/public/index.php: No changes needed
+[2025-10-25 16:12:02] ✓ supplier/migrate-purchase-orders-comprehensive.php: 17 replacements
+[2025-10-25 16:12:02] ✓ supplier/patch-transfer-categories.php: 11 replacements
+[2025-10-25 16:12:02] ✓ supplier/execute_phase3_tests.php: 6 replacements
+[2025-10-25 16:12:02] ✓ supplier/api/v2/_db_helpers.php: 3 replacements
+[2025-10-25 16:12:02] ✓ supplier/api/v2/po-update.php: 3 replacements
+[2025-10-25 16:12:02] ✓ advanced_transfer_control_panel.php: 1 replacements
+[2025-10-25 16:12:02] ✓ assets/functions/stock-transfer-functions.php: 26 replacements
+[2025-10-25 16:12:02] ✓ assets/cron/automatic-product-ordering.php: 4 replacements
+[2025-10-25 16:12:02] ✓ assets/cron/utility_scripts/god.php: 9 replacements
+[2025-10-25 16:12:02] ✓ assets/cron/utility_scripts/HARDFAST.php: 1 replacements
+[2025-10-25 16:12:02] ✓ assets/services/pipeline/error_hook.php: 1 replacements
+[2025-10-25 16:12:02] ✓ _kb/bot-memory-refresh.php: 1 replacements
+[2025-10-25 16:12:02] 
+Files updated: 51/{count(Array)}
+[2025-10-25 16:12:02] Total replacements: 291
+[2025-10-25 16:12:02] 
+=== PHASE 3: Renaming Database Tables ===
+[2025-10-25 16:12:02] ✓ transfer_parcel_items → consignment_parcel_items
+[2025-10-25 16:12:02] ✓ transfer_shipment_items → consignment_shipment_items
+[2025-10-25 16:12:02] ✓ transfer_receipt_items → consignment_receipt_items
+[2025-10-25 16:12:02] ✓ transfer_shipment_notes → consignment_shipment_notes
+[2025-10-25 16:12:02] ✓ transfer_pack_lock_requests → consignment_pack_lock_requests
+[2025-10-25 16:12:02] ✓ transfer_pack_lock_audit → consignment_pack_lock_audit
+[2025-10-25 16:12:02] ✓ transfer_allocations → consignment_allocations
+[2025-10-25 16:12:02] ✓ transfer_transaction_checkpoints → consignment_transaction_checkpoints
+[2025-10-25 16:12:02] ✓ transfer_tracking_events → consignment_tracking_events
+[2025-10-25 16:12:02] ✓ transfer_transaction_metrics → consignment_transaction_metrics
+[2025-10-25 16:12:02] ✓ transfer_carrier_orders → consignment_carrier_orders
+[2025-10-25 16:12:02] ✓ transfer_parcels → consignment_parcels
+[2025-10-25 16:12:02] ✓ transfer_shipments → consignment_shipments
+[2025-10-25 16:12:02] ✓ transfer_receipts → consignment_receipts
+[2025-10-25 16:12:02] ✓ transfer_transactions → consignment_transactions
+[2025-10-25 16:12:02] ✓ transfer_labels → consignment_labels
+[2025-10-25 16:12:02] ✓ transfer_upload_tokens → consignment_upload_tokens
+[2025-10-25 16:12:02] ✓ transfer_submissions_log → consignment_submissions_log
+[2025-10-25 16:12:03] ✓ transfer_item_analytics → consignment_item_analytics
+[2025-10-25 16:12:03] ✓ transfer_discrepancies → consignment_discrepancies
+[2025-10-25 16:12:03] ✓ transfer_user_efficiency → consignment_user_efficiency
+[2025-10-25 16:12:03] ✓ transfer_session_analytics → consignment_session_analytics
+[2025-10-25 16:12:03] ✓ transfer_behavior_patterns → consignment_behavior_patterns
+[2025-10-25 16:12:03] ✓ transfer_media → consignment_media
+[2025-10-25 16:12:03] ✓ transfer_executions → consignment_executions
+[2025-10-25 16:12:03] ✓ transfer_validation_cache → consignment_validation_cache
+[2025-10-25 16:12:03] ✓ transfer_logs → consignment_logs
+[2025-10-25 16:12:03] ✓ transfer_notes → consignment_notes
+[2025-10-25 16:12:03] ✓ transfer_unified_log → consignment_unified_log
+[2025-10-25 16:12:03] ✓ transfer_audit_log → consignment_audit_log
+[2025-10-25 16:12:03] ✓ transfer_ai_audit_log → consignment_ai_audit_log
+[2025-10-25 16:12:03] ✓ transfer_queue_log → consignment_queue_log
+[2025-10-25 16:12:03] ✓ transfer_performance_logs → consignment_performance_logs
+[2025-10-25 16:12:03] ✓ transfer_log_archive → consignment_log_archive
+[2025-10-25 16:12:03] ✓ transfer_alerts_log → consignment_alerts_log
+[2025-10-25 16:12:03] ✓ transfer_metrics → consignment_metrics
+[2025-10-25 16:12:03] ✓ transfer_performance_metrics → consignment_performance_metrics
+[2025-10-25 16:12:03] ✓ transfer_queue_metrics → consignment_queue_metrics
+[2025-10-25 16:12:03] ✓ transfer_ai_insights → consignment_ai_insights
+[2025-10-25 16:12:03] ✓ transfer_config → consignment_config
+[2025-10-25 16:12:03] ✓ transfer_configurations → consignment_configurations
+[2025-10-25 16:12:03] ✓ transfer_system_health → consignment_system_health
+[2025-10-25 16:12:03] ✓ transfer_alert_rules → consignment_alert_rules
+[2025-10-25 16:12:03] ✓ transfer_alert_config → consignment_alert_config
+[2025-10-25 16:12:03] ✓ transfer_pack_locks → consignment_pack_locks
+[2025-10-25 16:12:03] ✓ transfer_ui_sessions → consignment_ui_sessions
+[2025-10-25 16:12:03] ✓ transfer_queue → consignment_queue
+[2025-10-25 16:12:03] ✓ transfer_idempotency → consignment_idempotency
+[2025-10-25 16:12:03] ✓ transfer_notifications → consignment_notifications
+[2025-10-25 16:12:03] 
+Tables renamed: 49/{count(Array)}
+[2025-10-25 16:12:03] 
+=== PHASE 4: Updating Foreign Key Constraints ===
+[2025-10-25 16:12:04] Foreign key constraints updated automatically by MySQL
+[2025-10-25 16:12:04] 
+=== PHASE 5: Updating Views ===
+[2025-10-25 16:12:04] ✓ View v_ai_decision_performance references transfer tables (needs manual review)
+[2025-10-25 16:12:04] ✓ View v_transaction_dashboard references transfer tables (needs manual review)
+[2025-10-25 16:12:04] ✓ View v_transfer_activity_today references transfer tables (needs manual review)
+[2025-10-25 16:12:04] ✓ View vw_transfer_progress references transfer tables (needs manual review)
+[2025-10-25 16:12:04] Views backed up for manual review
+[2025-10-25 16:12:04] 
+=== PHASE 6: Creating Rollback Script ===
+[2025-10-25 16:12:04] ✓ Rollback script created: /home/master/applications/jcepnzzkmj/public_html/supplier/backups/rename_20251025_161202/rollback.php
+[2025-10-25 16:12:04] 
+=== SUMMARY ===
+[2025-10-25 16:12:04] Mode: EXECUTED
+[2025-10-25 16:12:04] Files processed: 65
+[2025-10-25 16:12:04] Files updated: 51
+[2025-10-25 16:12:04] Tables renamed: 49
+[2025-10-25 16:12:04] Total text replacements: 291
+[2025-10-25 16:12:04] 
+Backup location: /home/master/applications/jcepnzzkmj/public_html/supplier/backups/rename_20251025_161202
+[2025-10-25 16:12:04] Rollback script: /home/master/applications/jcepnzzkmj/public_html/supplier/backups/rename_20251025_161202/rollback.php
+[2025-10-25 16:12:04] 
+To rollback: php /home/master/applications/jcepnzzkmj/public_html/supplier/backups/rename_20251025_161202/rollback.php
+[2025-10-25 16:12:04] 
+=== Rename Complete ===

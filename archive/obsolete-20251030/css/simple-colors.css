@@ -1,0 +1,105 @@
+/**
+ * Simple Color Overrides for AdminLTE
+ * Just making it look better - NOT rebuilding everything
+ */
+
+/* Better font */
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+}
+
+/* Black sidebar */
+.main-sidebar {
+    background: linear-gradient(180deg, #000000 0%, #1a1a1a 100%) !important;
+}
+
+/* Gradient buttons that POP */
+.btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    border: none !important;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4) !important;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, #5568d3 0%, #6a3f91 100%) !important;
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5) !important;
+    transform: translateY(-2px) !important;
+}
+
+.btn-success {
+    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%) !important;
+    border: none !important;
+    box-shadow: 0 4px 15px rgba(17, 153, 142, 0.4) !important;
+}
+
+.btn-success:hover {
+    background: linear-gradient(135deg, #0d8577 0%, #2ed96a 100%) !important;
+    box-shadow: 0 6px 20px rgba(17, 153, 142, 0.5) !important;
+    transform: translateY(-2px) !important;
+}
+
+.btn-info {
+    background: linear-gradient(135deg, #2193b0 0%, #6dd5ed 100%) !important;
+    border: none !important;
+    box-shadow: 0 4px 15px rgba(33, 147, 176, 0.4) !important;
+}
+
+.btn-info:hover {
+    background: linear-gradient(135deg, #1a7a96 0%, #5dc4db 100%) !important;
+    box-shadow: 0 6px 20px rgba(33, 147, 176, 0.5) !important;
+    transform: translateY(-2px) !important;
+}
+
+.btn-warning {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%) !important;
+    border: none !important;
+    box-shadow: 0 4px 15px rgba(240, 147, 251, 0.4) !important;
+}
+
+.btn-warning:hover {
+    background: linear-gradient(135deg, #e77fea 0%, #e4405a 100%) !important;
+    box-shadow: 0 6px 20px rgba(240, 147, 251, 0.5) !important;
+    transform: translateY(-2px) !important;
+}
+
+.btn-danger {
+    background: linear-gradient(135deg, #f2709c 0%, #ff9472 100%) !important;
+    border: none !important;
+    box-shadow: 0 4px 15px rgba(242, 112, 156, 0.4) !important;
+}
+
+.btn-danger:hover {
+    background: linear-gradient(135deg, #e05d89 0%, #f57f5d 100%) !important;
+    box-shadow: 0 6px 20px rgba(242, 112, 156, 0.5) !important;
+    transform: translateY(-2px) !important;
+}
+
+/* Nice shadows on cards */
+.card {
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08) !important;
+}
+
+.card:hover {
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12) !important;
+}
+
+/* Info box gradients */
+.bg-primary .info-box-icon {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+}
+
+.bg-success .info-box-icon {
+    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%) !important;
+}
+
+.bg-info .info-box-icon {
+    background: linear-gradient(135deg, #2193b0 0%, #6dd5ed 100%) !important;
+}
+
+.bg-warning .info-box-icon {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%) !important;
+}
+
+.bg-danger .info-box-icon {
+    background: linear-gradient(135deg, #f2709c 0%, #ff9472 100%) !important;
+}

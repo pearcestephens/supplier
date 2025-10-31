@@ -1,0 +1,310 @@
+/**
+ * Dashboard Widgets CSS - Missing styles from demo
+ * Add to assets/css/ and include in index.php
+ * 
+ * @package Supplier\Portal
+ * @version 4.0.0
+ */
+
+/* ============================================================================
+   METRIC CARDS - 6 KPI Cards with gradient icons
+   ========================================================================== */
+.metric-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.metric-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.metric-card.clickable:hover {
+    cursor: pointer;
+    border-color: #3b82f6;
+}
+
+.metric-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 20px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.metric-icon.bg-primary {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+}
+
+.metric-icon.bg-success {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+}
+
+.metric-icon.bg-info {
+    background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+}
+
+.metric-icon.bg-warning {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+}
+
+.metric-icon.bg-cyan {
+    background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+}
+
+.metric-icon.bg-purple {
+    background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+}
+
+/* Progress bars inside metric cards */
+.metric-card .progress {
+    height: 6px;
+    background-color: #e5e7eb;
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.metric-card .progress-bar {
+    transition: width 0.6s ease;
+}
+
+/* ============================================================================
+   STOCK ALERTS GRID - Store cards with severity colors
+   ========================================================================== */
+.stock-alerts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1rem;
+    padding: 1rem;
+}
+
+.stock-alert-card {
+    border: 2px solid transparent;
+    border-radius: 8px;
+    padding: 1rem;
+    background: white;
+    transition: all 0.2s ease;
+}
+
+.stock-alert-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.1);
+}
+
+.stock-alert-card.critical {
+    border-color: #ef4444;
+    background: linear-gradient(135deg, #fef2f2 0%, #ffffff 100%);
+}
+
+.stock-alert-card.high {
+    border-color: #f59e0b;
+    background: linear-gradient(135deg, #fffbeb 0%, #ffffff 100%);
+}
+
+.stock-alert-card.medium {
+    border-color: #06b6d4;
+    background: linear-gradient(135deg, #ecfeff 0%, #ffffff 100%);
+}
+
+.stock-alert-card.clickable {
+    cursor: pointer;
+}
+
+.stock-alert-card .store-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+}
+
+.stock-alert-card .store-name {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #1a1d1e;
+}
+
+.stock-alert-card .alert-icon {
+    font-size: 24px;
+    opacity: 0.6;
+}
+
+.stock-alert-card.critical .alert-icon {
+    color: #ef4444;
+}
+
+.stock-alert-card.high .alert-icon {
+    color: #f59e0b;
+}
+
+.stock-alert-card.medium .alert-icon {
+    color: #06b6d4;
+}
+
+.stock-alert-card .stock-metrics {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.stock-alert-card .metric {
+    flex: 1;
+    text-align: center;
+}
+
+.stock-alert-card .metric-value {
+    display: block;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1a1d1e;
+}
+
+.stock-alert-card .metric-label {
+    display: block;
+    font-size: 0.75rem;
+    color: #6b7280;
+    margin-top: 0.25rem;
+}
+
+/* ============================================================================
+   COMPACT TABLE - Orders requiring action
+   ========================================================================== */
+.compact-table {
+    font-size: 0.875rem;
+}
+
+.compact-table th {
+    background-color: #f9fafb;
+    color: #374151;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.025em;
+    padding: 0.75rem 0.5rem;
+    border-bottom: 2px solid #e5e7eb;
+}
+
+.compact-table td {
+    padding: 0.5rem;
+    vertical-align: middle;
+}
+
+.compact-table tbody tr:hover {
+    background-color: #f9fafb;
+}
+
+.compact-table tbody tr.priority-high {
+    background-color: #fef2f2 !important;
+}
+
+.compact-table tbody tr.priority-high td {
+    border-top: 1px solid #fca5a5;
+    border-bottom: 1px solid #fca5a5;
+}
+
+.compact-table tbody tr.priority-high:first-child td {
+    border-top: 2px solid #ef4444;
+}
+
+.table-header-sticky {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+/* Extra small buttons for table actions */
+.btn-xs {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+    line-height: 1;
+    border-radius: 0.25rem;
+}
+
+/* Badge sizing */
+.badge-sm {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+}
+
+/* ============================================================================
+   UTILITY CLASSES
+   ========================================================================== */
+.bg-cyan {
+    background-color: #06b6d4 !important;
+}
+
+.text-cyan {
+    color: #06b6d4 !important;
+}
+
+.bg-purple {
+    background-color: #8b5cf6 !important;
+}
+
+.text-purple {
+    color: #8b5cf6 !important;
+}
+
+/* Clickable elements */
+.clickable {
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+/* ============================================================================
+   RESPONSIVE ADJUSTMENTS
+   ========================================================================== */
+@media (max-width: 768px) {
+    .metric-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 18px;
+    }
+    
+    .stock-alerts-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .compact-table {
+        font-size: 0.75rem;
+    }
+    
+    .compact-table th,
+    .compact-table td {
+        padding: 0.5rem 0.25rem;
+    }
+    
+    .btn-xs {
+        padding: 0.2rem 0.4rem;
+        font-size: 0.7rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .metric-card .card-body {
+        padding: 1rem;
+    }
+    
+    .metric-icon {
+        width: 36px;
+        height: 36px;
+        font-size: 16px;
+    }
+}
+
+/* ============================================================================
+   CHART CONTAINERS
+   ========================================================================== */
+.chart-container {
+    position: relative;
+    height: 300px;
+}
+
+@media (max-width: 768px) {
+    .chart-container {
+        height: 250px;
+    }
+}

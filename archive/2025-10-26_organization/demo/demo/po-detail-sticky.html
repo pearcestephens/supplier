@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PO Detail - Sticky Header (Design 18 Enhanced)</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background: #f3f4f6;
+            padding-top: 0;
+            margin: 0;
+        }
+        
+        /* MAIN TOP HEADER (SIMULATED) */
+        .main-header {
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            padding: 15px 30px;
+            color: white;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+        
+        .main-header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .main-header h1 {
+            font-size: 20px;
+            font-weight: 800;
+            margin: 0;
+            color: #fbbf24;
+        }
+        
+        .main-header-nav {
+            display: flex;
+            gap: 25px;
+        }
+        
+        .main-header-nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+            transition: color 0.2s;
+        }
+        
+        .main-header-nav a:hover {
+            color: #fbbf24;
+        }
+        
+        /* PAGE CONTENT AREA */
+        .page-content {
+            margin-top: 60px; /* Space for fixed main header */
+            max-width: 1400px;
+            margin-left: auto;
+            margin-right: auto;
+            padding: 30px;
+        }
+        
+        /* PO NUMBER BOX (Above the info bar) */
+        .po-number-box {
+            background: white;
+            border: 3px solid #1a1a1a;
+            border-radius: 12px;
+            padding: 25px 40px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .po-number-box .row {
+            align-items: center;
+        }
+        
+        .po-number-display {
+            font-size: 48px;
+            font-weight: 900;
+            color: #1a1a1a;
+            letter-spacing: -1px;
+        }
+        
+        .po-destination {
+            text-align: center;
+        }
+        
+        .po-destination-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+        }
+        
+        .po-destination-value {
+            font-size: 32px;
+            font-weight: 800;
+            color: #1a1a1a;
+        }
+        
+        .po-amount-display {
+            text-align: right;
+        }
+        
+        .po-amount-display .amount {
+            font-size: 52px;
+            font-weight: 900;
+            color: #fbbf24;
+            letter-spacing: -1px;
+        }
+        
+        /* INFO BAR (Based on Design 18 - becomes sticky) */
+        .po-info-bar {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+            transition: all 0.3s ease;
+        }
+        
+        .po-info-bar.sticky {
+            position: fixed;
+            top: 60px; /* Below main header */
+            left: 0;
+            right: 0;
+            margin: 0;
+            border-radius: 0;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+            z-index: 999;
+            animation: slideDown 0.3s ease;
+        }
+        
+        @keyframes slideDown {
+            from {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        
+        /* When sticky, show compact PO number in bar */
+        .po-info-bar .sticky-po-number {
+            display: none;
+            font-size: 18px;
+            font-weight: 900;
+            color: #1a1a1a;
+            margin-right: 20px;
+            padding-right: 20px;
+            border-right: 2px solid #e5e7eb;
+        }
+        
+        .po-info-bar.sticky .sticky-po-number {
+            display: inline-block;
+        }
+        
+        /* Black header bar */
+        .info-bar-header {
+            background: #000000;
+            color: white;
+            padding: 12px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .info-bar-header .left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .info-bar-header .store-name {
+            font-size: 20px;
+            font-weight: 800;
+        }
+        
+        .info-bar-header .store-code-badge {
+            background: #fbbf24;
+            color: #000;
+            padding: 4px 12px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 800;
+            font-family: monospace;
+        }
+        
+        .info-bar-header .right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .info-bar-header .amount-display {
+            font-size: 28px;
+            font-weight: 900;
+            color: #fbbf24;
+        }
+        
+        .info-bar-header .meta-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-size: 13px;
+            font-weight: 600;
+            color: white;
+        }
+        
+        .info-bar-header .meta-divider {
+            width: 1px;
+            height: 20px;
+            background: rgba(255, 255, 255, 0.3);
+        }
+        
+        /* Info sections */
+        .info-section {
+            padding: 15px 30px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .info-section:last-child {
+            border-bottom: none;
+        }
+        
+        .info-section.grey {
+            background: #f9fafb;
+        }
+        
+        .info-section.white {
+            background: white;
+        }
+        
+        .info-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            align-items: center;
+            font-size: 14px;
+        }
+        
+        .info-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: #1a1a1a;
+        }
+        
+        .info-item i {
+            color: #fbbf24;
+        }
+        
+        .info-item strong {
+            font-weight: 700;
+        }
+        
+        .info-divider {
+            width: 1px;
+            height: 20px;
+            background: #d1d5db;
+        }
+        
+        .copy-btn {
+            background: #fbbf24;
+            color: #000;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-weight: 700;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-left: auto;
+        }
+        
+        .copy-btn:hover {
+            background: #f59e0b;
+            transform: translateY(-1px);
+        }
+        
+        .status-badge {
+            background: #000;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-weight: 700;
+            font-size: 12px;
+        }
+        
+        /* PAGE CONTENT BELOW */
+        .content-section {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        
+        .content-section h2 {
+            font-size: 24px;
+            font-weight: 800;
+            margin-bottom: 20px;
+            color: #1a1a1a;
+        }
+        
+        .demo-text {
+            color: #6b7280;
+            line-height: 1.8;
+            margin-bottom: 15px;
+        }
+        
+        /* Spacer to show sticky behavior */
+        .scroll-spacer {
+            height: 200vh;
+        }
+        
+        /* Instructions banner */
+        .instructions {
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+            color: #1a1a1a;
+            padding: 20px 30px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(251, 191, 36, 0.3);
+        }
+        
+        .instructions h3 {
+            font-size: 20px;
+            font-weight: 900;
+            margin-bottom: 10px;
+        }
+        
+        .instructions p {
+            font-size: 15px;
+            font-weight: 600;
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+
+<!-- MAIN HEADER (Simulated existing site header) -->
+<div class="main-header">
+    <div class="main-header-content">
+        <h1><i class="fa-solid fa-warehouse"></i> Supplier Portal</h1>
+        <nav class="main-header-nav">
+            <a href="#"><i class="fa-solid fa-chart-line"></i> Dashboard</a>
+            <a href="#"><i class="fa-solid fa-box"></i> Orders</a>
+            <a href="#"><i class="fa-solid fa-download"></i> Downloads</a>
+            <a href="#"><i class="fa-solid fa-user"></i> Account</a>
+        </nav>
+    </div>
+</div>
+
+<!-- PAGE CONTENT -->
+<div class="page-content">
+    
+    <!-- Instructions -->
+    <div class="instructions">
+        <h3><i class="fa-solid fa-arrow-down"></i> SCROLL DOWN TO SEE STICKY BEHAVIOR</h3>
+        <p>The info bar will slide up and stick to the main header when you scroll!</p>
+    </div>
+    
+    <!-- PO NUMBER BOX (Big, prominent, always visible at top) -->
+    <div class="po-number-box">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="po-number-display">PO #JCE-PO-12851</div>
+            </div>
+            <div class="col-md-4">
+                <div class="po-destination">
+                    <div class="po-destination-label">Destination</div>
+                    <div class="po-destination-value">HAMILTON EAST</div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="po-amount-display">
+                    <div class="amount">$4,890.00</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- INFO BAR (Based on Design 18 - becomes sticky on scroll) -->
+    <div class="po-info-bar" id="poInfoBar">
+        <!-- Black header bar -->
+        <div class="info-bar-header">
+            <div class="left">
+                <span class="sticky-po-number">PO #12851</span>
+                <span class="store-name">Hamilton East</span>
+                <span class="store-code-badge">HAM-EAST</span>
+            </div>
+            <div class="right">
+                <div class="meta-info">
+                    <span><i class="fa-solid fa-circle" style="font-size: 7px; color: #22c55e;"></i> Open Now</span>
+                    <div class="meta-divider"></div>
+                    <span><i class="fa-solid fa-calendar"></i> Oct 23 → Oct 26</span>
+                    <div class="meta-divider"></div>
+                    <span><i class="fa-solid fa-box"></i> 18 items • 245 units</span>
+                </div>
+                <div class="amount-display">$4,890.00</div>
+            </div>
+        </div>
+        
+        <!-- Grey section: Store meta -->
+        <div class="info-section grey">
+            <div class="info-row">
+                <span class="info-item">
+                    <i class="fa-solid fa-circle" style="font-size: 8px; color: #22c55e;"></i>
+                    <strong>Open Now</strong>
+                </span>
+                <div class="info-divider"></div>
+                <span class="info-item">
+                    <i class="fa-solid fa-star"></i>
+                    <strong>4.8</strong> (491 reviews)
+                </span>
+                <div class="info-divider"></div>
+                <span class="info-item">
+                    <strong>Order Date:</strong> Oct 23, 2025
+                </span>
+                <div class="info-divider"></div>
+                <span class="info-item">
+                    <strong>Due Date:</strong> Oct 26, 2025
+                </span>
+                <div class="info-divider"></div>
+                <span class="status-badge">Processing</span>
+            </div>
+        </div>
+        
+        <!-- White section: Address -->
+        <div class="info-section white">
+            <div class="info-row">
+                <span class="info-item">
+                    <i class="fa-solid fa-map-marker-alt"></i>
+                    <strong>419 Grey Street, Hamilton East, Hamilton, 3216, New Zealand</strong>
+                </span>
+                <button class="copy-btn" onclick="copyAddress('419 Grey Street, Hamilton East, Hamilton, 3216, New Zealand')">
+                    <i class="fa-solid fa-copy"></i> Copy
+                </button>
+            </div>
+        </div>
+        
+        <!-- Grey section: Contact info -->
+        <div class="info-section grey">
+            <div class="info-row">
+                <span class="info-item">
+                    <i class="fa-solid fa-phone"></i>
+                    <a href="tel:078592199" style="color: #1a1a1a; text-decoration: none; font-weight: 600;">07 859 2199</a>
+                </span>
+                <div class="info-divider"></div>
+                <span class="info-item">
+                    <i class="fa-solid fa-envelope"></i>
+                    <a href="mailto:hamilton_east@vapeshed.co.nz" style="color: #1a1a1a; text-decoration: none; font-weight: 600;">hamilton_east@vapeshed.co.nz</a>
+                </span>
+                <div class="info-divider"></div>
+                <span class="info-item">
+                    <i class="fa-solid fa-clock"></i>
+                    <strong>Today:</strong> 9:00 AM - 5:30 PM
+                </span>
+                <div class="info-divider"></div>
+                <span class="info-item">
+                    18 items • 245 units
+                </span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- PAGE CONTENT SECTIONS (Demo content to show scrolling) -->
+    <div class="content-section">
+        <h2><i class="fa-solid fa-box-open"></i> Order Items</h2>
+        <div class="demo-text">
+            This is where the order items table would appear. When you scroll down, notice how the info bar sticks to the top of the page (below the main header) so all the important store and order information stays visible.
+        </div>
+        <div class="demo-text">
+            The PO number box stays at the top of the page content, while the detailed info bar becomes sticky and follows you as you scroll through the long list of order items.
+        </div>
+    </div>
+    
+    <div class="content-section">
+        <h2><i class="fa-solid fa-chart-bar"></i> Order Details</h2>
+        <div class="demo-text">
+            <strong>Scroll down to see the sticky behavior in action!</strong>
+        </div>
+        <div class="demo-text">
+            The info bar will smoothly slide up and attach itself to the main header, giving you constant access to:
+        </div>
+        <ul style="color: #6b7280; line-height: 1.8;">
+            <li>PO Number (shown compactly when sticky)</li>
+            <li>Store Name & Code</li>
+            <li>Order Amount</li>
+            <li>Store Status (Open/Closed)</li>
+            <li>Store Address (with copy button)</li>
+            <li>Contact Information</li>
+            <li>Order Dates & Status</li>
+        </ul>
+    </div>
+    
+    <div class="content-section">
+        <h2><i class="fa-solid fa-truck"></i> Shipping Information</h2>
+        <div class="demo-text">
+            Keep scrolling... the info bar should now be stuck to the top!
+        </div>
+        <div class="demo-text">
+            This design combines:
+        </div>
+        <ul style="color: #6b7280; line-height: 1.8;">
+            <li><strong>Big PO Number Box:</strong> Prominent display of PO#, Destination, and Amount</li>
+            <li><strong>Design 18 Styling:</strong> Black & white minimal with yellow accents</li>
+            <li><strong>Sticky Behavior:</strong> Info bar stays visible when scrolling</li>
+            <li><strong>Compact Sticky View:</strong> PO number appears in bar when sticky</li>
+        </ul>
+    </div>
+    
+    <div class="content-section">
+        <h2><i class="fa-solid fa-clipboard-list"></i> More Content</h2>
+        <div class="demo-text">
+            This is additional content to demonstrate the scroll behavior. Notice how the info bar remains accessible at the top of the viewport, integrated seamlessly with the main site header.
+        </div>
+        <div class="demo-text">
+            The sticky bar includes all the essential information you might need while reviewing order items, tracking information, or any other details further down the page.
+        </div>
+    </div>
+    
+    <!-- Spacer to enable scrolling -->
+    <div class="scroll-spacer">
+        <div class="content-section" style="margin-top: 50px;">
+            <h2><i class="fa-solid fa-check-circle"></i> Design Features</h2>
+            <div class="demo-text">
+                <strong>Design 18 Enhanced with Sticky Behavior:</strong>
+            </div>
+            <ul style="color: #6b7280; line-height: 1.8;">
+                <li>✅ Prominent PO number box above info bar (48px font, big and bold)</li>
+                <li>✅ Destination label with store name (HAMILTON EAST)</li>
+                <li>✅ Black & white minimal design from Design 18</li>
+                <li>✅ Yellow accent color (#fbbf24) for branding</li>
+                <li>✅ Smooth sticky animation when scrolling</li>
+                <li>✅ Info bar sticks below main header (60px from top)</li>
+                <li>✅ Compact PO number appears in sticky bar</li>
+                <li>✅ All store information visible while scrolling</li>
+                <li>✅ Clean, professional appearance</li>
+                <li>✅ Fully responsive layout</li>
+            </ul>
+        </div>
+    </div>
+    
+</div>
+
+<script>
+// Sticky header behavior
+window.addEventListener('scroll', function() {
+    const infoBar = document.getElementById('poInfoBar');
+    const mainHeader = document.querySelector('.main-header');
+    const poNumberBox = document.querySelector('.po-number-box');
+    
+    // Calculate when info bar should stick (when PO number box scrolls out of view)
+    const poBoxBottom = poNumberBox.offsetTop + poNumberBox.offsetHeight;
+    const scrollPosition = window.scrollY + mainHeader.offsetHeight;
+    
+    if (scrollPosition >= poBoxBottom) {
+        infoBar.classList.add('sticky');
+    } else {
+        infoBar.classList.remove('sticky');
+    }
+});
+
+// Copy address function
+function copyAddress(address) {
+    navigator.clipboard.writeText(address).then(function() {
+        alert('✅ Address copied to clipboard!\n\n' + address);
+    }).catch(function(err) {
+        console.error('Failed to copy: ', err);
+    });
+}
+</script>
+
+</body>
+</html>

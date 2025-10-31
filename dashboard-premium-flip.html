@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Premium Flip Dashboard Cards</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: #e2e8f0;
+            font-family: 'Outfit', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            min-height: 100vh;
+            padding: 2rem 1rem;
+        }
+
+        .container-xl {
+            max-width: 1200px;
+        }
+
+        h1 {
+            background: linear-gradient(135deg, #00d9ff, #0099ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+            font-weight: 900;
+            text-align: center;
+            font-size: 2.5rem;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #94a3b8;
+            margin-bottom: 3rem;
+            font-size: 1rem;
+            letter-spacing: 0.05em;
+        }
+
+        /* ============================================================================
+           FLIP CARD CONTAINER - 3D PERSPECTIVE
+           ============================================================================ */
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .flip-container {
+            height: 400px;
+            perspective: 1000px;
+            cursor: pointer;
+        }
+
+        .flip-card {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+
+        .flip-container:hover .flip-card {
+            transform: rotateY(180deg);
+        }
+
+        .flip-front, .flip-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 20px;
+            display: flex;
+            flex-direction: column;
+            padding: 2rem;
+            overflow: hidden;
+        }
+
+        .flip-back {
+            transform: rotateY(180deg);
+        }
+
+        /* ============================================================================
+           FRONT SIDE - METRIC DISPLAY
+           ============================================================================ */
+
+        .metric-front {
+            position: relative;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .metric-front::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, transparent 100%);
+            pointer-events: none;
+        }
+
+        /* Premium color gradients */
+        .metric-front.color-cyan {
+            background: linear-gradient(135deg, #00d9ff 0%, #0099cc 100%);
+        }
+
+        .metric-front.color-gold {
+            background: linear-gradient(135deg, #ffd700 0%, #ffaa00 100%);
+        }
+
+        .metric-front.color-emerald {
+            background: linear-gradient(135deg, #00ff88 0%, #00cc66 100%);
+        }
+
+        .metric-front.color-rose {
+            background: linear-gradient(135deg, #ff0080 0%, #ff6699 100%);
+        }
+
+        .metric-front.color-purple {
+            background: linear-gradient(135deg, #aa00ff 0%, #7700cc 100%);
+        }
+
+        .metric-front.color-orange {
+            background: linear-gradient(135deg, #ff6b00 0%, #ff9900 100%);
+        }
+
+        .sparkline-canvas-front {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 100%;
+            height: 120px;
+            opacity: 0.3;
+            z-index: 1;
+        }
+
+        .metric-content {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 100%;
+            color: white;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .metric-header {
+            flex: 0 0 auto;
+        }
+
+        .metric-label {
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            opacity: 0.9;
+            margin-bottom: 0.5rem;
+        }
+
+        .metric-value {
+            font-size: 3.5rem;
+            font-weight: 900;
+            line-height: 1;
+            margin-bottom: 0.75rem;
+            text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .metric-trend {
+            font-size: 0.9rem;
+            font-weight: 600;
+            opacity: 0.95;
+        }
+
+        .trend-up { color: #00ff88; }
+        .trend-down { color: #ff4444; }
+        .trend-stable { color: #ffff00; }
+
+        .metric-icon {
+            position: absolute;
+            top: 2rem;
+            right: 2rem;
+            font-size: 3rem;
+            opacity: 0.25;
+            z-index: 1;
+        }
+
+        /* ============================================================================
+           BACK SIDE - AI INSIGHTS (FULL FLIP)
+           ============================================================================ */
+
+        .metric-back {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            border: 1px solid rgba(0, 217, 255, 0.3);
+            box-shadow:
+                0 8px 32px rgba(0, 217, 255, 0.2),
+                inset 0 0 30px rgba(0, 217, 255, 0.1);
+        }
+
+        .insight-content {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 1rem;
+            height: 100%;
+        }
+
+        .insight-stat {
+            font-size: 0.9rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            background: linear-gradient(135deg, #00d9ff, #0099cc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .insight-text {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            color: #e2e8f0;
+            font-weight: 500;
+        }
+
+        .insight-emoji {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .insight-badge {
+            display: inline-block;
+            background: rgba(0, 217, 255, 0.2);
+            border: 1px solid rgba(0, 217, 255, 0.5);
+            color: #00d9ff;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-top: 0.5rem;
+            width: fit-content;
+        }
+
+        /* ============================================================================
+           GRAPH IMPROVEMENTS
+           ============================================================================ */
+
+        .sparkline-canvas-back {
+            position: absolute;
+            bottom: -20px;
+            right: -20px;
+            width: 150px;
+            height: 100px;
+            opacity: 0.15;
+            z-index: 0;
+        }
+
+        /* ============================================================================
+           RESPONSIVE DESIGN
+           ============================================================================ */
+
+        @media (max-width: 1200px) {
+            .metrics-grid {
+                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+                gap: 1.5rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .flip-container {
+                height: 320px;
+            }
+
+            .flip-front, .flip-back {
+                padding: 1.5rem;
+            }
+
+            .metric-value {
+                font-size: 2.5rem;
+            }
+
+            .metric-icon {
+                font-size: 2.5rem;
+                top: 1.5rem;
+                right: 1.5rem;
+            }
+
+            .insight-text {
+                font-size: 1rem;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+        }
+
+        /* Info text */
+        .info-text {
+            text-align: center;
+            color: #64748b;
+            margin-bottom: 2rem;
+            font-size: 0.95rem;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container-xl">
+        <h1>💎 Premium Flip Dashboard</h1>
+        <p class="subtitle">HOVER TO FLIP • AI-POWERED INSIGHTS</p>
+        <p class="info-text">Each card flips 180° to reveal intelligent insights about your performance</p>
+
+        <div class="metrics-grid">
+            <!-- Card 1: Orders -->
+            <div class="flip-container">
+                <div class="flip-card">
+                    <!-- Front -->
+                    <div class="flip-front metric-front color-cyan">
+                        <canvas class="sparkline-canvas-front" id="chart-orders-front"></canvas>
+                        <div class="metric-content">
+                            <div class="metric-header">
+                                <div class="metric-label">Total Orders</div>
+                                <div class="metric-value">18</div>
+                                <div class="metric-trend trend-up">↑ 12% vs last period</div>
+                            </div>
+                        </div>
+                        <div class="metric-icon">
+                            <i class="fas fa-shopping-cart"></i>
+                        </div>
+                    </div>
+                    <!-- Back -->
+                    <div class="flip-back metric-back">
+                        <canvas class="sparkline-canvas-back" id="chart-orders-back"></canvas>
+                        <div class="insight-content">
+                            <div class="insight-emoji">📈</div>
+                            <div class="insight-stat">ORDER VELOCITY</div>
+                            <div class="insight-text">18 orders this period - trending UP by 12%! Keep this momentum going.</div>
+                            <div class="insight-badge">Strong Performance</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 2: Products -->
+            <div class="flip-container">
+                <div class="flip-card">
+                    <!-- Front -->
+                    <div class="flip-front metric-front color-gold">
+                        <canvas class="sparkline-canvas-front" id="chart-products-front"></canvas>
+                        <div class="metric-content">
+                            <div class="metric-header">
+                                <div class="metric-label">Active Products</div>
+                                <div class="metric-value">50</div>
+                                <div class="metric-trend trend-stable">50 in stock • 100% available</div>
+                            </div>
+                        </div>
+                        <div class="metric-icon">
+                            <i class="fas fa-cube"></i>
+                        </div>
+                    </div>
+                    <!-- Back -->
+                    <div class="flip-back metric-back">
+                        <canvas class="sparkline-canvas-back" id="chart-products-back"></canvas>
+                        <div class="insight-content">
+                            <div class="insight-emoji">🌟</div>
+                            <div class="insight-stat">STAR PRODUCT</div>
+                            <div class="insight-text">Premium Vape Kit is your top performer - ordered 12 times this month. Stock it well!</div>
+                            <div class="insight-badge">Top Seller</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 3: Claims -->
+            <div class="flip-container">
+                <div class="flip-card">
+                    <!-- Front -->
+                    <div class="flip-front metric-front color-emerald">
+                        <canvas class="sparkline-canvas-front" id="chart-claims-front"></canvas>
+                        <div class="metric-content">
+                            <div class="metric-header">
+                                <div class="metric-label">Pending Claims</div>
+                                <div class="metric-value">0</div>
+                                <div class="metric-trend trend-up">✓ Excellent • All clear</div>
+                            </div>
+                        </div>
+                        <div class="metric-icon">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                    </div>
+                    <!-- Back -->
+                    <div class="flip-back metric-back">
+                        <canvas class="sparkline-canvas-back" id="chart-claims-back"></canvas>
+                        <div class="insight-content">
+                            <div class="insight-emoji">🏆</div>
+                            <div class="insight-stat">QUALITY SCORE</div>
+                            <div class="insight-text">Exceptional quality! Only 2% claim rate. You're in the top 5% of suppliers!</div>
+                            <div class="insight-badge">Excellent Work</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 4: Order Value -->
+            <div class="flip-container">
+                <div class="flip-card">
+                    <!-- Front -->
+                    <div class="flip-front metric-front color-rose">
+                        <canvas class="sparkline-canvas-front" id="chart-value-front"></canvas>
+                        <div class="metric-content">
+                            <div class="metric-header">
+                                <div class="metric-label">Avg Order Value</div>
+                                <div class="metric-value">$0</div>
+                                <div class="metric-trend trend-stable">Holding steady</div>
+                            </div>
+                        </div>
+                        <div class="metric-icon">
+                            <i class="fas fa-dollar-sign"></i>
+                        </div>
+                    </div>
+                    <!-- Back -->
+                    <div class="flip-back metric-back">
+                        <canvas class="sparkline-canvas-back" id="chart-value-back"></canvas>
+                        <div class="insight-content">
+                            <div class="insight-emoji">📊</div>
+                            <div class="insight-stat">FORECAST</div>
+                            <div class="insight-text">Projected $X,XXX next month based on current trends. Stay consistent!</div>
+                            <div class="insight-badge">On Track</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 5: Units Sold -->
+            <div class="flip-container">
+                <div class="flip-card">
+                    <!-- Front -->
+                    <div class="flip-front metric-front color-purple">
+                        <canvas class="sparkline-canvas-front" id="chart-units-front"></canvas>
+                        <div class="metric-content">
+                            <div class="metric-header">
+                                <div class="metric-label">Units Sold (30d)</div>
+                                <div class="metric-value">0</div>
+                                <div class="metric-trend trend-down">↓ -5% vs last month</div>
+                            </div>
+                        </div>
+                        <div class="metric-icon">
+                            <i class="fas fa-boxes"></i>
+                        </div>
+                    </div>
+                    <!-- Back -->
+                    <div class="flip-back metric-back">
+                        <canvas class="sparkline-canvas-back" id="chart-units-back"></canvas>
+                        <div class="insight-content">
+                            <div class="insight-emoji">⚡</div>
+                            <div class="insight-stat">ACTIVITY LEVEL</div>
+                            <div class="insight-text">45 active days this quarter. You're a highly engaged, consistent partner!</div>
+                            <div class="insight-badge">Highly Active</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 6: Revenue -->
+            <div class="flip-container">
+                <div class="flip-card">
+                    <!-- Front -->
+                    <div class="flip-front metric-front color-orange">
+                        <canvas class="sparkline-canvas-front" id="chart-revenue-front"></canvas>
+                        <div class="metric-content">
+                            <div class="metric-header">
+                                <div class="metric-label">Revenue (30d)</div>
+                                <div class="metric-value">$0</div>
+                                <div class="metric-trend trend-stable">Target: $10K</div>
+                            </div>
+                        </div>
+                        <div class="metric-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                    </div>
+                    <!-- Back -->
+                    <div class="flip-back metric-back">
+                        <canvas class="sparkline-canvas-back" id="chart-revenue-back"></canvas>
+                        <div class="insight-content">
+                            <div class="insight-emoji">💡</div>
+                            <div class="insight-stat">YOU'RE CRUSHING IT</div>
+                            <div class="insight-text">Top 10% of active suppliers! Your consistency and quality are unmatched. 🚀</div>
+                            <div class="insight-badge">Keep Growing</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // =========================================================================
+        // ENHANCED SPARKLINE GENERATION WITH BETTER VISUALS
+        // =========================================================================
+
+        function generateEnhancedSparkline(canvasElement, colorHex) {
+            // Generate smooth uptrend data
+            const baseData = [15, 22, 18, 32, 28, 45, 52];
+
+            const ctx = canvasElement.getContext('2d');
+
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                    datasets: [{
+                        label: 'Trend',
+                        data: baseData,
+                        borderColor: colorHex,
+                        backgroundColor: colorHex + '44', // 26% opacity
+                        fill: true,
+                        tension: 0.5, // Smoother curves
+                        pointRadius: 0,
+                        pointHoverRadius: 0,
+                        borderWidth: 3,
+                        clip: false
+                    }]
+                },
+                options: {
+                    responsive: false,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: { enabled: false },
+                        filler: {
+                            propagate: true
+                        }
+                    },
+                    scales: {
+                        x: {
+                            display: false,
+                            beginAtZero: true
+                        },
+                        y: {
+                            display: false,
+                            beginAtZero: true,
+                            min: 0,
+                            max: 60
+                        }
+                    }
+                }
+            });
+        }
+
+        // Color map for cards
+        const colorMap = {
+            'chart-orders': { front: '#00d9ff', back: '#0099cc' },
+            'chart-products': { front: '#ffd700', back: '#ffaa00' },
+            'chart-claims': { front: '#00ff88', back: '#00cc66' },
+            'chart-value': { front: '#ff0080', back: '#ff6699' },
+            'chart-units': { front: '#aa00ff', back: '#7700cc' },
+            'chart-revenue': { front: '#ff6b00', back: '#ff9900' }
+        };
+
+        // Initialize all sparklines on page load
+        window.addEventListener('load', () => {
+            Object.entries(colorMap).forEach(([key, colors]) => {
+                const frontCanvas = document.getElementById(`${key}-front`);
+                const backCanvas = document.getElementById(`${key}-back`);
+
+                if (frontCanvas) {
+                    frontCanvas.height = 120;
+                    frontCanvas.width = 320;
+                    generateEnhancedSparkline(frontCanvas, colors.front);
+                }
+
+                if (backCanvas) {
+                    backCanvas.height = 100;
+                    backCanvas.width = 150;
+                    generateEnhancedSparkline(backCanvas, colors.back);
+                }
+            });
+        });
+
+        // Add entrance animation
+        setTimeout(() => {
+            document.querySelectorAll('.flip-container').forEach((container, index) => {
+                container.style.animation = `fadeInUp 0.6s ease-out ${index * 0.1}s both`;
+            });
+        }, 100);
+
+        // Add animation keyframe
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes fadeInUp {
+                from {
+                    opacity: 0;
+                    transform: translateY(40px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+        `;
+        document.head.appendChild(style);
+
+    </script>
+</body>
+</html>

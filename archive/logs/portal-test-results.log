@@ -1,0 +1,25 @@
+[401] Portal Home (Authenticated) - https://staff.vapeshed.co.nz/supplier/
+[401] Index Direct Access - https://staff.vapeshed.co.nz/supplier/index.php
+[401] Dashboard Tab - https://staff.vapeshed.co.nz/supplier/?tab=dashboard
+[401] Purchase Orders Tab - https://staff.vapeshed.co.nz/supplier/?tab=orders
+[401] Warranty Claims Tab - https://staff.vapeshed.co.nz/supplier/?tab=warranty
+[401] Downloads Tab - https://staff.vapeshed.co.nz/supplier/?tab=downloads
+[401] Reports Tab - https://staff.vapeshed.co.nz/supplier/?tab=reports
+[401] Account Settings Tab - https://staff.vapeshed.co.nz/supplier/?tab=account
+[200] Legacy Dashboard - https://staff.vapeshed.co.nz/supplier/supplier-dashboard.php
+[200] Legacy PO List - https://staff.vapeshed.co.nz/supplier/supplier-purchase-order.php
+[500] Legacy Warranty Returns - https://staff.vapeshed.co.nz/supplier/supplier-warranty-returns.php
+[200] Legacy Sales Analytics - https://staff.vapeshed.co.nz/supplier/supplier-sales.php
+[200] Legacy Claims List - https://staff.vapeshed.co.nz/supplier/supplier-claims.php
+[400] View PO Detail (ID=1) - https://staff.vapeshed.co.nz/supplier/supplier-view-purchase-order.php?id=1
+[404] View Claim Detail (ID=1) - https://staff.vapeshed.co.nz/supplier/supplier-claim.php?id=1
+[401] API: Update PO Status - https://staff.vapeshed.co.nz/supplier/api/update-po-status.php
+[401] API: Update Warranty - https://staff.vapeshed.co.nz/supplier/api/update-warranty-claim.php
+[401] API: Warranty Action - https://staff.vapeshed.co.nz/supplier/api/warranty-action.php
+[401] API: Add Note - https://staff.vapeshed.co.nz/supplier/api/add-warranty-note.php
+[401] API: Download Media - https://staff.vapeshed.co.nz/supplier/api/download-media.php
+[200] CSS: Main Stylesheet - https://staff.vapeshed.co.nz/supplier/assets/css/supplier-portal.css
+[200] JS: Main Script - https://staff.vapeshed.co.nz/supplier/assets/js/supplier-portal.js
+[200] JS: AI Assistant - https://staff.vapeshed.co.nz/supplier/assets/js/neuro-ai-assistant.js
+[200] Main README - https://staff.vapeshed.co.nz/supplier/README.md
+[200] Docs Index - https://staff.vapeshed.co.nz/supplier/docs/README.md

@@ -1,0 +1,1208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sparkline Metrics - Bright & Vibrant Styles</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            color: #1e293b;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            min-height: 100vh;
+        }
+
+        .container-xl {
+            max-width: 1400px;
+        }
+
+        h1 {
+            background: linear-gradient(135deg, #3b82f6, #7c3aed);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+            font-weight: 800;
+            text-align: center;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #64748b;
+            margin-bottom: 3rem;
+            font-size: 1.1rem;
+        }
+
+        .variant-section {
+            margin-bottom: 4rem;
+            scroll-margin-top: 100px;
+        }
+
+        .variant-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 2rem;
+            color: #1e293b;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .variant-badge {
+            font-size: 0.7rem;
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            background: #e2e8f0;
+            color: #475569;
+        }
+
+        /* ========== STYLE 1: BRIGHT GRADIENT CARDS ========== */
+        .metrics-grid-1 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .card-style-1 {
+            border-radius: 16px;
+            padding: 2rem;
+            border: none;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        .card-style-1.blue {
+            background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+        }
+
+        .card-style-1.teal {
+            background: linear-gradient(135deg, #ccfbf1, #99f6e4);
+        }
+
+        .card-style-1.orange {
+            background: linear-gradient(135deg, #fed7aa, #fdba74);
+        }
+
+        .card-style-1.green {
+            background: linear-gradient(135deg, #dcfce7, #bbf7d0);
+        }
+
+        .card-style-1.cyan {
+            background: linear-gradient(135deg, #cffafe, #a5f3fc);
+        }
+
+        .card-style-1.purple {
+            background: linear-gradient(135deg, #f3e8ff, #e9d5ff);
+        }
+
+        .card-style-1:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+        }
+
+        .card-style-1 .metric-label {
+            font-size: 0.75rem;
+            color: #475569;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.8rem;
+            font-weight: 600;
+        }
+
+        .card-style-1 .metric-value {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: #0f172a;
+            margin-bottom: 0.5rem;
+        }
+
+        .card-style-1 .metric-trend {
+            font-size: 0.75rem;
+            color: #475569;
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+
+        .card-style-1 .sparkline-container {
+            height: 60px;
+            width: 100%;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* ========== STYLE 2: BOLD COLORED CARDS ========== */
+        .metrics-grid-2 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .card-style-2 {
+            border-radius: 16px;
+            padding: 2rem;
+            border: 2px solid;
+            transition: all 0.4s ease;
+            color: white;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-style-2.blue {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            border-color: #1d4ed8;
+        }
+
+        .card-style-2.teal {
+            background: linear-gradient(135deg, #14b8a6, #0d9488);
+            border-color: #0f766e;
+        }
+
+        .card-style-2.orange {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            border-color: #b45309;
+        }
+
+        .card-style-2.green {
+            background: linear-gradient(135deg, #10b981, #059669);
+            border-color: #047857;
+        }
+
+        .card-style-2.cyan {
+            background: linear-gradient(135deg, #06b6d4, #0891b2);
+            border-color: #0e7490;
+        }
+
+        .card-style-2.purple {
+            background: linear-gradient(135deg, #a855f7, #9333ea);
+            border-color: #7e22ce;
+        }
+
+        .card-style-2:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .card-style-2 .metric-label {
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.9);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.8rem;
+            font-weight: 600;
+        }
+
+        .card-style-2 .metric-value {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: white;
+            margin-bottom: 0.5rem;
+        }
+
+        .card-style-2 .metric-trend {
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.85);
+            margin-bottom: 1rem;
+        }
+
+        .card-style-2 .sparkline-container {
+            height: 60px;
+            width: 100%;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        }
+
+        /* ========== STYLE 3: GLASSMORPHIC BRIGHT ========== */
+        .metrics-grid-3 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .card-style-3 {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(20px);
+            border: 2px solid;
+            border-radius: 16px;
+            padding: 2rem;
+            transition: all 0.4s ease;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+        }
+
+        .card-style-3.blue {
+            border-color: #3b82f6;
+            background: rgba(219, 234, 254, 0.5);
+        }
+
+        .card-style-3.teal {
+            border-color: #14b8a6;
+            background: rgba(204, 251, 241, 0.5);
+        }
+
+        .card-style-3.orange {
+            border-color: #f59e0b;
+            background: rgba(254, 243, 199, 0.5);
+        }
+
+        .card-style-3.green {
+            border-color: #10b981;
+            background: rgba(209, 250, 229, 0.5);
+        }
+
+        .card-style-3.cyan {
+            border-color: #06b6d4;
+            background: rgba(207, 250, 254, 0.5);
+        }
+
+        .card-style-3.purple {
+            border-color: #a855f7;
+            background: rgba(243, 232, 255, 0.5);
+        }
+
+        .card-style-3:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(30px);
+        }
+
+        .card-style-3 .metric-label {
+            font-size: 0.75rem;
+            color: #475569;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.8rem;
+            font-weight: 600;
+        }
+
+        .card-style-3 .metric-value {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, #3b82f6, #7c3aed);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .card-style-3 .metric-trend {
+            font-size: 0.75rem;
+            color: #64748b;
+            margin-bottom: 1rem;
+        }
+
+        .card-style-3 .sparkline-container {
+            height: 60px;
+            width: 100%;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* ========== STYLE 4: NEON BRIGHT ========== */
+        .metrics-grid-4 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .card-style-4 {
+            background: white;
+            border: 3px solid;
+            border-radius: 12px;
+            padding: 2rem;
+            transition: all 0.4s ease;
+            position: relative;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-style-4.blue {
+            border-color: #3b82f6;
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.3), 0 4px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        .card-style-4.teal {
+            border-color: #14b8a6;
+            box-shadow: 0 0 20px rgba(20, 184, 166, 0.3), 0 4px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        .card-style-4.orange {
+            border-color: #f59e0b;
+            box-shadow: 0 0 20px rgba(245, 158, 11, 0.3), 0 4px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        .card-style-4.green {
+            border-color: #10b981;
+            box-shadow: 0 0 20px rgba(16, 185, 129, 0.3), 0 4px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        .card-style-4.cyan {
+            border-color: #06b6d4;
+            box-shadow: 0 0 20px rgba(6, 182, 212, 0.3), 0 4px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        .card-style-4.purple {
+            border-color: #a855f7;
+            box-shadow: 0 0 20px rgba(168, 85, 247, 0.3), 0 4px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        .card-style-4:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 40px rgba(59, 130, 246, 0.5), 0 8px 25px rgba(0, 0, 0, 0.12);
+        }
+
+        .card-style-4 .metric-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.8rem;
+            font-weight: 600;
+        }
+
+        .card-style-4.blue .metric-label { color: #3b82f6; }
+        .card-style-4.teal .metric-label { color: #14b8a6; }
+        .card-style-4.orange .metric-label { color: #f59e0b; }
+        .card-style-4.green .metric-label { color: #10b981; }
+        .card-style-4.cyan .metric-label { color: #06b6d4; }
+        .card-style-4.purple .metric-label { color: #a855f7; }
+
+        .card-style-4 .metric-value {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: #0f172a;
+            margin-bottom: 0.5rem;
+        }
+
+        .card-style-4 .metric-trend {
+            font-size: 0.75rem;
+            color: #475569;
+            margin-bottom: 1rem;
+        }
+
+        .card-style-4 .sparkline-container {
+            height: 60px;
+            width: 100%;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* ========== STYLE 5: PASTEL CHIC ========== */
+        .metrics-grid-5 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .card-style-5 {
+            border-radius: 20px;
+            padding: 2rem;
+            border: none;
+            transition: all 0.4s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
+            position: relative;
+        }
+
+        .card-style-5.blue {
+            background: linear-gradient(135deg, #eff6ff, #dbeafe);
+        }
+
+        .card-style-5.teal {
+            background: linear-gradient(135deg, #f0fdfa, #ccfbf1);
+        }
+
+        .card-style-5.orange {
+            background: linear-gradient(135deg, #fffbeb, #fef3c7);
+        }
+
+        .card-style-5.green {
+            background: linear-gradient(135deg, #f0fdf4, #d1fae5);
+        }
+
+        .card-style-5.cyan {
+            background: linear-gradient(135deg, #ecf9ff, #cffafe);
+        }
+
+        .card-style-5.purple {
+            background: linear-gradient(135deg, #faf5ff, #f3e8ff);
+        }
+
+        .card-style-5:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-style-5 .metric-label {
+            font-size: 0.75rem;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.8rem;
+            font-weight: 600;
+        }
+
+        .card-style-5 .metric-value {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: #1e293b;
+            margin-bottom: 0.5rem;
+        }
+
+        .card-style-5 .metric-trend {
+            font-size: 0.75rem;
+            color: #64748b;
+            margin-bottom: 1rem;
+        }
+
+        .card-style-5 .sparkline-container {
+            height: 60px;
+            width: 100%;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* ========== STYLE 6: SHINY METALLIC ========== */
+        .metrics-grid-6 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .card-style-6 {
+            border-radius: 16px;
+            padding: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+        }
+
+        .card-style-6::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.5), transparent);
+            pointer-events: none;
+        }
+
+        .card-style-6.blue {
+            background: linear-gradient(135deg, #0ea5e9, #3b82f6);
+        }
+
+        .card-style-6.teal {
+            background: linear-gradient(135deg, #06b6d4, #14b8a6);
+        }
+
+        .card-style-6.orange {
+            background: linear-gradient(135deg, #f97316, #f59e0b);
+        }
+
+        .card-style-6.green {
+            background: linear-gradient(135deg, #16a34a, #10b981);
+        }
+
+        .card-style-6.cyan {
+            background: linear-gradient(135deg, #0891b2, #06b6d4);
+        }
+
+        .card-style-6.purple {
+            background: linear-gradient(135deg, #c084fc, #a855f7);
+        }
+
+        .card-style-6:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.12);
+        }
+
+        .card-style-6 .metric-label {
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.9);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.8rem;
+            font-weight: 600;
+            position: relative;
+            z-index: 1;
+        }
+
+        .card-style-6 .metric-value {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: white;
+            margin-bottom: 0.5rem;
+            position: relative;
+            z-index: 1;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .card-style-6 .metric-trend {
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.85);
+            margin-bottom: 1rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .card-style-6 .sparkline-container {
+            height: 60px;
+            width: 100%;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ========== STYLE 7: RAINBOW GRADIENT ========== */
+        .metrics-grid-7 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .card-style-7 {
+            border-radius: 16px;
+            padding: 2rem;
+            border: 2px solid transparent;
+            background-clip: padding-box;
+            transition: all 0.4s ease;
+            position: relative;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+            background: white;
+        }
+
+        .card-style-7::before {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            border-radius: 16px;
+            padding: 2px;
+            background: linear-gradient(135deg, #3b82f6, #06b6d4, #10b981, #f59e0b, #ef4444);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        .card-style-7:hover::before {
+            opacity: 1;
+        }
+
+        .card-style-7:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.12);
+        }
+
+        .card-style-7 .metric-label {
+            font-size: 0.75rem;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.8rem;
+            font-weight: 600;
+        }
+
+        .card-style-7 .metric-value {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #3b82f6, #06b6d4, #10b981, #f59e0b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+        }
+
+        .card-style-7 .metric-trend {
+            font-size: 0.75rem;
+            color: #64748b;
+            margin-bottom: 1rem;
+        }
+
+        .card-style-7 .sparkline-container {
+            height: 60px;
+            width: 100%;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* ========== STYLE 8: SOFT ROUNDED MODERN ========== */
+        .metrics-grid-8 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .card-style-8 {
+            border-radius: 24px;
+            padding: 2rem;
+            border: none;
+            transition: all 0.4s ease;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+            background: white;
+        }
+
+        .card-style-8::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 24px;
+            padding: 2px;
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.3), rgba(168, 85, 247, 0.3));
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        .card-style-8:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-style-8 .metric-label {
+            font-size: 0.75rem;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.8rem;
+            font-weight: 600;
+        }
+
+        .card-style-8 .metric-value {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: #1e293b;
+            margin-bottom: 0.5rem;
+        }
+
+        .card-style-8 .metric-trend {
+            font-size: 0.75rem;
+            color: #64748b;
+            margin-bottom: 1rem;
+        }
+
+        .card-style-8 .sparkline-container {
+            height: 60px;
+            width: 100%;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* ========== STYLE 9: PREMIUM WHITE CARDS ========== */
+        .metrics-grid-9 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .card-style-9 {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 2rem;
+            transition: all 0.4s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            position: relative;
+        }
+
+        .card-style-9::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            border-radius: 12px 12px 0 0;
+            background: linear-gradient(90deg, #3b82f6, #06b6d4);
+        }
+
+        .card-style-9.blue::before { background: linear-gradient(90deg, #3b82f6, #2563eb); }
+        .card-style-9.teal::before { background: linear-gradient(90deg, #14b8a6, #0d9488); }
+        .card-style-9.orange::before { background: linear-gradient(90deg, #f59e0b, #d97706); }
+        .card-style-9.green::before { background: linear-gradient(90deg, #10b981, #059669); }
+        .card-style-9.cyan::before { background: linear-gradient(90deg, #06b6d4, #0891b2); }
+        .card-style-9.purple::before { background: linear-gradient(90deg, #a855f7, #9333ea); }
+
+        .card-style-9:hover {
+            border-color: #cbd5e1;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+            transform: translateY(-4px);
+        }
+
+        .card-style-9 .metric-label {
+            font-size: 0.75rem;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.8rem;
+            font-weight: 600;
+        }
+
+        .card-style-9 .metric-value {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: #1e293b;
+            margin-bottom: 0.5rem;
+        }
+
+        .card-style-9 .metric-trend {
+            font-size: 0.75rem;
+            color: #64748b;
+            margin-bottom: 1rem;
+        }
+
+        .card-style-9 .sparkline-container {
+            height: 60px;
+            width: 100%;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* ========== STYLE 10: ULTRA SHINY CARDS ========== */
+        .metrics-grid-10 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .card-style-10 {
+            border-radius: 16px;
+            padding: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+            box-shadow:
+                0 8px 24px rgba(0, 0, 0, 0.08),
+                inset 0 1px 0 rgba(255, 255, 255, 0.5);
+        }
+
+        .card-style-10.blue {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            box-shadow:
+                0 8px 24px rgba(59, 130, 246, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+        }
+
+        .card-style-10.teal {
+            background: linear-gradient(135deg, #14b8a6, #0d9488);
+            box-shadow:
+                0 8px 24px rgba(20, 184, 166, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+        }
+
+        .card-style-10.orange {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            box-shadow:
+                0 8px 24px rgba(245, 158, 11, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+        }
+
+        .card-style-10.green {
+            background: linear-gradient(135deg, #10b981, #059669);
+            box-shadow:
+                0 8px 24px rgba(16, 185, 129, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+        }
+
+        .card-style-10.cyan {
+            background: linear-gradient(135deg, #06b6d4, #0891b2);
+            box-shadow:
+                0 8px 24px rgba(6, 182, 212, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+        }
+
+        .card-style-10.purple {
+            background: linear-gradient(135deg, #a855f7, #9333ea);
+            box-shadow:
+                0 8px 24px rgba(168, 85, 247, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+        }
+
+        .card-style-10:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow:
+                0 20px 40px rgba(0, 0, 0, 0.12),
+                inset 0 1px 0 rgba(255, 255, 255, 0.4);
+        }
+
+        .card-style-10 .metric-label {
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.95);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.8rem;
+            font-weight: 600;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-style-10 .metric-value {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: white;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+        }
+
+        .card-style-10 .metric-trend {
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 1rem;
+        }
+
+        .card-style-10 .sparkline-container {
+            height: 60px;
+            width: 100%;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Common Chart Styling */
+        .sparkline-container canvas {
+            max-width: 100%;
+            height: 60px !important;
+            width: auto !important;
+        }
+
+        .sparkline-line {
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .sparkline-area {
+            opacity: 0.3;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .metrics-grid-1,
+            .metrics-grid-2,
+            .metrics-grid-3,
+            .metrics-grid-4,
+            .metrics-grid-5,
+            .metrics-grid-6,
+            .metrics-grid-7,
+            .metrics-grid-8,
+            .metrics-grid-9,
+            .metrics-grid-10 {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 3rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .nav-btn {
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            background: #e2e8f0;
+            color: #475569;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .nav-btn:hover {
+            background: #cbd5e1;
+            transform: translateY(-2px);
+        }
+
+        .nav-btn.active {
+            background: linear-gradient(135deg, #3b82f6, #7c3aed);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-xl py-5">
+        <h1>✨ Sparkline Metrics - Bright & Vibrant Styles</h1>
+        <p class="subtitle">10 shiny, colorful designs for your bright professional dashboard</p>
+
+        <div class="nav-buttons">
+            <button class="nav-btn active" onclick="scrollToStyle(1)">Style 1</button>
+            <button class="nav-btn" onclick="scrollToStyle(2)">Style 2</button>
+            <button class="nav-btn" onclick="scrollToStyle(3)">Style 3</button>
+            <button class="nav-btn" onclick="scrollToStyle(4)">Style 4</button>
+            <button class="nav-btn" onclick="scrollToStyle(5)">Style 5</button>
+            <button class="nav-btn" onclick="scrollToStyle(6)">Style 6</button>
+            <button class="nav-btn" onclick="scrollToStyle(7)">Style 7</button>
+            <button class="nav-btn" onclick="scrollToStyle(8)">Style 8</button>
+            <button class="nav-btn" onclick="scrollToStyle(9)">Style 9</button>
+            <button class="nav-btn" onclick="scrollToStyle(10)">Style 10</button>
+        </div>
+
+        <!-- STYLE 1: BRIGHT GRADIENT CARDS -->
+        <div class="variant-section" id="style-1">
+            <div class="variant-title">
+                <i class="fas fa-sun"></i>
+                Style 1: Bright Gradient
+                <span class="variant-badge">Pastel & Colorful</span>
+            </div>
+            <div class="metrics-grid-1" id="grid-1"></div>
+        </div>
+
+        <!-- STYLE 2: BOLD COLORED -->
+        <div class="variant-section" id="style-2">
+            <div class="variant-title">
+                <i class="fas fa-fire"></i>
+                Style 2: Bold Colored
+                <span class="variant-badge">Vibrant & Strong</span>
+            </div>
+            <div class="metrics-grid-2" id="grid-2"></div>
+        </div>
+
+        <!-- STYLE 3: GLASSMORPHIC BRIGHT -->
+        <div class="variant-section" id="style-3">
+            <div class="variant-title">
+                <i class="fas fa-gem"></i>
+                Style 3: Glassmorphic Bright
+                <span class="variant-badge">Modern & Clear</span>
+            </div>
+            <div class="metrics-grid-3" id="grid-3"></div>
+        </div>
+
+        <!-- STYLE 4: NEON BRIGHT -->
+        <div class="variant-section" id="style-4">
+            <div class="variant-title">
+                <i class="fas fa-lightbulb"></i>
+                Style 4: Neon Bright
+                <span class="variant-badge">Bold Glow</span>
+            </div>
+            <div class="metrics-grid-4" id="grid-4"></div>
+        </div>
+
+        <!-- STYLE 5: PASTEL CHIC -->
+        <div class="variant-section" id="style-5">
+            <div class="variant-title">
+                <i class="fas fa-flower"></i>
+                Style 5: Pastel Chic
+                <span class="variant-badge">Soft & Dreamy</span>
+            </div>
+            <div class="metrics-grid-5" id="grid-5"></div>
+        </div>
+
+        <!-- STYLE 6: SHINY METALLIC -->
+        <div class="variant-section" id="style-6">
+            <div class="variant-title">
+                <i class="fas fa-star"></i>
+                Style 6: Shiny Metallic
+                <span class="variant-badge">Premium Shine</span>
+            </div>
+            <div class="metrics-grid-6" id="grid-6"></div>
+        </div>
+
+        <!-- STYLE 7: RAINBOW GRADIENT -->
+        <div class="variant-section" id="style-7">
+            <div class="variant-title">
+                <i class="fas fa-rainbow"></i>
+                Style 7: Rainbow Gradient
+                <span class="variant-badge">Dynamic Border</span>
+            </div>
+            <div class="metrics-grid-7" id="grid-7"></div>
+        </div>
+
+        <!-- STYLE 8: SOFT ROUNDED MODERN -->
+        <div class="variant-section" id="style-8">
+            <div class="variant-title">
+                <i class="fas fa-circle"></i>
+                Style 8: Soft Rounded
+                <span class="variant-badge">Ultra Modern</span>
+            </div>
+            <div class="metrics-grid-8" id="grid-8"></div>
+        </div>
+
+        <!-- STYLE 9: PREMIUM WHITE CARDS -->
+        <div class="variant-section" id="style-9">
+            <div class="variant-title">
+                <i class="fas fa-card"></i>
+                Style 9: Premium White
+                <span class="variant-badge">Top Border Accent</span>
+            </div>
+            <div class="metrics-grid-9" id="grid-9"></div>
+        </div>
+
+        <!-- STYLE 10: ULTRA SHINY -->
+        <div class="variant-section" id="style-10">
+            <div class="variant-title">
+                <i class="fas fa-sparkles"></i>
+                Style 10: Ultra Shiny
+                <span class="variant-badge">Maximum Shine</span>
+            </div>
+            <div class="metrics-grid-10" id="grid-10"></div>
+        </div>
+
+        <div class="alert alert-success mt-5" style="background: linear-gradient(135deg, #d1fae5, #a7f3d0); border: none; color: #065f46;">
+            <i class="fas fa-check-circle me-2"></i> <strong>Pick Your Style!</strong> Which bright, vibrant design matches your brand best?
+        </div>
+    </div>
+
+    <script>
+        // Real data - same across all styles
+        const metrics = [
+            {
+                label: 'Orders',
+                value: '18',
+                trend: '↑ 12%',
+                color: '#3b82f6',
+                data: [8, 9, 7, 10, 12, 15, 18]
+            },
+            {
+                label: 'Products',
+                value: '50',
+                trend: 'Stable',
+                color: '#14b8a6',
+                data: [48, 48, 49, 49, 50, 50, 50]
+            },
+            {
+                label: 'Claims',
+                value: '0',
+                trend: '✓ Good',
+                color: '#f59e0b',
+                data: [2, 2, 1, 1, 1, 0, 0]
+            },
+            {
+                label: 'Avg Value',
+                value: '$0',
+                trend: '→ 0%',
+                color: '#10b981',
+                data: [0, 0, 0, 0, 0, 0, 0]
+            },
+            {
+                label: 'Units Sold',
+                value: '0',
+                trend: '↓ 5%',
+                color: '#06b6d4',
+                data: [5, 4, 5, 4, 3, 2, 0]
+            },
+            {
+                label: 'Revenue',
+                value: '$0',
+                trend: 'Target: $10K',
+                color: '#a855f7',
+                data: [0, 0, 0, 0, 0, 0, 0]
+            }
+        ];
+
+        const colorMap = {
+            '#3b82f6': 'blue',
+            '#14b8a6': 'teal',
+            '#f59e0b': 'orange',
+            '#10b981': 'green',
+            '#06b6d4': 'cyan',
+            '#a855f7': 'purple'
+        };
+
+        function generateSparklineChart(containerId, data, color) {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+
+            // Set canvas size to prevent overflow
+            canvas.height = 60;
+            canvas.width = 280;
+
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                    datasets: [{
+                        label: 'Trend',
+                        data: data,
+                        borderColor: color,
+                        backgroundColor: color + '33',
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 0,
+                        borderWidth: 2.5
+                    }]
+                },
+                options: {
+                    responsive: false,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: { enabled: false }
+                    },
+                    scales: {
+                        x: { display: false },
+                        y: { display: false }
+                    }
+                }
+            });
+
+            return canvas;
+        }
+
+        function createCard(style, metric, colorClass) {
+            const card = document.createElement('div');
+            card.className = `card-style-${style} ${colorClass || ''}`;
+
+            let html = `
+                <div class="metric-label">${metric.label}</div>
+                <div class="metric-value">${metric.value}</div>
+                <div class="metric-trend">${metric.trend}</div>
+                <div class="sparkline-container" id="sparkline-${style}-${colorClass}"></div>
+            `;
+
+            card.innerHTML = html;
+            return card;
+        }
+
+        // Render all styles
+        for (let style = 1; style <= 10; style++) {
+            const grid = document.getElementById(`grid-${style}`);
+
+            metrics.forEach((metric) => {
+                const colorClass = colorMap[metric.color];
+                const card = createCard(style, metric, colorClass);
+                grid.appendChild(card);
+
+                // Generate sparkline
+                setTimeout(() => {
+                    const container = document.getElementById(`sparkline-${style}-${colorClass}`);
+                    if (container) {
+                        const canvas = generateSparklineChart(`sparkline-${style}-${colorClass}`, metric.data, metric.color);
+                        container.appendChild(canvas);
+                    }
+                }, 100);
+            });
+        }
+
+        function scrollToStyle(styleNum) {
+            document.getElementById(`style-${styleNum}`).scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    </script>
+</body>
+</html>

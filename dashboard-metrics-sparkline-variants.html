@@ -1,0 +1,970 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sparkline Metrics - 10 Style Variants</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: #e2e8f0;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            min-height: 100vh;
+        }
+
+        .container-xl {
+            max-width: 1400px;
+        }
+
+        h1 {
+            background: linear-gradient(135deg, #60a5fa, #a78bfa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 3rem;
+            font-weight: 800;
+            text-align: center;
+        }
+
+        .variant-section {
+            margin-bottom: 4rem;
+            scroll-margin-top: 100px;
+        }
+
+        .variant-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 2rem;
+            color: #f1f5f9;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .variant-badge {
+            font-size: 0.7rem;
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            background: rgba(100, 116, 139, 0.3);
+            color: #cbd5e1;
+        }
+
+        /* ========== STYLE 1: MINIMALIST DARK ========== */
+        .metrics-grid-1 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .card-style-1 {
+            background: rgba(15, 23, 42, 0.4);
+            border: 1px solid rgba(100, 116, 139, 0.2);
+            border-radius: 12px;
+            padding: 1.5rem;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .card-style-1:hover {
+            background: rgba(15, 23, 42, 0.6);
+            border-color: rgba(100, 116, 139, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .card-style-1 .metric-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .card-style-1 .metric-label {
+            font-size: 0.75rem;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .card-style-1 .metric-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #f1f5f9;
+        }
+
+        .card-style-1 .metric-trend {
+            font-size: 0.75rem;
+            padding: 0.3rem 0.6rem;
+            border-radius: 4px;
+            background: rgba(16, 185, 129, 0.2);
+            color: #86efac;
+        }
+
+        .card-style-1 .sparkline-container {
+            height: 60px;
+            margin-bottom: 1rem;
+        }
+
+        /* ========== STYLE 2: NEON GLOW ========== */
+        .metrics-grid-2 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+        }
+
+        .card-style-2 {
+            background: rgba(15, 23, 42, 0.3);
+            border: 2px solid;
+            border-radius: 16px;
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s ease;
+            cursor: pointer;
+        }
+
+        .card-style-2.blue {
+            border-color: #3b82f6;
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+        }
+
+        .card-style-2.teal {
+            border-color: #14b8a6;
+            box-shadow: 0 0 20px rgba(20, 184, 166, 0.3);
+        }
+
+        .card-style-2.orange {
+            border-color: #f59e0b;
+            box-shadow: 0 0 20px rgba(245, 158, 11, 0.3);
+        }
+
+        .card-style-2.green {
+            border-color: #10b981;
+            box-shadow: 0 0 20px rgba(16, 185, 129, 0.3);
+        }
+
+        .card-style-2.cyan {
+            border-color: #06b6d4;
+            box-shadow: 0 0 20px rgba(6, 182, 212, 0.3);
+        }
+
+        .card-style-2.purple {
+            border-color: #a855f7;
+            box-shadow: 0 0 20px rgba(168, 85, 247, 0.3);
+        }
+
+        .card-style-2:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 40px rgba(100, 116, 139, 0.5);
+        }
+
+        .card-style-2 .metric-label {
+            font-size: 0.8rem;
+            color: #cbd5e1;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.5rem;
+        }
+
+        .card-style-2 .metric-value {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .card-style-2 .sparkline-container {
+            height: 70px;
+            margin-bottom: 1rem;
+        }
+
+        .card-style-2 .metric-stats {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            color: #94a3b8;
+        }
+
+        /* ========== STYLE 3: GRADIENT CARDS ========== */
+        .metrics-grid-3 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .card-style-3 {
+            border-radius: 16px;
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.4s ease;
+        }
+
+        .card-style-3.blue {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(59, 130, 246, 0.05));
+        }
+
+        .card-style-3.teal {
+            background: linear-gradient(135deg, rgba(20, 184, 166, 0.2), rgba(20, 184, 166, 0.05));
+        }
+
+        .card-style-3.orange {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.2), rgba(245, 158, 11, 0.05));
+        }
+
+        .card-style-3.green {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(16, 185, 129, 0.05));
+        }
+
+        .card-style-3.cyan {
+            background: linear-gradient(135deg, rgba(6, 182, 212, 0.2), rgba(6, 182, 212, 0.05));
+        }
+
+        .card-style-3.purple {
+            background: linear-gradient(135deg, rgba(168, 85, 247, 0.2), rgba(168, 85, 247, 0.05));
+        }
+
+        .card-style-3:hover {
+            transform: translateY(-4px);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .card-style-3 .metric-label {
+            font-size: 0.8rem;
+            color: #cbd5e1;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.8rem;
+        }
+
+        .card-style-3 .metric-value {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .card-style-3 .metric-trend {
+            font-size: 0.75rem;
+            color: #94a3b8;
+            margin-bottom: 1rem;
+        }
+
+        .card-style-3 .sparkline-container {
+            height: 60px;
+        }
+
+        /* ========== STYLE 4: FLAT MINIMAL ========== */
+        .metrics-grid-4 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .card-style-4 {
+            background: transparent;
+            border: none;
+            padding: 1.5rem;
+            position: relative;
+            text-align: center;
+        }
+
+        .card-style-4 .metric-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .card-style-4 .metric-label {
+            font-size: 0.8rem;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 1rem;
+        }
+
+        .card-style-4 .sparkline-container {
+            height: 50px;
+            margin-bottom: 0.5rem;
+        }
+
+        /* ========== STYLE 5: NEUMORPHIC ========== */
+        .metrics-grid-5 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 2rem;
+        }
+
+        .card-style-5 {
+            background: linear-gradient(145deg, #1e293b, #0f172a);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 8px 8px 16px rgba(0, 0, 0, 0.3), -8px -8px 16px rgba(255, 255, 255, 0.05);
+            transition: all 0.4s ease;
+            position: relative;
+        }
+
+        .card-style-5:hover {
+            box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.4), -4px -4px 8px rgba(255, 255, 255, 0.08);
+            transform: translateY(-2px);
+        }
+
+        .card-style-5 .metric-label {
+            font-size: 0.75rem;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 1rem;
+        }
+
+        .card-style-5 .metric-value {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .card-style-5 .sparkline-container {
+            height: 60px;
+            margin-bottom: 1rem;
+        }
+
+        /* ========== STYLE 6: RETRO GRID ========== */
+        .metrics-grid-6 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 2rem;
+        }
+
+        .card-style-6 {
+            background: rgba(15, 23, 42, 0.5);
+            border: 2px dashed rgba(100, 116, 139, 0.4);
+            border-radius: 8px;
+            padding: 1.5rem;
+            position: relative;
+            font-family: 'Courier New', monospace;
+            transition: all 0.3s ease;
+        }
+
+        .card-style-6:hover {
+            background: rgba(15, 23, 42, 0.7);
+            border-color: rgba(100, 116, 139, 0.6);
+        }
+
+        .card-style-6 .metric-label {
+            font-size: 0.7rem;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.8rem;
+        }
+
+        .card-style-6 .metric-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #60a5fa;
+            margin-bottom: 0.8rem;
+            text-shadow: 0 0 10px rgba(96, 165, 250, 0.3);
+        }
+
+        .card-style-6 .sparkline-container {
+            height: 50px;
+        }
+
+        /* ========== STYLE 7: LAYERED DEPTH ========== */
+        .metrics-grid-7 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+        }
+
+        .card-style-7 {
+            position: relative;
+            border-radius: 16px;
+            padding: 2rem;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(100, 116, 139, 0.2);
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .card-style-7::before {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            border-radius: 16px;
+            padding: 2px;
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.5), rgba(168, 85, 247, 0.5), rgba(20, 184, 166, 0.5));
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        .card-style-7:hover::before {
+            opacity: 1;
+        }
+
+        .card-style-7:hover {
+            transform: translateY(-8px);
+        }
+
+        .card-style-7 .metric-label {
+            font-size: 0.75rem;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.8rem;
+        }
+
+        .card-style-7 .metric-value {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .card-style-7 .sparkline-container {
+            height: 60px;
+            margin-bottom: 1rem;
+        }
+
+        /* ========== STYLE 8: SOFT SHADOWS ========== */
+        .metrics-grid-8 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+        }
+
+        .card-style-8 {
+            background: rgba(30, 41, 59, 0.4);
+            border-radius: 24px;
+            padding: 2rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            transition: all 0.4s ease;
+        }
+
+        .card-style-8:hover {
+            box-shadow: 0 16px 48px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.1);
+            transform: translateY(-4px);
+        }
+
+        .card-style-8 .metric-label {
+            font-size: 0.75rem;
+            color: #cbd5e1;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 1rem;
+        }
+
+        .card-style-8 .metric-value {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 0.8rem;
+        }
+
+        .card-style-8 .sparkline-container {
+            height: 60px;
+            margin-bottom: 1rem;
+        }
+
+        .card-style-8 .metric-stats {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            color: #94a3b8;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(100, 116, 139, 0.2);
+        }
+
+        /* ========== STYLE 9: BOLD & VIBRANT ========== */
+        .metrics-grid-9 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+        }
+
+        .card-style-9 {
+            border-radius: 16px;
+            padding: 2rem;
+            border: none;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card-style-9.blue {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+        }
+
+        .card-style-9.teal {
+            background: linear-gradient(135deg, #14b8a6, #0d9488);
+        }
+
+        .card-style-9.orange {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+        }
+
+        .card-style-9.green {
+            background: linear-gradient(135deg, #10b981, #059669);
+        }
+
+        .card-style-9.cyan {
+            background: linear-gradient(135deg, #06b6d4, #0891b2);
+        }
+
+        .card-style-9.purple {
+            background: linear-gradient(135deg, #a855f7, #9333ea);
+        }
+
+        .card-style-9::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: rgba(255, 255, 255, 0.1);
+            pointer-events: none;
+        }
+
+        .card-style-9:hover {
+            transform: scale(1.05);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .card-style-9 .metric-label {
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.8);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.8rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .card-style-9 .metric-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 1rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .card-style-9 .sparkline-container {
+            height: 60px;
+            margin-bottom: 1rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .card-style-9 .metric-trend {
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.9);
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ========== STYLE 10: TRANSPARENT CHIC ========== */
+        .metrics-grid-10 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+        }
+
+        .card-style-10 {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(30px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 20px;
+            padding: 2rem;
+            transition: all 0.4s ease;
+            position: relative;
+        }
+
+        .card-style-10::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at top left, rgba(255, 255, 255, 0.1), transparent);
+            border-radius: 20px;
+            pointer-events: none;
+        }
+
+        .card-style-10:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.25);
+            transform: translateY(-6px);
+        }
+
+        .card-style-10 .metric-label {
+            font-size: 0.75rem;
+            color: #cbd5e1;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.8rem;
+        }
+
+        .card-style-10 .metric-value {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 0.8rem;
+        }
+
+        .card-style-10 .sparkline-container {
+            height: 60px;
+            margin-bottom: 1rem;
+        }
+
+        .card-style-10 .metric-stats {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            color: #94a3b8;
+        }
+
+        /* Common Chart Styling */
+        .sparkline-line {
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .sparkline-area {
+            opacity: 0.3;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .metrics-grid-1,
+            .metrics-grid-2,
+            .metrics-grid-3,
+            .metrics-grid-4,
+            .metrics-grid-5,
+            .metrics-grid-6,
+            .metrics-grid-7,
+            .metrics-grid-8,
+            .metrics-grid-9,
+            .metrics-grid-10 {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 3rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .nav-btn {
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            background: rgba(100, 116, 139, 0.2);
+            color: #cbd5e1;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .nav-btn:hover {
+            background: rgba(100, 116, 139, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .nav-btn.active {
+            background: #3b82f6;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-xl py-5">
+        <h1 class="mb-2">
+            <i class="fas fa-wave-square"></i> Sparkline Metrics - 10 Stunning Styles
+        </h1>
+        <p class="text-center text-muted mb-5">Same data, completely different aesthetics. Pick your favorite!</p>
+
+        <div class="nav-buttons">
+            <button class="nav-btn active" onclick="scrollToStyle(1)">Style 1</button>
+            <button class="nav-btn" onclick="scrollToStyle(2)">Style 2</button>
+            <button class="nav-btn" onclick="scrollToStyle(3)">Style 3</button>
+            <button class="nav-btn" onclick="scrollToStyle(4)">Style 4</button>
+            <button class="nav-btn" onclick="scrollToStyle(5)">Style 5</button>
+            <button class="nav-btn" onclick="scrollToStyle(6)">Style 6</button>
+            <button class="nav-btn" onclick="scrollToStyle(7)">Style 7</button>
+            <button class="nav-btn" onclick="scrollToStyle(8)">Style 8</button>
+            <button class="nav-btn" onclick="scrollToStyle(9)">Style 9</button>
+            <button class="nav-btn" onclick="scrollToStyle(10)">Style 10</button>
+        </div>
+
+        <!-- STYLE 1: MINIMALIST DARK -->
+        <div class="variant-section" id="style-1">
+            <div class="variant-title">
+                <i class="fas fa-square"></i>
+                Style 1: Minimalist Dark
+                <span class="variant-badge">Clean & Simple</span>
+            </div>
+            <div class="metrics-grid-1" id="grid-1"></div>
+        </div>
+
+        <!-- STYLE 2: NEON GLOW -->
+        <div class="variant-section" id="style-2">
+            <div class="variant-title">
+                <i class="fas fa-lightbulb"></i>
+                Style 2: Neon Glow
+                <span class="variant-badge">Vibrant & Bold</span>
+            </div>
+            <div class="metrics-grid-2" id="grid-2"></div>
+        </div>
+
+        <!-- STYLE 3: GRADIENT CARDS -->
+        <div class="variant-section" id="style-3">
+            <div class="variant-title">
+                <i class="fas fa-palette"></i>
+                Style 3: Gradient Cards
+                <span class="variant-badge">Colorful</span>
+            </div>
+            <div class="metrics-grid-3" id="grid-3"></div>
+        </div>
+
+        <!-- STYLE 4: FLAT MINIMAL -->
+        <div class="variant-section" id="style-4">
+            <div class="variant-title">
+                <i class="fas fa-minimize"></i>
+                Style 4: Flat Minimal
+                <span class="variant-badge">Ultra Minimal</span>
+            </div>
+            <div class="metrics-grid-4" id="grid-4"></div>
+        </div>
+
+        <!-- STYLE 5: NEUMORPHIC -->
+        <div class="variant-section" id="style-5">
+            <div class="variant-title">
+                <i class="fas fa-cube"></i>
+                Style 5: Neumorphic
+                <span class="variant-badge">Soft & Tactile</span>
+            </div>
+            <div class="metrics-grid-5" id="grid-5"></div>
+        </div>
+
+        <!-- STYLE 6: RETRO GRID -->
+        <div class="variant-section" id="style-6">
+            <div class="variant-title">
+                <i class="fas fa-gamepad"></i>
+                Style 6: Retro Grid
+                <span class="variant-badge">80s Vibes</span>
+            </div>
+            <div class="metrics-grid-6" id="grid-6"></div>
+        </div>
+
+        <!-- STYLE 7: LAYERED DEPTH -->
+        <div class="variant-section" id="style-7">
+            <div class="variant-title">
+                <i class="fas fa-layer-group"></i>
+                Style 7: Layered Depth
+                <span class="variant-badge">3D Feel</span>
+            </div>
+            <div class="metrics-grid-7" id="grid-7"></div>
+        </div>
+
+        <!-- STYLE 8: SOFT SHADOWS -->
+        <div class="variant-section" id="style-8">
+            <div class="variant-title">
+                <i class="fas fa-clouds"></i>
+                Style 8: Soft Shadows
+                <span class="variant-badge">Premium Feel</span>
+            </div>
+            <div class="metrics-grid-8" id="grid-8"></div>
+        </div>
+
+        <!-- STYLE 9: BOLD & VIBRANT -->
+        <div class="variant-section" id="style-9">
+            <div class="variant-title">
+                <i class="fas fa-fire"></i>
+                Style 9: Bold & Vibrant
+                <span class="variant-badge">Eye-Catching</span>
+            </div>
+            <div class="metrics-grid-9" id="grid-9"></div>
+        </div>
+
+        <!-- STYLE 10: TRANSPARENT CHIC -->
+        <div class="variant-section" id="style-10">
+            <div class="variant-title">
+                <i class="fas fa-gem"></i>
+                Style 10: Transparent Chic
+                <span class="variant-badge">Modern Luxury</span>
+            </div>
+            <div class="metrics-grid-10" id="grid-10"></div>
+        </div>
+
+        <div class="alert alert-info mt-5" role="alert">
+            <i class="fas fa-lightbulb me-2"></i> <strong>Pick Your Style!</strong> Which one feels right for your dashboard? Let me know and I'll integrate it with your real data API!
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+    <script>
+        // Sample data - same across all styles
+        const metrics = [
+            {
+                label: 'Orders',
+                value: '18',
+                trend: '↑ 12%',
+                color: '#3b82f6',
+                data: [8, 9, 7, 10, 12, 15, 18]
+            },
+            {
+                label: 'Products',
+                value: '50',
+                trend: 'Stable',
+                color: '#14b8a6',
+                data: [48, 48, 49, 49, 50, 50, 50]
+            },
+            {
+                label: 'Claims',
+                value: '0',
+                trend: '✓ Good',
+                color: '#f59e0b',
+                data: [2, 2, 1, 1, 1, 0, 0]
+            },
+            {
+                label: 'Avg Value',
+                value: '$0',
+                trend: '→ 0%',
+                color: '#10b981',
+                data: [0, 0, 0, 0, 0, 0, 0]
+            },
+            {
+                label: 'Units Sold',
+                value: '0',
+                trend: '↓ 5%',
+                color: '#06b6d4',
+                data: [5, 4, 5, 4, 3, 2, 0]
+            },
+            {
+                label: 'Revenue',
+                value: '$0',
+                trend: 'Target: $10K',
+                color: '#a855f7',
+                data: [0, 0, 0, 0, 0, 0, 0]
+            }
+        ];
+
+        const colorMap = {
+            '#3b82f6': 'blue',
+            '#14b8a6': 'teal',
+            '#f59e0b': 'orange',
+            '#10b981': 'green',
+            '#06b6d4': 'cyan',
+            '#a855f7': 'purple'
+        };
+
+        function generateSparklineChart(data, color) {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                    datasets: [{
+                        label: 'Trend',
+                        data: data,
+                        borderColor: color,
+                        backgroundColor: color + '22',
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 0,
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: { enabled: false }
+                    },
+                    scales: {
+                        x: { display: false },
+                        y: { display: false }
+                    }
+                }
+            });
+
+            return canvas;
+        }
+
+        function createCard(style, metric, colorClass) {
+            const card = document.createElement('div');
+            card.className = `card-style-${style} ${colorClass || ''}`;
+
+            let html = `
+                <div class="metric-header">
+                    <div class="metric-label">${metric.label}</div>
+                    <div class="metric-trend">${metric.trend}</div>
+                </div>
+                <div class="metric-value">${metric.value}</div>
+            `;
+
+            if (style === 8) {
+                html += `
+                    <div class="sparkline-container">
+                        <svg width="100%" height="100%" viewBox="0 0 100 60" preserveAspectRatio="none">
+                            <defs>
+                                <linearGradient id="grad-${Math.random()}" x1="0%" y1="0%" x2="0%" y2="100%">
+                                    <stop offset="0%" style="stop-color:${metric.color};stop-opacity:0.3" />
+                                    <stop offset="100%" style="stop-color:${metric.color};stop-opacity:0.01" />
+                                </linearGradient>
+                            </defs>
+                            <polyline class="sparkline-area" fill="url(#grad-${Math.random()})" points="0,50 ${metric.data.map((v, i) => `${i * 14},${60 - v}`).join(' ')}"/>
+                            <polyline class="sparkline-line" stroke="${metric.color}" points="0,50 ${metric.data.map((v, i) => `${i * 14},${60 - v}`).join(' ')}"/>
+                        </svg>
+                    </div>
+                    <div class="metric-stats">
+                        <span>7-day trend</span>
+                        <span>${metric.trend}</span>
+                    </div>
+                `;
+            } else {
+                html += `<div class="sparkline-container"></div>`;
+            }
+
+            card.innerHTML = html;
+            return card;
+        }
+
+        // Render all styles
+        for (let style = 1; style <= 10; style++) {
+            const grid = document.getElementById(`grid-${style}`);
+
+            metrics.forEach((metric, idx) => {
+                const colorClass = colorMap[metric.color];
+                const card = createCard(style, metric, colorClass);
+                grid.appendChild(card);
+
+                // Generate sparkline for non-style-8 cards
+                if (style !== 8) {
+                    const sparklineContainer = card.querySelector('.sparkline-container');
+                    if (sparklineContainer) {
+                        const canvas = generateSparklineChart(metric.data, metric.color);
+                        sparklineContainer.appendChild(canvas);
+                    }
+                }
+            });
+        }
+
+        function scrollToStyle(styleNum) {
+            document.getElementById(`style-${styleNum}`).scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,22 @@
+<?php
+/**
+ * Dashboard Tab - Phase 3 API-Driven Implementation (BACKUP)
+ * Modern responsive dashboard with real-time data from API handlers
+ * 
+ * @package Supplier\Portal
+ * @version 3.0.0 - API-driven with tested endpoints
+ * @backup_date October 25, 2025
+ */
+
+declare(strict_types=1);
+
+if (!defined('TAB_FILE_INCLUDED')) {
+    http_response_code(403);
+    exit('Direct access not permitted');
+}
+
+// THIS IS A BACKUP FILE - Original preserved before demo migration
+// To restore: mv tab-dashboard.php_backup tab-dashboard.php
+?>
+
+<!-- BACKUP FILE - See tab-dashboard.php for current implementation -->

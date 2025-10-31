@@ -1,0 +1,659 @@
+/**
+ * Executive Pro Theme
+ * 
+ * Clean business foundation with vibrant accents
+ * - Black/white/gray base (professional)
+ * - Gradient buttons that POP (blues, pinks, purples)
+ * - Nice shadows for depth
+ * - Sharp modern corners (not too rounded)
+ * - High-end widgets
+ * 
+ * Vibe: Apple Store meets Bloomberg Terminal
+ */
+
+/* ============================================
+   RESET & BASE
+   ============================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif !important;
+    font-size: 14px !important;
+    line-height: 1.6 !important;
+    color: #1a1a1a !important;
+    background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 100%) !important;
+    -webkit-font-smoothing: antialiased !important;
+    -moz-osx-font-smoothing: grayscale !important;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Inter', sans-serif !important;
+    font-weight: 700 !important;
+    color: #000000 !important;
+    letter-spacing: -0.03em !important;
+}
+
+h1 { font-size: 32px !important; }
+h2 { font-size: 26px !important; }
+h3 { font-size: 22px !important; }
+h4 { font-size: 18px !important; }
+h5 { font-size: 16px !important; }
+h6 { font-size: 14px !important; }
+
+
+/* ============================================
+   LAYOUT
+   ============================================ */
+
+.content-wrapper {
+    background: transparent !important;
+    padding: 24px !important;
+}
+
+.container-fluid {
+    max-width: 1800px !important;
+    margin: 0 auto !important;
+}
+
+
+/* ============================================
+   SIDEBAR - Sleek Black
+   ============================================ */
+
+.main-sidebar,
+.sidebar {
+    background: linear-gradient(180deg, #000000 0%, #1a1a1a 100%) !important;
+    width: 260px !important;
+    box-shadow: 4px 0 20px rgba(0, 0, 0, 0.15) !important;
+}
+
+.brand-link {
+    background: #000000 !important;
+    border-bottom: 1px solid #2a2a2a !important;
+    padding: 20px !important;
+}
+
+.brand-text {
+    color: #ffffff !important;
+    font-size: 18px !important;
+    font-weight: 800 !important;
+    letter-spacing: -0.02em !important;
+}
+
+.sidebar-dark-primary .nav-sidebar > .nav-item > .nav-link {
+    color: #b0b0b0 !important;
+    padding: 12px 20px !important;
+    font-size: 14px !important;
+    font-weight: 500 !important;
+    transition: all 0.3s ease !important;
+    border-left: 3px solid transparent !important;
+    margin: 2px 0 !important;
+}
+
+.sidebar-dark-primary .nav-sidebar > .nav-item > .nav-link:hover {
+    background: rgba(255, 255, 255, 0.05) !important;
+    color: #ffffff !important;
+    border-left-color: #667eea !important;
+}
+
+.sidebar-dark-primary .nav-sidebar > .nav-item > .nav-link.active {
+    background: linear-gradient(90deg, rgba(102, 126, 234, 0.2) 0%, rgba(118, 75, 162, 0.2) 100%) !important;
+    color: #ffffff !important;
+    border-left-color: #667eea !important;
+    font-weight: 600 !important;
+}
+
+.sidebar-dark-primary .nav-sidebar > .nav-item > .nav-link i {
+    margin-right: 12px !important;
+    font-size: 16px !important;
+}
+
+
+/* ============================================
+   NAVBAR - Clean White
+   ============================================ */
+
+.main-header {
+    background: #ffffff !important;
+    border-bottom: 1px solid #e0e0e0 !important;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05) !important;
+    padding: 0 24px !important;
+}
+
+.main-header .navbar {
+    background: transparent !important;
+}
+
+.main-header .nav-link {
+    color: #4a4a4a !important;
+    font-size: 14px !important;
+    font-weight: 500 !important;
+    padding: 12px 16px !important;
+    transition: all 0.3s ease !important;
+}
+
+.main-header .nav-link:hover {
+    color: #000000 !important;
+    background: rgba(102, 126, 234, 0.08) !important;
+}
+
+
+/* ============================================
+   CARDS - Premium White Containers
+   ============================================ */
+
+.card {
+    background: #ffffff !important;
+    border: none !important;
+    border-radius: 8px !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08) !important;
+    margin-bottom: 24px !important;
+    transition: all 0.3s ease !important;
+}
+
+.card:hover {
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12) !important;
+    transform: translateY(-2px) !important;
+}
+
+.card-header {
+    background: linear-gradient(135deg, #fafbfc 0%, #f5f6f8 100%) !important;
+    border-bottom: 2px solid #e8e8e8 !important;
+    padding: 18px 24px !important;
+    border-radius: 8px 8px 0 0 !important;
+}
+
+.card-header h3 {
+    font-size: 18px !important;
+    font-weight: 700 !important;
+    color: #1a1a1a !important;
+    margin: 0 !important;
+}
+
+.card-body {
+    padding: 24px !important;
+}
+
+.card-footer {
+    background: #f9fafb !important;
+    border-top: 1px solid #e8e8e8 !important;
+    padding: 16px 24px !important;
+}
+
+
+/* ============================================
+   BUTTONS - VIBRANT GRADIENTS THAT POP!
+   ============================================ */
+
+.btn {
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    padding: 11px 24px !important;
+    border-radius: 4px !important;
+    border: none !important;
+    transition: all 0.3s ease !important;
+    cursor: pointer !important;
+    text-transform: none !important;
+    letter-spacing: 0.02em !important;
+    position: relative !important;
+    overflow: hidden !important;
+}
+
+/* Primary - Purple to Blue Gradient (POPS!) */
+.btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    color: #ffffff !important;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4) !important;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, #5568d3 0%, #6a3f91 100%) !important;
+    box-shadow: 0 6px 25px rgba(102, 126, 234, 0.6) !important;
+    transform: translateY(-2px) !important;
+    color: #ffffff !important;
+}
+
+/* Success - Vibrant Green Gradient */
+.btn-success {
+    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%) !important;
+    color: #ffffff !important;
+    box-shadow: 0 4px 15px rgba(17, 153, 142, 0.4) !important;
+}
+
+.btn-success:hover {
+    background: linear-gradient(135deg, #0d8577 0%, #2ed96a 100%) !important;
+    box-shadow: 0 6px 25px rgba(17, 153, 142, 0.6) !important;
+    transform: translateY(-2px) !important;
+    color: #ffffff !important;
+}
+
+/* Info - Blue to Cyan Gradient (SHINY!) */
+.btn-info {
+    background: linear-gradient(135deg, #2193b0 0%, #6dd5ed 100%) !important;
+    color: #ffffff !important;
+    box-shadow: 0 4px 15px rgba(33, 147, 176, 0.4) !important;
+}
+
+.btn-info:hover {
+    background: linear-gradient(135deg, #1a7a96 0%, #5dc4db 100%) !important;
+    box-shadow: 0 6px 25px rgba(33, 147, 176, 0.6) !important;
+    transform: translateY(-2px) !important;
+    color: #ffffff !important;
+}
+
+/* Warning - Orange to Pink Gradient (BOLD!) */
+.btn-warning {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%) !important;
+    color: #ffffff !important;
+    box-shadow: 0 4px 15px rgba(240, 147, 251, 0.4) !important;
+}
+
+.btn-warning:hover {
+    background: linear-gradient(135deg, #e77fea 0%, #e4405a 100%) !important;
+    box-shadow: 0 6px 25px rgba(240, 147, 251, 0.6) !important;
+    transform: translateY(-2px) !important;
+    color: #ffffff !important;
+}
+
+/* Danger - Red to Pink Gradient (FIERCE!) */
+.btn-danger {
+    background: linear-gradient(135deg, #f2709c 0%, #ff9472 100%) !important;
+    color: #ffffff !important;
+    box-shadow: 0 4px 15px rgba(242, 112, 156, 0.4) !important;
+}
+
+.btn-danger:hover {
+    background: linear-gradient(135deg, #e05d89 0%, #f57f5d 100%) !important;
+    box-shadow: 0 6px 25px rgba(242, 112, 156, 0.6) !important;
+    transform: translateY(-2px) !important;
+    color: #ffffff !important;
+}
+
+/* Secondary - Sleek Gray */
+.btn-secondary,
+.btn-default {
+    background: linear-gradient(135deg, #bdc3c7 0%, #2c3e50 100%) !important;
+    color: #ffffff !important;
+    box-shadow: 0 4px 15px rgba(44, 62, 80, 0.3) !important;
+}
+
+.btn-secondary:hover,
+.btn-default:hover {
+    background: linear-gradient(135deg, #a8aeb3 0%, #1f2d3d 100%) !important;
+    box-shadow: 0 6px 25px rgba(44, 62, 80, 0.5) !important;
+    transform: translateY(-2px) !important;
+    color: #ffffff !important;
+}
+
+/* Button sizes */
+.btn-sm {
+    font-size: 13px !important;
+    padding: 8px 18px !important;
+}
+
+.btn-lg {
+    font-size: 16px !important;
+    padding: 14px 32px !important;
+}
+
+.btn-xs {
+    font-size: 12px !important;
+    padding: 6px 14px !important;
+}
+
+
+/* ============================================
+   INFO BOXES - Modern Widgets with Gradients
+   ============================================ */
+
+.info-box {
+    background: #ffffff !important;
+    border-radius: 8px !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08) !important;
+    padding: 20px !important;
+    margin-bottom: 20px !important;
+    transition: all 0.3s ease !important;
+    border: none !important;
+}
+
+.info-box:hover {
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12) !important;
+    transform: translateY(-3px) !important;
+}
+
+.info-box-icon {
+    border-radius: 6px !important;
+    width: 70px !important;
+    height: 70px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 28px !important;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* Icon gradient backgrounds */
+.bg-primary .info-box-icon {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    color: #ffffff !important;
+}
+
+.bg-success .info-box-icon {
+    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%) !important;
+    color: #ffffff !important;
+}
+
+.bg-info .info-box-icon {
+    background: linear-gradient(135deg, #2193b0 0%, #6dd5ed 100%) !important;
+    color: #ffffff !important;
+}
+
+.bg-warning .info-box-icon {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%) !important;
+    color: #ffffff !important;
+}
+
+.bg-danger .info-box-icon {
+    background: linear-gradient(135deg, #f2709c 0%, #ff9472 100%) !important;
+    color: #ffffff !important;
+}
+
+.info-box-text {
+    font-size: 12px !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.1em !important;
+    color: #7a7a7a !important;
+    font-weight: 700 !important;
+    margin-bottom: 6px !important;
+}
+
+.info-box-number {
+    font-size: 30px !important;
+    font-weight: 800 !important;
+    color: #1a1a1a !important;
+    line-height: 1 !important;
+}
+
+.info-box-content {
+    padding-left: 20px !important;
+}
+
+
+/* ============================================
+   TABLES - Clean & Professional
+   ============================================ */
+
+.table {
+    font-size: 14px !important;
+    margin-bottom: 0 !important;
+}
+
+.table thead th {
+    background: linear-gradient(135deg, #f8f9fa 0%, #f0f2f5 100%) !important;
+    border-bottom: 2px solid #d0d0d0 !important;
+    color: #4a4a4a !important;
+    font-weight: 700 !important;
+    font-size: 13px !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.05em !important;
+    padding: 14px 16px !important;
+}
+
+.table tbody td {
+    padding: 14px 16px !important;
+    border-bottom: 1px solid #f0f0f0 !important;
+    color: #2a2a2a !important;
+    vertical-align: middle !important;
+}
+
+.table tbody tr {
+    transition: all 0.2s ease !important;
+}
+
+.table tbody tr:hover {
+    background: linear-gradient(90deg, rgba(102, 126, 234, 0.03) 0%, rgba(255, 255, 255, 1) 100%) !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04) !important;
+}
+
+.table-striped tbody tr:nth-of-type(odd) {
+    background-color: #fafbfc !important;
+}
+
+
+/* ============================================
+   BADGES - Modern Labels
+   ============================================ */
+
+.badge {
+    font-size: 11px !important;
+    font-weight: 700 !important;
+    padding: 6px 12px !important;
+    border-radius: 4px !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.08em !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15) !important;
+}
+
+.badge-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    color: #ffffff !important;
+}
+
+.badge-success {
+    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%) !important;
+    color: #ffffff !important;
+}
+
+.badge-info {
+    background: linear-gradient(135deg, #2193b0 0%, #6dd5ed 100%) !important;
+    color: #ffffff !important;
+}
+
+.badge-warning {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%) !important;
+    color: #ffffff !important;
+}
+
+.badge-danger {
+    background: linear-gradient(135deg, #f2709c 0%, #ff9472 100%) !important;
+    color: #ffffff !important;
+}
+
+.badge-secondary {
+    background: linear-gradient(135deg, #bdc3c7 0%, #2c3e50 100%) !important;
+    color: #ffffff !important;
+}
+
+
+/* ============================================
+   FORMS - Clean Inputs
+   ============================================ */
+
+.form-control,
+.custom-select,
+select.form-control {
+    font-size: 14px !important;
+    padding: 10px 14px !important;
+    border: 2px solid #e0e0e0 !important;
+    border-radius: 4px !important;
+    background-color: #ffffff !important;
+    color: #2a2a2a !important;
+    transition: all 0.3s ease !important;
+}
+
+.form-control:focus,
+.custom-select:focus {
+    border-color: #667eea !important;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15) !important;
+    outline: none !important;
+}
+
+.form-label,
+label {
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    color: #4a4a4a !important;
+    margin-bottom: 8px !important;
+    letter-spacing: 0.02em !important;
+}
+
+
+/* ============================================
+   ALERTS - Eye-Catching Messages
+   ============================================ */
+
+.alert {
+    border-radius: 6px !important;
+    border: none !important;
+    padding: 16px 20px !important;
+    font-size: 14px !important;
+    font-weight: 500 !important;
+    margin-bottom: 20px !important;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1) !important;
+}
+
+.alert-success {
+    background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%) !important;
+    color: #155724 !important;
+}
+
+.alert-danger {
+    background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%) !important;
+    color: #721c24 !important;
+}
+
+.alert-warning {
+    background: linear-gradient(135deg, #fff3cd 0%, #ffe69c 100%) !important;
+    color: #856404 !important;
+}
+
+.alert-info {
+    background: linear-gradient(135deg, #d1ecf1 0%, #bee5eb 100%) !important;
+    color: #0c5460 !important;
+}
+
+
+/* ============================================
+   BREADCRUMBS
+   ============================================ */
+
+.breadcrumb {
+    background: transparent !important;
+    padding: 0 !important;
+    margin-bottom: 20px !important;
+    font-size: 13px !important;
+}
+
+.breadcrumb-item {
+    color: #7a7a7a !important;
+    font-weight: 500 !important;
+}
+
+.breadcrumb-item.active {
+    color: #1a1a1a !important;
+    font-weight: 700 !important;
+}
+
+
+/* ============================================
+   DROPDOWNS
+   ============================================ */
+
+.dropdown-menu {
+    border: none !important;
+    border-radius: 6px !important;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15) !important;
+    padding: 8px !important;
+}
+
+.dropdown-item {
+    padding: 10px 16px !important;
+    border-radius: 4px !important;
+    font-size: 14px !important;
+    font-weight: 500 !important;
+    transition: all 0.2s ease !important;
+}
+
+.dropdown-item:hover {
+    background: linear-gradient(90deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%) !important;
+    color: #667eea !important;
+}
+
+
+/* ============================================
+   PAGINATION
+   ============================================ */
+
+.pagination {
+    margin: 20px 0 !important;
+}
+
+.page-link {
+    font-size: 13px !important;
+    padding: 8px 14px !important;
+    border: 2px solid #e0e0e0 !important;
+    color: #4a4a4a !important;
+    background-color: #ffffff !important;
+    border-radius: 4px !important;
+    margin: 0 4px !important;
+    font-weight: 600 !important;
+    transition: all 0.3s ease !important;
+}
+
+.page-link:hover {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    border-color: transparent !important;
+    color: #ffffff !important;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3) !important;
+}
+
+.page-item.active .page-link {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    border-color: transparent !important;
+    color: #ffffff !important;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4) !important;
+}
+
+
+/* ============================================
+   UTILITIES
+   ============================================ */
+
+.shadow-pop {
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15) !important;
+}
+
+.text-gradient {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+
+/* ============================================
+   ANIMATIONS - Smooth & Professional
+   ============================================ */
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.card,
+.info-box {
+    animation: fadeInUp 0.5s ease !important;
+}

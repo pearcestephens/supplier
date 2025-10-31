@@ -1,0 +1,617 @@
+/**
+ * Dashboard Metrics - Premium Professional Design
+ * Modern, sophisticated metric cards with subtle animations
+ * Inspired by: Apple, Stripe, Linear, Vercel
+ *
+ * Features:
+ * - Minimalist glassmorphic design
+ * - Smooth micro-animations (not flashy)
+ * - Rich data visualization
+ * - Professional color palette
+ * - Accessibility first
+ */
+
+/* ============================================================================
+   METRIC CARD CONTAINER
+   ============================================================================ */
+
+.metric-card-premium {
+    position: relative;
+    background: linear-gradient(135deg, #ffffff 0%, #f9fafb 100%);
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 0;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.metric-card-premium:hover {
+    border-color: #d1d5db;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    transform: translateY(-2px);
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    .metric-card-premium {
+        background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+        border-color: #374151;
+    }
+
+    .metric-card-premium:hover {
+        border-color: #4b5563;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    }
+}
+
+/* ============================================================================
+   CARD SECTIONS
+   ============================================================================ */
+
+.metric-card-premium-header {
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    border-bottom: 1px solid #f3f4f6;
+}
+
+@media (prefers-color-scheme: dark) {
+    .metric-card-premium-header {
+        border-bottom-color: #374151;
+    }
+}
+
+.metric-card-premium-body {
+    padding: 20px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.metric-card-premium-footer {
+    padding: 12px 20px;
+    background: #f9fafb;
+    border-top: 1px solid #f3f4f6;
+    display: none;
+}
+
+@media (prefers-color-scheme: dark) {
+    .metric-card-premium-footer {
+        background: #111827;
+        border-top-color: #374151;
+    }
+}
+
+.metric-card-premium:hover .metric-card-premium-footer {
+    display: block;
+}
+
+/* ============================================================================
+   METRIC LABEL
+   ============================================================================ */
+
+.metric-label-premium {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #6b7280;
+    text-transform: none;
+    letter-spacing: 0;
+    margin: 0 0 8px 0;
+    line-height: 1.4;
+}
+
+@media (prefers-color-scheme: dark) {
+    .metric-label-premium {
+        color: #9ca3af;
+    }
+}
+
+/* ============================================================================
+   METRIC VALUE (Main number)
+   ============================================================================ */
+
+.metric-value-premium {
+    font-size: 2.25rem;
+    font-weight: 700;
+    color: #111827;
+    margin: 0;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    animation: fadeInSlideUp 0.5s ease-out;
+}
+
+@media (prefers-color-scheme: dark) {
+    .metric-value-premium {
+        color: #f9fafb;
+    }
+}
+
+@keyframes fadeInSlideUp {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ============================================================================
+   METRIC ICON
+   ============================================================================ */
+
+.metric-icon-premium {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    flex-shrink: 0;
+    transition: all 0.3s ease;
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+@media (prefers-color-scheme: dark) {
+    .metric-icon-premium {
+        background-color: rgba(255, 255, 255, 0.1);
+    }
+}
+
+.metric-card-premium:hover .metric-icon-premium {
+    transform: scale(1.1);
+    background-color: rgba(0, 0, 0, 0.08);
+}
+
+@media (prefers-color-scheme: dark) {
+    .metric-card-premium:hover .metric-icon-premium {
+        background-color: rgba(255, 255, 255, 0.15);
+    }
+}
+
+/* ============================================================================
+   COLOR VARIANTS (Subtle, professional)
+   ============================================================================ */
+
+.metric-card-premium.card-blue .metric-icon-premium {
+    color: #3b82f6;
+    background-color: #dbeafe;
+}
+
+@media (prefers-color-scheme: dark) {
+    .metric-card-premium.card-blue .metric-icon-premium {
+        color: #93c5fd;
+        background-color: rgba(59, 130, 246, 0.2);
+    }
+}
+
+.metric-card-premium.card-teal .metric-icon-premium {
+    color: #14b8a6;
+    background-color: #ccfbf1;
+}
+
+@media (prefers-color-scheme: dark) {
+    .metric-card-premium.card-teal .metric-icon-premium {
+        color: #7ee8df;
+        background-color: rgba(20, 184, 166, 0.2);
+    }
+}
+
+.metric-card-premium.card-orange .metric-icon-premium {
+    color: #f59e0b;
+    background-color: #fef3c7;
+}
+
+@media (prefers-color-scheme: dark) {
+    .metric-card-premium.card-orange .metric-icon-premium {
+        color: #fcd34d;
+        background-color: rgba(245, 158, 11, 0.2);
+    }
+}
+
+.metric-card-premium.card-green .metric-icon-premium {
+    color: #10b981;
+    background-color: #d1fae5;
+}
+
+@media (prefers-color-scheme: dark) {
+    .metric-card-premium.card-green .metric-icon-premium {
+        color: #6ee7b7;
+        background-color: rgba(16, 185, 129, 0.2);
+    }
+}
+
+.metric-card-premium.card-cyan .metric-icon-premium {
+    color: #06b6d4;
+    background-color: #cffafe;
+}
+
+@media (prefers-color-scheme: dark) {
+    .metric-card-premium.card-cyan .metric-icon-premium {
+        color: #67e8f9;
+        background-color: rgba(6, 182, 212, 0.2);
+    }
+}
+
+.metric-card-premium.card-purple .metric-icon-premium {
+    color: #a855f7;
+    background-color: #f3e8ff;
+}
+
+@media (prefers-color-scheme: dark) {
+    .metric-card-premium.card-purple .metric-icon-premium {
+        color: #d8b4fe;
+        background-color: rgba(168, 85, 247, 0.2);
+    }
+}
+
+/* ============================================================================
+   PROGRESS BAR (Subtle)
+   ============================================================================ */
+
+.metric-progress-container {
+    margin-top: 16px;
+}
+
+.metric-progress-label {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: #6b7280;
+}
+
+@media (prefers-color-scheme: dark) {
+    .metric-progress-label {
+        color: #9ca3af;
+    }
+}
+
+.metric-progress-bar {
+    height: 6px;
+    background-color: #e5e7eb;
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+@media (prefers-color-scheme: dark) {
+    .metric-progress-bar {
+        background-color: #374151;
+    }
+}
+
+.metric-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #3b82f6, #06b6d4);
+    border-radius: 3px;
+    transition: width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+    animation: progressPulse 2s ease-in-out infinite;
+}
+
+@keyframes progressPulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.8;
+    }
+}
+
+/* ============================================================================
+   SPARKLINE (Subtle trend chart)
+   ============================================================================ */
+
+.metric-sparkline-container {
+    margin-top: 12px;
+    height: 36px;
+}
+
+.metric-sparkline {
+    width: 100%;
+    height: 100%;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.metric-sparkline-line {
+    stroke-width: 2;
+    fill: none;
+    stroke: #3b82f6;
+    animation: drawLine 0.8s ease-out;
+}
+
+.metric-sparkline-fill {
+    fill: url(#sparkline-gradient);
+    opacity: 0.1;
+    animation: drawLine 0.8s ease-out;
+}
+
+@keyframes drawLine {
+    from {
+        stroke-dasharray: 1000;
+        stroke-dashoffset: 1000;
+        fill-opacity: 0;
+    }
+    to {
+        stroke-dasharray: 1000;
+        stroke-dashoffset: 0;
+        fill-opacity: 1;
+    }
+}
+
+/* ============================================================================
+   STATUS INDICATORS (Badges)
+   ============================================================================ */
+
+.metric-status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.metric-status-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    animation: statusPulse 2s ease-in-out infinite;
+}
+
+@keyframes statusPulse {
+    0%, 100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.6;
+        transform: scale(1.2);
+    }
+}
+
+/* Status variants */
+.status-excellent {
+    background-color: #d1fae5;
+    color: #065f46;
+}
+
+.status-excellent .metric-status-dot {
+    background-color: #10b981;
+}
+
+@media (prefers-color-scheme: dark) {
+    .status-excellent {
+        background-color: rgba(16, 185, 129, 0.2);
+        color: #86efac;
+    }
+}
+
+.status-good {
+    background-color: #dbeafe;
+    color: #1e40af;
+}
+
+.status-good .metric-status-dot {
+    background-color: #3b82f6;
+}
+
+@media (prefers-color-scheme: dark) {
+    .status-good {
+        background-color: rgba(59, 130, 246, 0.2);
+        color: #93c5fd;
+    }
+}
+
+.status-warning {
+    background-color: #fef3c7;
+    color: #92400e;
+}
+
+.status-warning .metric-status-dot {
+    background-color: #f59e0b;
+}
+
+@media (prefers-color-scheme: dark) {
+    .status-warning {
+        background-color: rgba(245, 158, 11, 0.2);
+        color: #fcd34d;
+    }
+}
+
+.status-critical {
+    background-color: #fee2e2;
+    color: #7f1d1d;
+}
+
+.status-critical .metric-status-dot {
+    background-color: #ef4444;
+}
+
+@media (prefers-color-scheme: dark) {
+    .status-critical {
+        background-color: rgba(239, 68, 68, 0.2);
+        color: #fca5a5;
+    }
+}
+
+/* ============================================================================
+   TREND INDICATOR
+   ============================================================================ */
+
+.metric-trend {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+.trend-up {
+    color: #10b981;
+}
+
+.trend-down {
+    color: #ef4444;
+}
+
+.trend-neutral {
+    color: #6b7280;
+}
+
+@media (prefers-color-scheme: dark) {
+    .trend-neutral {
+        color: #9ca3af;
+    }
+}
+
+/* ============================================================================
+   METRIC DETAILS (Expandable on hover)
+   ============================================================================ */
+
+.metric-details-premium {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+}
+
+.metric-detail-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.metric-detail-value {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #111827;
+    line-height: 1.2;
+}
+
+@media (prefers-color-scheme: dark) {
+    .metric-detail-value {
+        color: #f9fafb;
+    }
+}
+
+.metric-detail-label {
+    font-size: 0.75rem;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 500;
+}
+
+@media (prefers-color-scheme: dark) {
+    .metric-detail-label {
+        color: #9ca3af;
+    }
+}
+
+/* ============================================================================
+   LOADING STATE
+   ============================================================================ */
+
+.metric-card-premium.loading .metric-value-premium,
+.metric-card-premium.loading .metric-progress-fill,
+.metric-card-premium.loading .metric-sparkline-line {
+    animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+    0% {
+        opacity: 0.6;
+    }
+    50% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0.6;
+    }
+}
+
+/* ============================================================================
+   RESPONSIVE
+   ============================================================================ */
+
+@media (max-width: 768px) {
+    .metric-card-premium {
+        border-radius: 10px;
+    }
+
+    .metric-value-premium {
+        font-size: 1.75rem;
+    }
+
+    .metric-card-premium-body {
+        padding: 16px;
+    }
+
+    .metric-details-premium {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ============================================================================
+   PRINT STYLES
+   ============================================================================ */
+
+@media print {
+    .metric-card-premium {
+        page-break-inside: avoid;
+        box-shadow: none;
+        border-color: #d1d5db;
+    }
+
+    .metric-progress-fill {
+        animation: none;
+    }
+
+    .metric-status-dot {
+        animation: none;
+    }
+}
+
+/* ============================================================================
+   ACCESSIBILITY
+   ============================================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+    .metric-card-premium,
+    .metric-value-premium,
+    .metric-icon-premium,
+    .metric-progress-fill,
+    .metric-status-dot,
+    .metric-sparkline-line {
+        animation: none !important;
+        transition: none !important;
+    }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: more) {
+    .metric-card-premium {
+        border-width: 2px;
+    }
+
+    .metric-label-premium {
+        font-weight: 700;
+    }
+
+    .metric-status-badge {
+        border: 1px solid;
+    }
+}

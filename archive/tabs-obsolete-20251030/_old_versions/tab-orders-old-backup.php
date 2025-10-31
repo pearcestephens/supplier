@@ -1,0 +1,664 @@
+<?php
+/**
+ * Supplier Portal - Orders Tab
+ * 
+ * PHASE 1: Orders archive with year/quarter filters and bulk downloads
+ * Lists all purchase orders with CSV/ZIP export capabilities
+ * 
+ * @package CIS\Supplier\Tabs
+ */
+
+declare(strict_types=1);
+
+// Get authenticated supplier ID
+$supplierID = Auth::getSupplierId();
+
+// Pagination
+$page = isset($_GET['page']) ? max(1, intval($_GET['page'])) : 1;
+$perPage = 50;
+$offset = ($page - 1) * $perPage;
+
+// Filters
+$filterYear = $_GET['year'] ?? '';
+$filterQuarter = $_GET['quarter'] ?? 'all';
+$filterStatus = $_GET['status'] ?? 'all';
+$filterOutlet = $_GET['outlet'] ?? 'all';
+$searchTerm = $_GET['search'] ?? '';
+
+// ============================================================================
+// QUERY 1: Get available years for filter dropdown
+// ============================================================================
+$yearsQuery = "
+    SELECT DISTINCT YEAR(created_at) as year
+    FROM vend_consignments
+    WHERE supplier_id = ?
+      AND transfer_category = 'PURCHASE_ORDER'
+      AND deleted_at IS NULL
+    ORDER BY year DESC
+";
+$stmt = $db->prepare($yearsQuery);
+$stmt->bind_param('s', $supplierID);
+$stmt->execute();
+$result = $stmt->get_result();
+$availableYears = [];
+while ($row = $result->fetch_assoc()) {
+    $availableYears[] = $row['year'];
+}
+$stmt->close();
+
+// ============================================================================
+// QUERY 2: Get available outlets for filter dropdown
+// ============================================================================
+$outletsQuery = "
+    SELECT DISTINCT o.id, o.name, o.outlet_code
+    FROM vend_consignments t
+    JOIN vend_outlets o ON t.outlet_to = o.id
+    WHERE t.supplier_id = ?
+      AND t.transfer_category = 'PURCHASE_ORDER'
+      AND t.deleted_at IS NULL
+    ORDER BY o.name
+";
+$stmt = $db->prepare($outletsQuery);
+$stmt->bind_param('s', $supplierID);
+$stmt->execute();
+$result = $stmt->get_result();
+$availableOutlets = $result->fetch_all(MYSQLI_ASSOC);
+$stmt->close();
+
+// ============================================================================
+// QUERY 3: Build main orders query with filters
+// ============================================================================
+$whereConditions = ["t.supplier_id = ?", "t.transfer_category = 'PURCHASE_ORDER'", "t.deleted_at IS NULL"];
+$params = [$supplierID];
+$paramTypes = 's';
+
+// Year filter
+if (!empty($filterYear)) {
+    $whereConditions[] = "YEAR(t.created_at) = ?";
+    $params[] = $filterYear;
+    $paramTypes .= 'i';
+}
+
+// Quarter filter
+if ($filterQuarter !== 'all') {
+    $quarter = intval($filterQuarter);
+    $whereConditions[] = "QUARTER(t.created_at) = ?";
+    $params[] = $quarter;
+    $paramTypes .= 'i';
+}
+
+// Status filter
+if ($filterStatus !== 'all') {
+    switch ($filterStatus) {
+        case 'active':
+            $whereConditions[] = "t.state IN ('OPEN', 'SENT', 'RECEIVING', 'PARTIAL')";
+            break;
+        case 'completed':
+            $whereConditions[] = "t.state IN ('RECEIVED', 'CLOSED')";
+            break;
+        case 'cancelled':
+            $whereConditions[] = "t.state = 'CANCELLED'";
+            break;
+    }
+}
+
+// Outlet filter
+if ($filterOutlet !== 'all') {
+    $whereConditions[] = "t.outlet_to = ?";
+    $params[] = $filterOutlet;
+    $paramTypes .= 's';
+}
+
+// Search term
+if (!empty($searchTerm)) {
+    $whereConditions[] = "(t.public_id LIKE ? OR t.reference LIKE ? OR o.name LIKE ?)";
+    $searchPattern = "%{$searchTerm}%";
+    $params[] = $searchPattern;
+    $params[] = $searchPattern;
+    $params[] = $searchPattern;
+    $paramTypes .= 'sss';
+}
+
+$whereClause = implode(' AND ', $whereConditions);
+
+// Count total matching orders
+$countQuery = "
+    SELECT COUNT(DISTINCT t.id) as total
+    FROM vend_consignments t
+    LEFT JOIN vend_outlets o ON t.outlet_to = o.id
+    WHERE {$whereClause}
+";
+$stmt = $db->prepare($countQuery);
+$stmt->bind_param($paramTypes, ...$params);
+$stmt->execute();
+$totalOrders = $stmt->get_result()->fetch_assoc()['total'];
+$stmt->close();
+
+// Get orders with pagination
+$ordersQuery = "
+    SELECT 
+        t.id,
+        t.public_id as order_number,
+        t.created_at as order_date,
+        t.expected_delivery_date,
+        t.state as status,
+        t.reference,
+        t.notes,
+        o.name as outlet_name,
+        o.outlet_code,
+        COUNT(DISTINCT ti.id) as items_count,
+        SUM(ti.quantity) as total_units,
+        COALESCE(SUM(ti.quantity * ti.cost), 0) as total_ex_gst,
+        COALESCE(SUM(ti.quantity * ti.cost * 1.15), 0) as total_inc_gst
+    FROM vend_consignments t
+    LEFT JOIN vend_consignment_line_items ti ON t.id = ti.transfer_id
+    LEFT JOIN vend_outlets o ON t.outlet_to = o.id
+    WHERE {$whereClause}
+    GROUP BY t.id
+    ORDER BY t.created_at DESC
+    LIMIT ? OFFSET ?
+";
+$params[] = $perPage;
+$params[] = $offset;
+$paramTypes .= 'ii';
+
+$stmt = $db->prepare($ordersQuery);
+$stmt->bind_param($paramTypes, ...$params);
+$stmt->execute();
+$orders = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+$stmt->close();
+
+// Calculate summary stats
+$totalValue = array_sum(array_column($orders, 'total_inc_gst'));
+$totalPages = ceil($totalOrders / $perPage);
+
+// ============================================================================
+// QUERY 4: Get summary statistics (for top metrics)
+// ============================================================================
+$statsQuery = "
+    SELECT 
+        COUNT(DISTINCT t.id) as total_orders_this_year,
+        COALESCE(SUM(ti.quantity * ti.cost * 1.15), 0) as total_value_this_year,
+        COALESCE(AVG(ti.quantity * ti.cost * 1.15), 0) as avg_order_value
+    FROM vend_consignments t
+    LEFT JOIN vend_consignment_line_items ti ON t.id = ti.transfer_id
+    WHERE t.supplier_id = ?
+      AND t.transfer_category = 'PURCHASE_ORDER'
+      AND t.deleted_at IS NULL
+      AND YEAR(t.created_at) = YEAR(NOW())
+";
+$stmt = $db->prepare($statsQuery);
+$stmt->bind_param('s', $supplierID);
+$stmt->execute();
+$yearStats = $stmt->get_result()->fetch_assoc();
+$stmt->close();
+
+// Last 30 days stats
+$last30Query = "
+    SELECT 
+        COUNT(DISTINCT t.id) as orders_30d,
+        COALESCE(SUM(ti.quantity * ti.cost * 1.15), 0) as value_30d
+    FROM vend_consignments t
+    LEFT JOIN vend_consignment_line_items ti ON t.id = ti.transfer_id
+    WHERE t.supplier_id = ?
+      AND t.transfer_category = 'PURCHASE_ORDER'
+      AND t.deleted_at IS NULL
+      AND t.created_at >= DATE_SUB(NOW(), INTERVAL 30 DAY)
+";
+$stmt = $db->prepare($last30Query);
+$stmt->bind_param('s', $supplierID);
+$stmt->execute();
+$last30Stats = $stmt->get_result()->fetch_assoc();
+$stmt->close();
+
+// Active orders count
+$activeQuery = "
+    SELECT COUNT(*) as active_count
+    FROM vend_consignments
+    WHERE supplier_id = ?
+      AND transfer_category = 'PURCHASE_ORDER'
+      AND deleted_at IS NULL
+      AND state IN ('OPEN', 'SENT', 'RECEIVING', 'PARTIAL')
+";
+$stmt = $db->prepare($activeQuery);
+$stmt->bind_param('s', $supplierID);
+$stmt->execute();
+$activeCount = $stmt->get_result()->fetch_assoc()['active_count'];
+$stmt->close();
+?>
+
+<!-- Page Header -->
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">
+        <i class="fas fa-file-invoice-dollar"></i> Purchase Orders
+        <span class="badge badge-secondary"><?php echo number_format($totalOrders); ?> Total</span>
+    </h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <button class="btn btn-sm btn-success mr-2" onclick="exportOrdersCSV();">
+            <i class="fas fa-file-csv"></i> Export CSV
+        </button>
+        <button class="btn btn-sm btn-primary" onclick="window.print();">
+            <i class="fas fa-print"></i> Print
+        </button>
+    </div>
+</div>
+
+<!-- Summary Stats Row -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card border-left-primary shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">This Year</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800"><?php echo number_format($yearStats['total_orders_this_year']); ?> Orders</div>
+                        <small class="text-muted">$<?php echo number_format($yearStats['total_value_this_year'], 2); ?></small>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-calendar fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card border-left-success shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Last 30 Days</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800"><?php echo number_format($last30Stats['orders_30d']); ?> Orders</div>
+                        <small class="text-muted">$<?php echo number_format($last30Stats['value_30d'], 2); ?></small>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-clock fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card border-left-info shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Average Order</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">$<?php echo number_format($yearStats['avg_order_value'], 2); ?></div>
+                        <small class="text-muted">This year</small>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card border-left-warning shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Active Orders</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800"><?php echo number_format($activeCount); ?></div>
+                        <small class="text-muted">In progress</small>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-shipping-fast fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Filters & Search -->
+<div class="card shadow mb-4">
+    <div class="card-body">
+        <form method="GET" action="/supplier/" class="form-inline" id="ordersFilterForm">
+            <input type="hidden" name="tab" value="orders">
+            
+            <!-- Year Filter -->
+            <div class="form-group mr-3 mb-2">
+                <label for="year" class="mr-2">Year:</label>
+                <select name="year" id="year" class="form-control" onchange="this.form.submit();">
+                    <option value="">All Years</option>
+                    <?php foreach ($availableYears as $year): ?>
+                        <option value="<?php echo $year; ?>" <?php echo ($filterYear == $year) ? 'selected' : ''; ?>>
+                            <?php echo $year; ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+            
+            <!-- Quarter Filter -->
+            <div class="form-group mr-3 mb-2">
+                <label for="quarter" class="mr-2">Quarter:</label>
+                <select name="quarter" id="quarter" class="form-control" onchange="this.form.submit();">
+                    <option value="all" <?php echo ($filterQuarter === 'all') ? 'selected' : ''; ?>>All Quarters</option>
+                    <option value="1" <?php echo ($filterQuarter === '1') ? 'selected' : ''; ?>>Q1 (Jan-Mar)</option>
+                    <option value="2" <?php echo ($filterQuarter === '2') ? 'selected' : ''; ?>>Q2 (Apr-Jun)</option>
+                    <option value="3" <?php echo ($filterQuarter === '3') ? 'selected' : ''; ?>>Q3 (Jul-Sep)</option>
+                    <option value="4" <?php echo ($filterQuarter === '4') ? 'selected' : ''; ?>>Q4 (Oct-Dec)</option>
+                </select>
+            </div>
+            
+            <!-- Status Filter -->
+            <div class="form-group mr-3 mb-2">
+                <label for="status" class="mr-2">Status:</label>
+                <select name="status" id="status" class="form-control" onchange="this.form.submit();">
+                    <option value="all" <?php echo ($filterStatus === 'all') ? 'selected' : ''; ?>>All Statuses</option>
+                    <option value="active" <?php echo ($filterStatus === 'active') ? 'selected' : ''; ?>>Active</option>
+                    <option value="completed" <?php echo ($filterStatus === 'completed') ? 'selected' : ''; ?>>Completed</option>
+                    <option value="cancelled" <?php echo ($filterStatus === 'cancelled') ? 'selected' : ''; ?>>Cancelled</option>
+                </select>
+            </div>
+            
+            <!-- Outlet Filter -->
+            <div class="form-group mr-3 mb-2">
+                <label for="outlet" class="mr-2">Outlet:</label>
+                <select name="outlet" id="outlet" class="form-control" onchange="this.form.submit();">
+                    <option value="all">All Outlets</option>
+                    <?php foreach ($availableOutlets as $outlet): ?>
+                        <option value="<?php echo htmlspecialchars($outlet['id']); ?>" 
+                                <?php echo ($filterOutlet === $outlet['id']) ? 'selected' : ''; ?>>
+                            <?php echo htmlspecialchars($outlet['name']); ?> (<?php echo htmlspecialchars($outlet['outlet_code']); ?>)
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+            
+            <!-- Search -->
+            <div class="form-group mr-3 mb-2">
+                <label for="search" class="mr-2">Search:</label>
+                <input type="text" name="search" id="search" class="form-control" 
+                       placeholder="Order #, Reference..." 
+                       value="<?php echo htmlspecialchars($searchTerm); ?>">
+            </div>
+            
+            <div class="form-group mb-2">
+                <button type="submit" class="btn btn-primary mr-2">
+                    <i class="fas fa-search"></i> Filter
+                </button>
+                <a href="/supplier/?tab=orders" class="btn btn-secondary">
+                    <i class="fas fa-redo"></i> Reset
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+            
+            <!-- Quarter Filter -->
+            <div class="form-group mr-3">
+                <label for="quarter" class="mr-2">Quarter:</label>
+                <select name="quarter" id="quarter" class="form-control" onchange="this.form.submit();">
+                    <option value="all">All Quarters</option>
+                    <option value="Q1" <?php echo ($filterQuarter === 'Q1') ? 'selected' : ''; ?>>Q1 (Jan-Mar)</option>
+                    <option value="Q2" <?php echo ($filterQuarter === 'Q2') ? 'selected' : ''; ?>>Q2 (Apr-Jun)</option>
+                    <option value="Q3" <?php echo ($filterQuarter === 'Q3') ? 'selected' : ''; ?>>Q3 (Jul-Sep)</option>
+                    <option value="Q4" <?php echo ($filterQuarter === 'Q4') ? 'selected' : ''; ?>>Q4 (Oct-Dec)</option>
+                </select>
+            </div>
+            
+            <!-- Status Filter -->
+            <div class="form-group mr-3">
+                <label for="status" class="mr-2">Status:</label>
+                <select name="status" id="status" class="form-control" onchange="this.form.submit();">
+                    <option value="all">All Statuses</option>
+                    <option value="pending" <?php echo ($filterStatus === 'pending') ? 'selected' : ''; ?>>Pending</option>
+                    <option value="confirmed" <?php echo ($filterStatus === 'confirmed') ? 'selected' : ''; ?>>Confirmed</option>
+                    <option value="completed" <?php echo ($filterStatus === 'completed') ? 'selected' : ''; ?>>Completed</option>
+                    <option value="cancelled" <?php echo ($filterStatus === 'cancelled') ? 'selected' : ''; ?>>Cancelled</option>
+                </select>
+            </div>
+            
+            <!-- Search -->
+            <div class="form-group mr-3">
+                <input type="text" name="search" class="form-control" placeholder="Search PO#, Outlet..." 
+                       value="<?php echo htmlspecialchars($_GET['search'] ?? ''); ?>">
+            </div>
+            
+            <button type="submit" class="btn btn-primary mr-2">
+                <i class="fas fa-search"></i> Filter
+            </button>
+            
+            <a href="/supplier/?tab=orders" class="btn btn-outline-secondary">
+                <i class="fas fa-redo"></i> Reset
+            </a>
+        </form>
+    </div>
+</div>
+
+<!-- Summary Stats -->
+<div class="row mb-3">
+    <div class="col-md-4">
+        <div class="alert alert-info mb-0">
+            <strong>Total Orders:</strong> <?php echo number_format($totalOrders); ?>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="alert alert-success mb-0">
+            <strong>Total Value:</strong> $<?php echo number_format($totalValue, 2); ?>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="alert alert-primary mb-0">
+            <strong>Selected:</strong> <span id="selectedCount">0</span> orders
+        </div>
+    </div>
+</div>
+
+<!-- Orders Table -->
+<div class="card shadow mb-4">
+    <div class="card-header py-3 d-flex justify-content-between align-items-center">
+        <h6 class="m-0 font-weight-bold text-primary">
+            Purchase Orders
+            <?php if (!empty($filterYear)): ?>
+                - <?php echo $filterYear; ?>
+                <?php if ($filterQuarter !== 'all'): ?>
+                    Q<?php echo $filterQuarter; ?>
+                <?php endif; ?>
+            <?php endif; ?>
+        </h6>
+        <span class="text-muted">Showing <?php echo count($orders); ?> of <?php echo number_format($totalOrders); ?> orders</span>
+    </div>
+    <div class="card-body">
+        <?php if (empty($orders)): ?>
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle"></i>
+                No orders found matching your filters. Try adjusting your search criteria.
+            </div>
+        <?php else: ?>
+            <div class="table-responsive">
+                <table class="table table-hover table-sm" id="ordersTable">
+                    <thead class="thead-light">
+                        <tr>
+                            <th width="40">
+                                <input type="checkbox" id="selectAll" onclick="toggleSelectAll(this);">
+                            </th>
+                            <th>Order #</th>
+                            <th>Date</th>
+                            <th>Outlet</th>
+                            <th class="text-center">Items</th>
+                            <th class="text-center">Units</th>
+                            <th class="text-right">Total (ex GST)</th>
+                            <th class="text-right">Total (inc GST)</th>
+                            <th class="text-center">Status</th>
+                            <th class="text-center">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($orders as $order): 
+                            // Status badge logic
+                            $statusBadge = 'secondary';
+                            $statusText = ucfirst(strtolower($order['status']));
+                            
+                            switch($order['status']) {
+                                case 'OPEN':
+                                case 'SENT':
+                                    $statusBadge = 'info';
+                                    $statusText = 'In Progress';
+                                    break;
+                                case 'RECEIVING':
+                                case 'PARTIAL':
+                                    $statusBadge = 'warning';
+                                    $statusText = 'Receiving';
+                                    break;
+                                case 'RECEIVED':
+                                case 'CLOSED':
+                                    $statusBadge = 'success';
+                                    $statusText = 'Completed';
+                                    break;
+                                case 'CANCELLED':
+                                    $statusBadge = 'danger';
+                                    $statusText = 'Cancelled';
+                                    break;
+                            }
+                        ?>
+                            <tr>
+                                <td>
+                                    <input type="checkbox" class="order-checkbox" 
+                                           value="<?php echo htmlspecialchars($order['id']); ?>"
+                                           onchange="updateSelectedCount();">
+                                </td>
+                                <td>
+                                    <strong><?php echo htmlspecialchars($order['order_number'] ?? 'PO-' . $order['id']); ?></strong>
+                                    <?php if (!empty($order['reference'])): ?>
+                                        <br><small class="text-muted"><?php echo htmlspecialchars($order['reference']); ?></small>
+                                    <?php endif; ?>
+                                </td>
+                                <td>
+                                    <?php echo date('j M Y', strtotime($order['order_date'])); ?>
+                                    <?php if (!empty($order['expected_delivery_date'])): ?>
+                                        <br><small class="text-muted" title="Expected delivery">
+                                            <i class="fas fa-truck"></i> <?php echo date('j M', strtotime($order['expected_delivery_date'])); ?>
+                                        </small>
+                                    <?php endif; ?>
+                                </td>
+                                <td>
+                                    <?php echo htmlspecialchars($order['outlet_name'] ?? 'Unknown'); ?>
+                                    <?php if (!empty($order['outlet_code'])): ?>
+                                        <br><span class="badge badge-light"><?php echo htmlspecialchars($order['outlet_code']); ?></span>
+                                    <?php endif; ?>
+                                </td>
+                                <td class="text-center"><?php echo number_format($order['items_count']); ?></td>
+                                <td class="text-center"><?php echo number_format($order['total_units']); ?></td>
+                                <td class="text-right">$<?php echo number_format($order['total_ex_gst'], 2); ?></td>
+                                <td class="text-right"><strong>$<?php echo number_format($order['total_inc_gst'], 2); ?></strong></td>
+                                <td class="text-center">
+                                    <span class="badge badge-<?php echo $statusBadge; ?>">
+                                        <?php echo $statusText; ?>
+                                    </span>
+                                </td>
+                                <td class="text-center">
+                                    <div class="btn-group btn-group-sm" role="group">
+                                        <button class="btn btn-outline-primary" 
+                                                onclick="viewOrderDetails(<?php echo $order['id']; ?>);" 
+                                                title="View Details">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button class="btn btn-outline-success" 
+                                                onclick="downloadOrderCSV(<?php echo $order['id']; ?>);" 
+                                                title="Download CSV">
+                                            <i class="fas fa-file-csv"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                    <tfoot class="thead-light">
+                        <tr>
+                            <th colspan="6" class="text-right">Page Totals:</th>
+                            <th class="text-right">$<?php echo number_format(array_sum(array_column($orders, 'total_ex_gst')), 2); ?></th>
+                            <th class="text-right">$<?php echo number_format(array_sum(array_column($orders, 'total_inc_gst')), 2); ?></th>
+                            <th colspan="2"></th>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        <?php endif; ?>
+    </div>
+</div>
+
+<!-- Pagination -->
+<?php if ($totalPages > 1): ?>
+<nav aria-label="Orders pagination">
+    <ul class="pagination justify-content-center">
+        <!-- Previous -->
+        <li class="page-item <?php echo ($page <= 1) ? 'disabled' : ''; ?>">
+            <a class="page-link" href="?tab=orders&page=<?php echo ($page-1); ?>&year=<?php echo urlencode($filterYear); ?>&quarter=<?php echo urlencode($filterQuarter); ?>&status=<?php echo urlencode($filterStatus); ?>&outlet=<?php echo urlencode($filterOutlet); ?>&search=<?php echo urlencode($searchTerm); ?>">
+                Previous
+            </a>
+        </li>
+        
+        <!-- Page Numbers -->
+        <?php 
+        $startPage = max(1, $page - 2);
+        $endPage = min($totalPages, $page + 2);
+        
+        if ($startPage > 1): ?>
+            <li class="page-item"><a class="page-link" href="?tab=orders&page=1&year=<?php echo urlencode($filterYear); ?>&quarter=<?php echo urlencode($filterQuarter); ?>&status=<?php echo urlencode($filterStatus); ?>&outlet=<?php echo urlencode($filterOutlet); ?>&search=<?php echo urlencode($searchTerm); ?>">1</a></li>
+            <?php if ($startPage > 2): ?>
+                <li class="page-item disabled"><span class="page-link">...</span></li>
+            <?php endif; ?>
+        <?php endif; ?>
+        
+        <?php for ($i = $startPage; $i <= $endPage; $i++): ?>
+            <li class="page-item <?php echo ($i === $page) ? 'active' : ''; ?>">
+                <a class="page-link" href="?tab=orders&page=<?php echo $i; ?>&year=<?php echo urlencode($filterYear); ?>&quarter=<?php echo urlencode($filterQuarter); ?>&status=<?php echo urlencode($filterStatus); ?>&outlet=<?php echo urlencode($filterOutlet); ?>&search=<?php echo urlencode($searchTerm); ?>">
+                    <?php echo $i; ?>
+                </a>
+            </li>
+        <?php endfor; ?>
+        
+        <?php if ($endPage < $totalPages): ?>
+            <?php if ($endPage < $totalPages - 1): ?>
+                <li class="page-item disabled"><span class="page-link">...</span></li>
+            <?php endif; ?>
+            <li class="page-item"><a class="page-link" href="?tab=orders&page=<?php echo $totalPages; ?>&year=<?php echo urlencode($filterYear); ?>&quarter=<?php echo urlencode($filterQuarter); ?>&status=<?php echo urlencode($filterStatus); ?>&outlet=<?php echo urlencode($filterOutlet); ?>&search=<?php echo urlencode($searchTerm); ?>"><?php echo $totalPages; ?></a></li>
+        <?php endif; ?>
+        
+        <!-- Next -->
+        <li class="page-item <?php echo ($page >= $totalPages) ? 'disabled' : ''; ?>">
+            <a class="page-link" href="?tab=orders&page=<?php echo ($page+1); ?>&year=<?php echo urlencode($filterYear); ?>&quarter=<?php echo urlencode($filterQuarter); ?>&status=<?php echo urlencode($filterStatus); ?>&outlet=<?php echo urlencode($filterOutlet); ?>&search=<?php echo urlencode($searchTerm); ?>">
+                Next
+            </a>
+        </li>
+    </ul>
+</nav>
+<?php endif; ?>
+
+<script>
+function toggleSelectAll(checkbox) {
+    const checkboxes = document.querySelectorAll('.order-checkbox');
+    checkboxes.forEach(cb => cb.checked = checkbox.checked);
+    updateSelectedCount();
+}
+
+function updateSelectedCount() {
+    const checked = document.querySelectorAll('.order-checkbox:checked');
+    const count = checked.length;
+    // Update count somewhere if you add a selected count display
+}
+
+function viewOrderDetails(orderId) {
+    window.location.href = `/supplier/?tab=orders&order_id=${orderId}&view=details`;
+}
+
+function downloadOrderCSV(orderId) {
+    window.location.href = `/supplier/api/download-order.php?order_id=${orderId}&format=csv`;
+}
+
+function exportOrdersCSV() {
+    const year = '<?php echo addslashes($filterYear); ?>';
+    const quarter = '<?php echo addslashes($filterQuarter); ?>';
+    const status = '<?php echo addslashes($filterStatus); ?>';
+    const outlet = '<?php echo addslashes($filterOutlet); ?>';
+    const search = '<?php echo addslashes($searchTerm); ?>';
+    
+    window.location.href = `/supplier/api/export-orders.php?year=${year}&quarter=${quarter}&status=${status}&outlet=${outlet}&search=${encodeURIComponent(search)}&format=csv`;
+}
+</script>

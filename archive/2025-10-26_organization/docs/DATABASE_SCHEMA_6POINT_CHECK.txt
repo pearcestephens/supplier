@@ -1,0 +1,230 @@
+## TABLE: faulty_products\n### FIELD: id\n1. TYPE: int(11)\n2. NULL: NO\n3. KEY: PRI\n4. DEFAULT: NULL\n5. EXTRA: auto_increment\n6. COMMENT: Unique identifier for each faulty product record in the system.\n---
+## TABLE: faulty_products\n### FIELD: product_id\n1. TYPE: varchar(45)\n2. NULL: NO\n3. KEY: \n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: Unique identifier for the faulty product being reported.\n---
+## TABLE: faulty_products\n### FIELD: serial_number\n1. TYPE: varchar(100)\n2. NULL: YES\n3. KEY: \n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: Unique identifier for tracking each faulty product in the system.\n---
+## TABLE: faulty_products\n### FIELD: fault_desc\n1. TYPE: mediumtext\n2. NULL: NO\n3. KEY: \n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: Description of the product's fault as reported by staff for troubleshooting and record-keeping.\n---
+## TABLE: faulty_products\n### FIELD: staff_member\n1. TYPE: varchar(45)\n2. NULL: NO\n3. KEY: \n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: Name of the employee who logged or handled the faulty product entry.\n---
+## TABLE: faulty_products\n### FIELD: store_location\n1. TYPE: varchar(100)\n2. NULL: NO\n3. KEY: \n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: Identifies the specific store where the faulty product is located for processing or reporting.\n---
+## TABLE: faulty_products\n### FIELD: time_created\n1. TYPE: timestamp\n2. NULL: NO\n3. KEY: \n4. DEFAULT: current_timestamp()\n5. EXTRA: \n6. COMMENT: \n---
+## TABLE: faulty_products\n### FIELD: status\n1. TYPE: int(11)\n2. NULL: NO\n3. KEY: \n4. DEFAULT: 1\n5. EXTRA: \n6. COMMENT: Indicates whether the faulty product has been processed for resolution.\n---
+## TABLE: faulty_products\n### FIELD: supplier_status\n1. TYPE: int(11)\n2. NULL: NO\n3. KEY: \n4. DEFAULT: 0\n5. EXTRA: \n6. COMMENT: Indicates the current resolution status of the product issue with the supplier.\n---
+## TABLE: faulty_products\n### FIELD: supplier_update_status\n1. TYPE: int(11)\n2. NULL: NO\n3. KEY: \n4. DEFAULT: 0\n5. EXTRA: \n6. COMMENT: Indicates if the supplier has been updated about the faulty product's status.\n---
+## TABLE: faulty_products\n### FIELD: supplier_status_timestamp\n1. TYPE: timestamp\n2. NULL: YES\n3. KEY: \n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: Timestamp of the last update from the supplier regarding the faulty product's status.\n---
+## TABLE: faulty_products\n### FIELD: wholesale_customer_submitted_id\n1. TYPE: int(11)\n2. NULL: NO\n3. KEY: \n4. DEFAULT: 0\n5. EXTRA: \n6. COMMENT: Identifies the wholesale customer who reported the faulty product.\n---
+## TABLE: purchase_order_line_items\n### FIELD: product_id\n1. TYPE: varchar(100)\n2. NULL: NO\n3. KEY: PRI\n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: Unique identifier for each product in a purchase order line item.\n---
+## TABLE: purchase_order_line_items\n### FIELD: substitution_product_id\n1. TYPE: varchar(100)\n2. NULL: YES\n3. KEY: MUL\n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: \n---
+## TABLE: purchase_order_line_items\n### FIELD: purchase_order_id\n1. TYPE: int(11)\n2. NULL: NO\n3. KEY: PRI\n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: Links each line item to its corresponding purchase order for tracking and reference.\n---
+## TABLE: purchase_order_line_items\n### FIELD: order_qty\n1. TYPE: int(11)\n2. NULL: NO\n3. KEY: \n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: The number of units ordered for a specific product in a purchase order.\n---
+## TABLE: purchase_order_line_items\n### FIELD: slip_qty\n1. TYPE: int(11)\n2. NULL: YES\n3. KEY: \n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: \n---
+## TABLE: purchase_order_line_items\n### FIELD: order_purchase_price\n1. TYPE: decimal(10,4)\n2. NULL: NO\n3. KEY: \n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: \n---
+## TABLE: purchase_order_line_items\n### FIELD: qty_in_stock_before\n1. TYPE: int(11)\n2. NULL: YES\n3. KEY: \n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: The stock level of a product before receiving the current purchase order.\n---
+## TABLE: purchase_order_line_items\n### FIELD: qty_arrived\n1. TYPE: int(11)\n2. NULL: YES\n3. KEY: \n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: The number of items received from a supplier for a specific purchase order.\n---
+## TABLE: purchase_order_line_items\n### FIELD: damaged_qty\n1. TYPE: int(11)\n2. NULL: NO\n3. KEY: \n4. DEFAULT: 0\n5. EXTRA: \n6. COMMENT: \n---
+## TABLE: purchase_order_line_items\n### FIELD: discrepancy_type\n1. TYPE: enum('OK','MISSING','SENT_LOW','SENT_HIGH','SUBSTITUTED','DAMAGED','UNORDERED')\n2. NULL: NO\n3. KEY: \n4. DEFAULT: 'OK'\n5. EXTRA: \n6. COMMENT: \n---
+## TABLE: purchase_order_line_items\n### FIELD: unit_cost_ex_gst\n1. TYPE: decimal(10,4)\n2. NULL: YES\n3. KEY: \n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: \n---
+## TABLE: purchase_order_line_items\n### FIELD: line_note\n1. TYPE: varchar(255)\n2. NULL: YES\n3. KEY: \n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: \n---
+## TABLE: purchase_order_line_items\n### FIELD: received_by\n1. TYPE: varchar(45)\n2. NULL: YES\n3. KEY: MUL\n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: Staff member who received this line item\n---
+## TABLE: purchase_order_line_items\n### FIELD: received_at\n1. TYPE: timestamp\n2. NULL: YES\n3. KEY: \n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: When this line item was processed\n---
+## TABLE: purchase_order_line_items\n### FIELD: barcode_scanned\n1. TYPE: tinyint(1)\n2. NULL: NO\n3. KEY: MUL\n4. DEFAULT: 0\n5. EXTRA: \n6. COMMENT: Whether barcode was scanned during receiving\n---
+## TABLE: purchase_order_line_items\n### FIELD: photo_evidence_count\n1. TYPE: int(11)\n2. NULL: NO\n3. KEY: MUL\n4. DEFAULT: 0\n5. EXTRA: \n6. COMMENT: Number of photos attached to this line item\n---
+## TABLE: purchase_order_line_items\n### FIELD: receiving_notes\n1. TYPE: mediumtext\n2. NULL: YES\n3. KEY: \n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: Additional notes during receiving process\n---
+## TABLE: purchase_order_line_items\n### FIELD: added_product\n1. TYPE: int(11)\n2. NULL: NO\n3. KEY: \n4. DEFAULT: 0\n5. EXTRA: \n6. COMMENT: Indicates if the product was newly added to inventory with this order.\n---
+## TABLE: purchase_order_line_items\n### FIELD: unexpected_product\n1. TYPE: tinyint(1)\n2. NULL: NO\n3. KEY: MUL\n4. DEFAULT: 0\n5. EXTRA: \n6. COMMENT: \n---
+## TABLE: purchase_order_line_items\n### FIELD: updated_at\n1. TYPE: timestamp\n2. NULL: NO\n3. KEY: \n4. DEFAULT: current_timestamp()\n5. EXTRA: on update current_timestamp()\n6. COMMENT: Last time this PO line item was updated\n---
+## TABLE: purchase_order_line_items\n### FIELD: deleted_by\n1. TYPE: int(11)\n2. NULL: YES\n3. KEY: \n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: User ID of staff who soft-deleted this PO line item\n---
+## TABLE: purchase_order_line_items\n### FIELD: deleted_at\n1. TYPE: timestamp\n2. NULL: YES\n3. KEY: \n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: When the PO line item was soft deleted\n---
+## TABLE: purchase_order_line_items\n### FIELD: qty_ordered\n1. TYPE: int(11)\n2. NULL: YES\n3. KEY: \n4. DEFAULT: NULL\n5. EXTRA: VIRTUAL GENERATED\n6. COMMENT: \n---
+## TABLE: purchase_order_line_items\n### FIELD: qty_received\n1. TYPE: int(11)\n2. NULL: YES\n3. KEY: \n4. DEFAULT: NULL\n5. EXTRA: VIRTUAL GENERATED\n6. COMMENT: \n---
+## TABLE: purchase_order_line_items\n### FIELD: has_damage\n1. TYPE: tinyint(1)\n2. NULL: YES\n3. KEY: \n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: \n---
+## TABLE: purchase_order_line_items\n### FIELD: is_substitute\n1. TYPE: tinyint(1)\n2. NULL: YES\n3. KEY: \n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: \n---
+## TABLE: supplier_activity_log\n### FIELD: id\n1. TYPE: bigint(20) unsigned\n2. NULL: NO\n3. KEY: PRI\n4. DEFAULT: NULL\n5. EXTRA: auto_increment\n6. COMMENT: \n---
+## TABLE: supplier_activity_log\n### FIELD: supplier_id\n1. TYPE: varchar(100)\n2. NULL: NO\n3. KEY: MUL\n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: \n---
+## TABLE: supplier_activity_log\n### FIELD: order_id\n1. TYPE: int(11)\n2. NULL: YES\n3. KEY: MUL\n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: \n---
+## TABLE: supplier_activity_log\n### FIELD: action_type\n1. TYPE: enum('login','logout','tracking_updated','note_added','info_requested','order_viewed','report_generated','csv_exported')\n2. NULL: NO\n3. KEY: MUL\n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: \n---
+## TABLE: supplier_activity_log\n### FIELD: action_details\n1. TYPE: text\n2. NULL: YES\n3. KEY: \n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: \n---
+## TABLE: supplier_activity_log\n### FIELD: ip_address\n1. TYPE: varchar(45)\n2. NULL: YES\n3. KEY: \n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: \n---
+## TABLE: supplier_activity_log\n### FIELD: user_agent\n1. TYPE: varchar(255)\n2. NULL: YES\n3. KEY: \n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: \n---
+## TABLE: supplier_activity_log\n### FIELD: created_at\n1. TYPE: timestamp\n2. NULL: NO\n3. KEY: MUL\n4. DEFAULT: current_timestamp()\n5. EXTRA: \n6. COMMENT: \n---
+## TABLE: supplier_portal_sessions\n### FIELD: id\n1. TYPE: int(11)\n2. NULL: NO\n3. KEY: PRI\n4. DEFAULT: NULL\n5. EXTRA: auto_increment\n6. COMMENT: Unique session identifier\n---
+## TABLE: supplier_portal_sessions\n### FIELD: supplier_id\n1. TYPE: varchar(100)\n2. NULL: NO\n3. KEY: MUL\n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: Links to vend_suppliers.id (business code format)\n---
+## TABLE: supplier_portal_sessions\n### FIELD: session_token\n1. TYPE: varchar(64)\n2. NULL: NO\n3. KEY: UNI\n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: Secure session token for authentication\n---
+## TABLE: supplier_portal_sessions\n### FIELD: ip_address\n1. TYPE: varchar(45)\n2. NULL: YES\n3. KEY: \n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: IP address of the session for security tracking\n---
+## TABLE: supplier_portal_sessions\n### FIELD: user_agent\n1. TYPE: varchar(255)\n2. NULL: YES\n3. KEY: \n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: Browser user agent for device identification\n---
+## TABLE: supplier_portal_sessions\n### FIELD: created_at\n1. TYPE: timestamp\n2. NULL: NO\n3. KEY: \n4. DEFAULT: current_timestamp()\n5. EXTRA: \n6. COMMENT: When session was created\n---
+## TABLE: supplier_portal_sessions\n### FIELD: expires_at\n1. TYPE: timestamp\n2. NULL: NO\n3. KEY: MUL\n4. DEFAULT: '0000-00-00 00:00:00'\n5. EXTRA: \n6. COMMENT: When session expires (typically 24 hours)\n---
+## TABLE: supplier_portal_sessions\n### FIELD: last_activity\n1. TYPE: timestamp\n2. NULL: NO\n3. KEY: \n4. DEFAULT: current_timestamp()\n5. EXTRA: on update current_timestamp()\n6. COMMENT: Last activity timestamp for idle detection\n---
+## TABLE: vend_consignments\n### FIELD: id\n1. TYPE: int(11)\n2. NULL: NO\n3. KEY: PRI\n4. DEFAULT: NULL\n5. EXTRA: auto_increment\n6. COMMENT: CIS transfer ID (primary)\n---
+## TABLE: vend_consignments\n### FIELD: public_id\n1. TYPE: varchar(40)\n2. NULL: NO\n3. KEY: UNI\n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: \n---
+## TABLE: vend_consignments\n### FIELD: vend_transfer_id\n1. TYPE: char(36)\n2. NULL: YES\n3. KEY: UNI\n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: Vend/Lightspeed consignment UUID (unique when present)\n---
+## TABLE: vend_consignments\n### FIELD: vend_consignment_id\n1. TYPE: varchar(64)\n2. NULL: YES\n3. KEY: \n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: Legacy/alternate Vend consignment UUID\n---
+## TABLE: vend_consignments\n### FIELD: consignment_id\n1. TYPE: bigint(20) unsigned\n2. NULL: YES\n3. KEY: MUL\n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: Link to queue_consignments.id for Lightspeed sync\n---
+## TABLE: vend_consignments\n### FIELD: transfer_category\n1. TYPE: enum('STOCK','JUICE','RETURN','PURCHASE_ORDER','INTERNAL','STOCKTAKE')\n2. NULL: NO\n3. KEY: MUL\n4. DEFAULT: 'STOCK'\n5. EXTRA: \n6. COMMENT: \n---
+## TABLE: vend_consignments\n### FIELD: creation_method\n1. TYPE: enum('MANUAL','AUTOMATED')\n2. NULL: NO\n3. KEY: MUL\n4. DEFAULT: 'MANUAL'\n5. EXTRA: \n6. COMMENT: \n---
+## TABLE: vend_consignments\n### FIELD: vend_number\n1. TYPE: varchar(64)\n2. NULL: YES\n3. KEY: MUL\n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: \n---
+## TABLE: vend_consignments\n### FIELD: vend_url\n1. TYPE: varchar(255)\n2. NULL: YES\n3. KEY: \n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: \n---
+## TABLE: vend_consignments\n### FIELD: vend_origin\n1. TYPE: enum('CONSIGNMENT','PURCHASE_ORDER','TRANSFER')\n2. NULL: YES\n3. KEY: \n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: \n---
+## TABLE: vend_consignments\n### FIELD: outlet_from\n1. TYPE: varchar(100)\n2. NULL: NO\n3. KEY: MUL\n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: Source outlet UUID (Vend)\n---
+## TABLE: vend_consignments\n### FIELD: outlet_to\n1. TYPE: varchar(100)\n2. NULL: NO\n3. KEY: MUL\n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: Destination outlet UUID (Vend)\n---
+## TABLE: vend_consignments\n### FIELD: created_by\n1. TYPE: int(11)\n2. NULL: NO\n3. KEY: \n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: CIS user who created this transfer\n---
+## TABLE: vend_consignments\n### FIELD: staff_transfer_id\n1. TYPE: int(10) unsigned\n2. NULL: YES\n3. KEY: MUL\n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: Link to existing staff_transfers.id (unsigned)\n---
+## TABLE: vend_consignments\n### FIELD: supplier_id\n1. TYPE: varchar(100)\n2. NULL: YES\n3. KEY: MUL\n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: Supplier UUID - for queries and portal filtering\n---
+## TABLE: vend_consignments\n### FIELD: supplier_invoice_number\n1. TYPE: varchar(100)\n2. NULL: YES\n3. KEY: \n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: \n---
+## TABLE: vend_consignments\n### FIELD: supplier_reference\n1. TYPE: varchar(100)\n2. NULL: YES\n3. KEY: \n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: \n---
+## TABLE: vend_consignments\n### FIELD: tracking_number\n1. TYPE: varchar(100)\n2. NULL: YES\n3. KEY: MUL\n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: \n---
+## TABLE: vend_consignments\n### FIELD: tracking_carrier\n1. TYPE: varchar(50)\n2. NULL: YES\n3. KEY: \n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: \n---
+## TABLE: vend_consignments\n### FIELD: tracking_url\n1. TYPE: varchar(255)\n2. NULL: YES\n3. KEY: \n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: \n---
+## TABLE: vend_consignments\n### FIELD: tracking_updated_at\n1. TYPE: timestamp\n2. NULL: YES\n3. KEY: MUL\n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: \n---
+## TABLE: vend_consignments\n### FIELD: created_at\n1. TYPE: timestamp\n2. NULL: NO\n3. KEY: MUL\n4. DEFAULT: current_timestamp()\n5. EXTRA: \n6. COMMENT: \n---
+## TABLE: vend_consignments\n### FIELD: expected_delivery_date\n1. TYPE: date\n2. NULL: YES\n3. KEY: MUL\n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: \n---
+## TABLE: vend_consignments\n### FIELD: due_at\n1. TYPE: datetime\n2. NULL: YES\n3. KEY: \n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: \n---
+## TABLE: vend_consignments\n### FIELD: sent_at\n1. TYPE: datetime\n2. NULL: YES\n3. KEY: \n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: \n---
+## TABLE: vend_consignments\n### FIELD: received_at\n1. TYPE: datetime\n2. NULL: YES\n3. KEY: \n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: \n---
+## TABLE: vend_consignments\n### FIELD: supplier_sent_at\n1. TYPE: timestamp\n2. NULL: YES\n3. KEY: MUL\n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: \n---
+## TABLE: vend_consignments\n### FIELD: supplier_cancelled_at\n1. TYPE: timestamp\n2. NULL: YES\n3. KEY: \n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: \n---
+## TABLE: vend_consignments\n### FIELD: supplier_acknowledged_at\n1. TYPE: timestamp\n2. NULL: YES\n3. KEY: MUL\n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: Timestamp when supplier first viewed the PO in portal\n---
+## TABLE: vend_consignments\n### FIELD: updated_at\n1. TYPE: timestamp\n2. NULL: NO\n3. KEY: \n4. DEFAULT: current_timestamp()\n5. EXTRA: on update current_timestamp()\n6. COMMENT: \n---
+## TABLE: vend_consignments\n### FIELD: last_transaction_id\n1. TYPE: varchar(50)\n2. NULL: YES\n3. KEY: MUL\n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: Last transaction that modified this transfer\n---
+## TABLE: vend_consignments\n### FIELD: version\n1. TYPE: int(11)\n2. NULL: YES\n3. KEY: MUL\n4. DEFAULT: 1\n5. EXTRA: \n6. COMMENT: Optimistic locking version\n---
+## TABLE: vend_consignments\n### FIELD: locked_at\n1. TYPE: datetime\n2. NULL: YES\n3. KEY: MUL\n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: When transfer was locked\n---
+## TABLE: vend_consignments\n### FIELD: locked_by\n1. TYPE: int(11)\n2. NULL: YES\n3. KEY: \n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: User who locked transfer\n---
+## TABLE: vend_consignments\n### FIELD: lock_expires_at\n1. TYPE: datetime\n2. NULL: YES\n3. KEY: MUL\n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: When lock expires\n---
+## TABLE: vend_consignments\n### FIELD: deleted_by\n1. TYPE: int(11)\n2. NULL: YES\n3. KEY: \n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: User ID of staff who soft-deleted this transfer\n---
+## TABLE: vend_consignments\n### FIELD: deleted_at\n1. TYPE: timestamp\n2. NULL: YES\n3. KEY: \n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: When the transfer was soft deleted\n---
+## TABLE: vend_consignments\n### FIELD: customer_id\n1. TYPE: varchar(45)\n2. NULL: YES\n3. KEY: MUL\n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: \n---
+## TABLE: vend_consignments\n### FIELD: state\n1. TYPE: enum('DRAFT','OPEN','PACKING','PACKAGED','SENT','RECEIVING','PARTIAL','RECEIVED','CLOSED','CANCELLED','ARCHIVED')\n2. NULL: NO\n3. KEY: MUL\n4. DEFAULT: 'OPEN'\n5. EXTRA: \n6. COMMENT: \n---
+## TABLE: vend_consignments\n### FIELD: total_boxes\n1. TYPE: int(10) unsigned\n2. NULL: NO\n3. KEY: \n4. DEFAULT: 0\n5. EXTRA: \n6. COMMENT: \n---
+## TABLE: vend_consignments\n### FIELD: total_weight_g\n1. TYPE: bigint(20) unsigned\n2. NULL: NO\n3. KEY: \n4. DEFAULT: 0\n5. EXTRA: \n6. COMMENT: \n---
+## TABLE: vend_consignments\n### FIELD: total_count\n1. TYPE: int(11)\n2. NULL: YES\n3. KEY: \n4. DEFAULT: 0\n5. EXTRA: \n6. COMMENT: \n---
+## TABLE: vend_consignments\n### FIELD: total_cost\n1. TYPE: decimal(10,2)\n2. NULL: YES\n3. KEY: \n4. DEFAULT: 0.00\n5. EXTRA: \n6. COMMENT: \n---
+## TABLE: vend_consignments\n### FIELD: total_received\n1. TYPE: int(11)\n2. NULL: YES\n3. KEY: \n4. DEFAULT: 0\n5. EXTRA: \n6. COMMENT: \n---
+## TABLE: vend_consignments\n### FIELD: line_item_count\n1. TYPE: int(11)\n2. NULL: YES\n3. KEY: \n4. DEFAULT: 0\n5. EXTRA: \n6. COMMENT: \n---
+## TABLE: vend_consignments\n### FIELD: draft_data\n1. TYPE: longtext\n2. NULL: YES\n3. KEY: \n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: \n---
+## TABLE: vend_consignments\n### FIELD: draft_updated_at\n1. TYPE: timestamp\n2. NULL: YES\n3. KEY: \n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: \n---
+## TABLE: vend_consignments\n### FIELD: lightspeed_sync_status\n1. TYPE: enum('pending','synced','failed')\n2. NULL: YES\n3. KEY: \n4. DEFAULT: 'pending'\n5. EXTRA: \n6. COMMENT: \n---
+## TABLE: vend_consignments\n### FIELD: lightspeed_last_sync_at\n1. TYPE: timestamp\n2. NULL: YES\n3. KEY: \n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: \n---
+## TABLE: vend_consignments\n### FIELD: lightspeed_push_attempts\n1. TYPE: int(11)\n2. NULL: YES\n3. KEY: \n4. DEFAULT: 0\n5. EXTRA: \n6. COMMENT: \n---
+## TABLE: vend_consignments\n### FIELD: lightspeed_push_error\n1. TYPE: text\n2. NULL: YES\n3. KEY: \n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: \n---
+## TABLE: vend_consignments\n### FIELD: status\n1. TYPE: enum('DRAFT','OPEN','SENT','DISPATCHED','RECEIVED','CANCELLED','STOCKTAKE')\n2. NULL: YES\n3. KEY: \n4. DEFAULT: 'OPEN'\n5. EXTRA: \n6. COMMENT: \n---
+## TABLE: vend_consignments\n### FIELD: type\n1. TYPE: enum('SUPPLIER','OUTLET','CUSTOMER','RETURN')\n2. NULL: YES\n3. KEY: \n4. DEFAULT: 'OUTLET'\n5. EXTRA: \n6. COMMENT: \n---
+## TABLE: vend_consignments\n### FIELD: consignment_notes\n1. TYPE: text\n2. NULL: YES\n3. KEY: \n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: \n---
+## TABLE: vend_inventory\n### FIELD: id\n1. TYPE: varchar(100)\n2. NULL: NO\n3. KEY: PRI\n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: Unique identifier for each inventory record in the system.\n---
+## TABLE: vend_inventory\n### FIELD: outlet_id\n1. TYPE: varchar(100)\n2. NULL: NO\n3. KEY: MUL\n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: Identifies the specific store location where the product inventory is held.\n---
+## TABLE: vend_inventory\n### FIELD: product_id\n1. TYPE: varchar(100)\n2. NULL: NO\n3. KEY: MUL\n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: Unique identifier for each product in the inventory system.\n---
+## TABLE: vend_inventory\n### FIELD: inventory_level\n1. TYPE: int(11)\n2. NULL: NO\n3. KEY: MUL\n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: The current stock quantity of a product available at a specific outlet.\n---
+## TABLE: vend_inventory\n### FIELD: current_amount\n1. TYPE: int(11)\n2. NULL: NO\n3. KEY: MUL\n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: The actual stock quantity available for a product at a specific outlet.\n---
+## TABLE: vend_inventory\n### FIELD: version\n1. TYPE: bigint(20)\n2. NULL: NO\n3. KEY: \n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: \n---
+## TABLE: vend_inventory\n### FIELD: reorder_point\n1. TYPE: int(11)\n2. NULL: YES\n3. KEY: \n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: Minimum stock level triggering a reorder to prevent product shortages.\n---
+## TABLE: vend_inventory\n### FIELD: reorder_amount\n1. TYPE: int(11)\n2. NULL: YES\n3. KEY: \n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: The quantity of a product to order when stock reaches the reorder point.\n---
+## TABLE: vend_inventory\n### FIELD: deleted_at\n1. TYPE: timestamp\n2. NULL: YES\n3. KEY: \n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: Timestamp indicating when the inventory record was marked as inactive or removed.\n---
+## TABLE: vend_inventory\n### FIELD: average_cost\n1. TYPE: decimal(16,6)\n2. NULL: NO\n3. KEY: \n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: The average cost of acquiring a product, used for pricing and profitability analysis.\n---
+## TABLE: vend_outlets\n### FIELD: id\n1. TYPE: varchar(100)\n2. NULL: NO\n3. KEY: PRI\n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: Unique identifier for each retail outlet in the system.\n---
+## TABLE: vend_outlets\n### FIELD: register_id\n1. TYPE: varchar(100)\n2. NULL: YES\n3. KEY: UNI\n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: Unique identifier for the cash register used at a specific retail outlet.\n---
+## TABLE: vend_outlets\n### FIELD: name\n1. TYPE: varchar(100)\n2. NULL: NO\n3. KEY: \n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: The name of the physical store location for inventory and sales tracking.\n---
+## TABLE: vend_outlets\n### FIELD: default_tax_id\n1. TYPE: varchar(100)\n2. NULL: YES\n3. KEY: \n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: Identifies the tax rate applied by default to sales at this outlet.\n---
+## TABLE: vend_outlets\n### FIELD: currency\n1. TYPE: varchar(100)\n2. NULL: YES\n3. KEY: \n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: The currency used for transactions at this outlet.\n---
+## TABLE: vend_outlets\n### FIELD: currency_symbol\n1. TYPE: varchar(100)\n2. NULL: YES\n3. KEY: \n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: Symbol used to represent the currency for transactions at this outlet.\n---
+## TABLE: vend_outlets\n### FIELD: display_prices\n1. TYPE: varchar(100)\n2. NULL: YES\n3. KEY: \n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: Indicates whether prices shown to customers include tax.\n---
+## TABLE: vend_outlets\n### FIELD: time_zone\n1. TYPE: varchar(100)\n2. NULL: YES\n3. KEY: \n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: Indicates the local time zone for scheduling and coordinating store operations.\n---
+## TABLE: vend_outlets\n### FIELD: physical_street_number\n1. TYPE: varchar(45)\n2. NULL: YES\n3. KEY: \n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: Stores the street number for the physical location of the vendor outlet.\n---
+## TABLE: vend_outlets\n### FIELD: physical_street\n1. TYPE: varchar(45)\n2. NULL: YES\n3. KEY: \n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: Street name for the outlet's physical location.\n---
+## TABLE: vend_outlets\n### FIELD: physical_address_1\n1. TYPE: varchar(100)\n2. NULL: YES\n3. KEY: \n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: Stores the first line of the outlet's physical address for location identification.\n---
+## TABLE: vend_outlets\n### FIELD: physical_address_2\n1. TYPE: varchar(100)\n2. NULL: YES\n3. KEY: \n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: Additional address details for a vendor outlet, such as a building or unit name.\n---
+## TABLE: vend_outlets\n### FIELD: physical_suburb\n1. TYPE: varchar(100)\n2. NULL: YES\n3. KEY: \n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: Identifies the suburb where the physical store is located for delivery and regional analysis.\n---
+## TABLE: vend_outlets\n### FIELD: physical_city\n1. TYPE: varchar(255)\n2. NULL: YES\n3. KEY: \n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: \n---
+## TABLE: vend_outlets\n### FIELD: physical_postcode\n1. TYPE: varchar(100)\n2. NULL: YES\n3. KEY: \n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: The postcode for the physical location of the retail outlet.\n---
+## TABLE: vend_outlets\n### FIELD: physical_state\n1. TYPE: varchar(100)\n2. NULL: YES\n3. KEY: \n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: Indicates the region or province where the outlet is located for logistical and reporting purposes.\n---
+## TABLE: vend_outlets\n### FIELD: physical_country_id\n1. TYPE: varchar(100)\n2. NULL: YES\n3. KEY: \n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: Stores the country code where the physical outlet is located for business operations.\n---
+## TABLE: vend_outlets\n### FIELD: physical_phone_number\n1. TYPE: varchar(45)\n2. NULL: YES\n3. KEY: \n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: Contact number for reaching the physical store location.\n---
+## TABLE: vend_outlets\n### FIELD: deleted_at\n1. TYPE: timestamp\n2. NULL: YES\n3. KEY: \n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: Timestamp indicating when the outlet was marked as inactive or removed from active use.\n---
+## TABLE: vend_outlets\n### FIELD: version\n1. TYPE: bigint(20)\n2. NULL: NO\n3. KEY: \n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: \n---
+## TABLE: vend_outlets\n### FIELD: turn_over_rate\n1. TYPE: float\n2. NULL: NO\n3. KEY: \n4. DEFAULT: 5\n5. EXTRA: \n6. COMMENT: The rate at which inventory is sold and replaced at this outlet.\n---
+## TABLE: vend_outlets\n### FIELD: automatic_ordering\n1. TYPE: int(11)\n2. NULL: NO\n3. KEY: \n4. DEFAULT: 1\n5. EXTRA: \n6. COMMENT: Indicates if the outlet uses an automated system for placing stock orders.\n---
+## TABLE: vend_outlets\n### FIELD: facebook_page_id\n1. TYPE: varchar(45)\n2. NULL: YES\n3. KEY: \n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: Unique identifier for the outlet's Facebook page to manage social media presence and customer interactions.\n---
+## TABLE: vend_outlets\n### FIELD: gss_token\n1. TYPE: varchar(100)\n2. NULL: YES\n3. KEY: \n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: Unique identifier for integrating Google services with the outlet.\n---
+## TABLE: vend_outlets\n### FIELD: google_page_id\n1. TYPE: varchar(100)\n2. NULL: YES\n3. KEY: \n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: Unique identifier for the store's Google business page, used for managing online presence and reviews.\n---
+## TABLE: vend_outlets\n### FIELD: total_review_count\n1. TYPE: int(11)\n2. NULL: YES\n3. KEY: \n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: The total number of customer reviews received by this outlet.\n---
+## TABLE: vend_outlets\n### FIELD: google_review_rating\n1. TYPE: float(2,1)\n2. NULL: YES\n3. KEY: \n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: Average customer rating for the outlet based on Google reviews.\n---
+## TABLE: vend_outlets\n### FIELD: store_code\n1. TYPE: varchar(45)\n2. NULL: YES\n3. KEY: \n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: Unique identifier for each store location used in operations and reporting.\n---
+## TABLE: vend_outlets\n### FIELD: magento_warehouse_id\n1. TYPE: int(11)\n2. NULL: YES\n3. KEY: \n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: Links each outlet to its corresponding warehouse in the Magento system.\n---
+## TABLE: vend_outlets\n### FIELD: google_link\n1. TYPE: varchar(100)\n2. NULL: YES\n3. KEY: \n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: URL for the store's Google Maps location to assist with navigation and customer visits.\n---
+## TABLE: vend_outlets\n### FIELD: outlet_lat\n1. TYPE: varchar(45)\n2. NULL: YES\n3. KEY: \n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: Latitude coordinate for the outlet's physical location.\n---
+## TABLE: vend_outlets\n### FIELD: outlet_long\n1. TYPE: varchar(45)\n2. NULL: YES\n3. KEY: \n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: Geographical longitude coordinate for the outlet's location.\n---
+## TABLE: vend_outlets\n### FIELD: website_active\n1. TYPE: int(11)\n2. NULL: NO\n3. KEY: \n4. DEFAULT: 1\n5. EXTRA: \n6. COMMENT: Indicates if the outlet's website is currently active for online sales.\n---
+## TABLE: vend_outlets\n### FIELD: website_outlet_id\n1. TYPE: int(11)\n2. NULL: YES\n3. KEY: UNI\n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: Unique identifier for the outlet's online presence within the company's website system.\n---
+## TABLE: vend_outlets\n### FIELD: deposit_card_id\n1. TYPE: int(11)\n2. NULL: YES\n3. KEY: \n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: Identifies the card used for deposits at this outlet for financial tracking.\n---
+## TABLE: vend_outlets\n### FIELD: vape_hq_shipping_id\n1. TYPE: varchar(45)\n2. NULL: YES\n3. KEY: \n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: Unique identifier for tracking shipments from Vape HQ to this outlet.\n---
+## TABLE: vend_outlets\n### FIELD: banking_days_allocated\n1. TYPE: int(11)\n2. NULL: NO\n3. KEY: \n4. DEFAULT: 7\n5. EXTRA: \n6. COMMENT: Number of days allocated for banking transactions at this outlet.\n---
+## TABLE: vend_outlets\n### FIELD: email\n1. TYPE: varchar(45)\n2. NULL: YES\n3. KEY: \n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: Email address for contacting the specific store location.\n---
+## TABLE: vend_outlets\n### FIELD: nz_post_api_key\n1. TYPE: varchar(45)\n2. NULL: YES\n3. KEY: \n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: API key for accessing New Zealand Post services for shipping and logistics.\n---
+## TABLE: vend_outlets\n### FIELD: nz_post_subscription_key\n1. TYPE: varchar(45)\n2. NULL: YES\n3. KEY: \n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: Unique identifier for managing NZ Post subscription services for each outlet.\n---
+## TABLE: vend_outlets\n### FIELD: ip_address\n1. TYPE: varchar(45)\n2. NULL: YES\n3. KEY: \n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: Identifies the network location of the outlet for security and connectivity purposes.\n---
+## TABLE: vend_outlets\n### FIELD: deputy_location_id\n1. TYPE: int(11)\n2. NULL: NO\n3. KEY: \n4. DEFAULT: 0\n5. EXTRA: \n6. COMMENT: Links the outlet to its corresponding location in the Deputy workforce management system.\n---
+## TABLE: vend_outlets\n### FIELD: eftpos_merchant_id\n1. TYPE: int(11)\n2. NULL: YES\n3. KEY: \n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: Unique identifier for processing card payments at this outlet.\n---
+## TABLE: vend_outlets\n### FIELD: created_at\n1. TYPE: timestamp\n2. NULL: NO\n3. KEY: \n4. DEFAULT: current_timestamp()\n5. EXTRA: \n6. COMMENT: \n---
+## TABLE: vend_outlets\n### FIELD: is_warehouse\n1. TYPE: int(11)\n2. NULL: NO\n3. KEY: MUL\n4. DEFAULT: 0\n5. EXTRA: \n6. COMMENT: Indicates if the outlet functions as a warehouse (1 for yes, 0 for no).\n---
+## TABLE: vend_products\n### FIELD: id\n1. TYPE: varchar(100)\n2. NULL: NO\n3. KEY: PRI\n4. DEFAULT: ''\n5. EXTRA: \n6. COMMENT: Unique identifier for each product entry in the system.\n---
+## TABLE: vend_products\n### FIELD: source_id\n1. TYPE: varchar(200)\n2. NULL: YES\n3. KEY: \n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: \n---
+## TABLE: vend_products\n### FIELD: source_variant_id\n1. TYPE: mediumtext\n2. NULL: YES\n3. KEY: \n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: Unique identifier for a product variant from the original supplier or source.\n---
+## TABLE: vend_products\n### FIELD: variant_parent_id\n1. TYPE: mediumtext\n2. NULL: YES\n3. KEY: \n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: Identifies the main product for which this item is a variant.\n---
+## TABLE: vend_products\n### FIELD: name\n1. TYPE: varchar(255)\n2. NULL: YES\n3. KEY: MUL\n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: \n---
+## TABLE: vend_products\n### FIELD: variant_name\n1. TYPE: varchar(255)\n2. NULL: YES\n3. KEY: \n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: \n---
+## TABLE: vend_products\n### FIELD: handle\n1. TYPE: varchar(200)\n2. NULL: YES\n3. KEY: \n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: \n---
+## TABLE: vend_products\n### FIELD: sku\n1. TYPE: varchar(200)\n2. NULL: YES\n3. KEY: \n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: \n---
+## TABLE: vend_products\n### FIELD: supplier_code\n1. TYPE: int(11)\n2. NULL: YES\n3. KEY: \n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: Unique identifier for the product's supplier in the business system.\n---
+## TABLE: vend_products\n### FIELD: active\n1. TYPE: int(11)\n2. NULL: NO\n3. KEY: MUL\n4. DEFAULT: 0\n5. EXTRA: \n6. COMMENT: \n---
+## TABLE: vend_products\n### FIELD: has_inventory\n1. TYPE: int(11)\n2. NULL: NO\n3. KEY: \n4. DEFAULT: 0\n5. EXTRA: \n6. COMMENT: \n---
+## TABLE: vend_products\n### FIELD: is_composite\n1. TYPE: int(11)\n2. NULL: NO\n3. KEY: \n4. DEFAULT: 0\n5. EXTRA: \n6. COMMENT: \n---
+## TABLE: vend_products\n### FIELD: description\n1. TYPE: longtext\n2. NULL: YES\n3. KEY: \n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: \n---
+## TABLE: vend_products\n### FIELD: image_url\n1. TYPE: text\n2. NULL: YES\n3. KEY: \n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: \n---
+## TABLE: vend_products\n### FIELD: created_at\n1. TYPE: timestamp\n2. NULL: NO\n3. KEY: \n4. DEFAULT: '0000-00-00 00:00:00'\n5. EXTRA: \n6. COMMENT: Timestamp indicating when the product record was first added to the database.\n---
+## TABLE: vend_products\n### FIELD: updated_at\n1. TYPE: timestamp\n2. NULL: NO\n3. KEY: \n4. DEFAULT: '0000-00-00 00:00:00'\n5. EXTRA: \n6. COMMENT: Timestamp of the last modification made to the product details.\n---
+## TABLE: vend_products\n### FIELD: deleted_at\n1. TYPE: timestamp\n2. NULL: YES\n3. KEY: MUL\n4. DEFAULT: '0000-00-00 00:00:00'\n5. EXTRA: \n6. COMMENT: Timestamp indicating when the product was removed from active listings.\n---
+## TABLE: vend_products\n### FIELD: type\n1. TYPE: mediumtext\n2. NULL: YES\n3. KEY: \n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: \n---
+## TABLE: vend_products\n### FIELD: account_code\n1. TYPE: mediumtext\n2. NULL: YES\n3. KEY: \n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: \n---
+## TABLE: vend_products\n### FIELD: version\n1. TYPE: bigint(20)\n2. NULL: NO\n3. KEY: \n4. DEFAULT: 0\n5. EXTRA: \n6. COMMENT: \n---
+## TABLE: vend_products\n### FIELD: supplier\n1. TYPE: mediumtext\n2. NULL: YES\n3. KEY: \n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: The supplier's name for each product, used for ordering and inventory management.\n---
+## TABLE: vend_products\n### FIELD: source\n1. TYPE: text\n2. NULL: YES\n3. KEY: \n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: \n---
+## TABLE: vend_products\n### FIELD: account_code_purchase\n1. TYPE: mediumtext\n2. NULL: YES\n3. KEY: \n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: \n---
+## TABLE: vend_products\n### FIELD: has_variants\n1. TYPE: mediumtext\n2. NULL: YES\n3. KEY: \n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: Indicates if the product has different versions or options available for sale.\n---
+## TABLE: vend_products\n### FIELD: brand\n1. TYPE: varchar(255)\n2. NULL: YES\n3. KEY: \n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: \n---
+## TABLE: vend_products\n### FIELD: variant_options\n1. TYPE: text\n2. NULL: YES\n3. KEY: \n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: \n---
+## TABLE: vend_products\n### FIELD: brand_id\n1. TYPE: varchar(200)\n2. NULL: YES\n3. KEY: MUL\n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: Unique identifier linking each product to its associated brand for inventory and reporting purposes.\n---
+## TABLE: vend_products\n### FIELD: price_including_tax\n1. TYPE: decimal(13,5)\n2. NULL: NO\n3. KEY: \n4. DEFAULT: 0.00000\n5. EXTRA: \n6. COMMENT: \n---
+## TABLE: vend_products\n### FIELD: loyalty_amount\n1. TYPE: decimal(13,5)\n2. NULL: YES\n3. KEY: \n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: The loyalty amount awarded to customers for purchasing this product.\n---
+## TABLE: vend_products\n### FIELD: price_excluding_tax\n1. TYPE: decimal(13,5)\n2. NULL: NO\n3. KEY: \n4. DEFAULT: 0.00000\n5. EXTRA: \n6. COMMENT: \n---
+## TABLE: vend_products\n### FIELD: product_type_id\n1. TYPE: mediumtext\n2. NULL: YES\n3. KEY: \n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: \n---
+## TABLE: vend_products\n### FIELD: supplier_id\n1. TYPE: varchar(200)\n2. NULL: YES\n3. KEY: MUL\n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: Unique identifier for the supplier providing this product.\n---
+## TABLE: vend_products\n### FIELD: button_order\n1. TYPE: int(11)\n2. NULL: NO\n3. KEY: \n4. DEFAULT: 0\n5. EXTRA: \n6. COMMENT: \n---
+## TABLE: vend_products\n### FIELD: is_active\n1. TYPE: int(11)\n2. NULL: NO\n3. KEY: \n4. DEFAULT: 0\n5. EXTRA: \n6. COMMENT: \n---
+## TABLE: vend_products\n### FIELD: image_thumbnail_url\n1. TYPE: text\n2. NULL: YES\n3. KEY: \n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: \n---
+## TABLE: vend_products\n### FIELD: supply_price\n1. TYPE: decimal(13,5)\n2. NULL: NO\n3. KEY: \n4. DEFAULT: 0.00000\n5. EXTRA: \n6. COMMENT: \n---
+## TABLE: vend_products\n### FIELD: avg_weight_grams\n1. TYPE: int(11)\n2. NULL: YES\n3. KEY: MUL\n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: \n---
+## TABLE: vend_products\n### FIELD: dont_show_in_low_stock\n1. TYPE: int(11)\n2. NULL: NO\n3. KEY: \n4. DEFAULT: 0\n5. EXTRA: \n6. COMMENT: Indicates if a product should be excluded from low stock alerts.\n---
+## TABLE: vend_products\n### FIELD: dont_insert_into_website\n1. TYPE: int(11)\n2. NULL: YES\n3. KEY: \n4. DEFAULT: 0\n5. EXTRA: \n6. COMMENT: Indicates if a product should be excluded from being listed on the website.\n---
+## TABLE: vend_products\n### FIELD: harp_product_status\n1. TYPE: int(11)\n2. NULL: NO\n3. KEY: \n4. DEFAULT: 0\n5. EXTRA: \n6. COMMENT: Indicates the product's availability status in the HARP system.\n---
+## TABLE: vend_products\n### FIELD: is_deleted\n1. TYPE: tinyint(1)\n2. NULL: YES\n3. KEY: MUL\n4. DEFAULT: NULL\n5. EXTRA: STORED GENERATED\n6. COMMENT: \n---
+## TABLE: vend_suppliers\n### FIELD: id\n1. TYPE: varchar(100)\n2. NULL: NO\n3. KEY: PRI\n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: Unique identifier for each supplier in the system.\n---
+## TABLE: vend_suppliers\n### FIELD: name\n1. TYPE: varchar(100)\n2. NULL: NO\n3. KEY: MUL\n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: The supplier's business or brand name for identification and communication.\n---
+## TABLE: vend_suppliers\n### FIELD: source\n1. TYPE: varchar(45)\n2. NULL: YES\n3. KEY: \n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: Indicates the origin or method by which the supplier was added to the system.\n---
+## TABLE: vend_suppliers\n### FIELD: description\n1. TYPE: varchar(500)\n2. NULL: YES\n3. KEY: \n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: Provides detailed overview of supplier product line or brand association\n---
+## TABLE: vend_suppliers\n### FIELD: deleted_at\n1. TYPE: varchar(45)\n2. NULL: YES\n3. KEY: \n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: Indicates when a supplier was removed from active use in the system.\n---
+## TABLE: vend_suppliers\n### FIELD: version\n1. TYPE: varchar(45)\n2. NULL: YES\n3. KEY: \n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: \n---
+## TABLE: vend_suppliers\n### FIELD: email\n1. TYPE: varchar(100)\n2. NULL: YES\n3. KEY: MUL\n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: Supplier's primary email address for communication and order processing.\n---
+## TABLE: vend_suppliers\n### FIELD: claim_email\n1. TYPE: varchar(150)\n2. NULL: YES\n3. KEY: \n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: \n---
+## TABLE: vend_suppliers\n### FIELD: bank_account\n1. TYPE: varchar(45)\n2. NULL: YES\n3. KEY: \n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: Stores the supplier's bank account details for processing payments.\n---
+## TABLE: vend_suppliers\n### FIELD: phone\n1. TYPE: varchar(45)\n2. NULL: YES\n3. KEY: \n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: Stores the contact number for reaching out to the supplier.\n---
+## TABLE: vend_suppliers\n### FIELD: contact_name\n1. TYPE: varchar(45)\n2. NULL: YES\n3. KEY: \n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: Name of the primary contact person for supplier communication.\n---
+## TABLE: vend_suppliers\n### FIELD: show_in_system\n1. TYPE: int(11)\n2. NULL: YES\n3. KEY: MUL\n4. DEFAULT: 1\n5. EXTRA: \n6. COMMENT: Indicates if the supplier is visible and active in the system for transactions and operations.\n---
+## TABLE: vend_suppliers\n### FIELD: automatic_ordering\n1. TYPE: int(11)\n2. NULL: NO\n3. KEY: MUL\n4. DEFAULT: 0\n5. EXTRA: \n6. COMMENT: Indicates if the supplier is set up for automatic order placement.\n---
+## TABLE: vend_suppliers\n### FIELD: automatic_transferring\n1. TYPE: int(11)\n2. NULL: NO\n3. KEY: MUL\n4. DEFAULT: 1\n5. EXTRA: \n6. COMMENT: Indicates if supplier transfers are automated within the system.\n---
+## TABLE: vend_suppliers\n### FIELD: automatic_transferring_based_on_sales_data\n1. TYPE: int(11)\n2. NULL: YES\n3. KEY: \n4. DEFAULT: 0\n5. EXTRA: \n6. COMMENT: Indicates if stock transfers are triggered automatically based on sales trends.\n---
+## TABLE: vend_suppliers\n### FIELD: notification_eligible\n1. TYPE: int(11)\n2. NULL: NO\n3. KEY: MUL\n4. DEFAULT: 1\n5. EXTRA: \n6. COMMENT: Indicates if the supplier is eligible to receive notifications from the system.\n---
+## TABLE: vend_suppliers\n### FIELD: credit_sla_days\n1. TYPE: int(11)\n2. NULL: YES\n3. KEY: \n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: \n---
+## TABLE: vend_suppliers\n### FIELD: enable_product_returns\n1. TYPE: int(11)\n2. NULL: NO\n3. KEY: MUL\n4. DEFAULT: 1\n5. EXTRA: \n6. COMMENT: Indicates if the supplier allows products to be returned.\n---
+## TABLE: vend_suppliers\n### FIELD: enable_wholesale_show_estimated_delivery\n1. TYPE: int(11)\n2. NULL: NO\n3. KEY: \n4. DEFAULT: 0\n5. EXTRA: \n6. COMMENT: Indicates if wholesale customers can view estimated delivery dates for orders.\n---
+## TABLE: vend_suppliers\n### FIELD: automatic_ordering_moq\n1. TYPE: int(11)\n2. NULL: NO\n3. KEY: \n4. DEFAULT: 30\n5. EXTRA: \n6. COMMENT: Minimum quantity required to trigger automatic ordering from this supplier.\n---
+## TABLE: vend_suppliers\n### FIELD: automatic_product_forecasting\n1. TYPE: int(11)\n2. NULL: NO\n3. KEY: \n4. DEFAULT: 0\n5. EXTRA: \n6. COMMENT: Indicates if the supplier's products are included in automated demand forecasting.\n---
+## TABLE: vend_suppliers\n### FIELD: website\n1. TYPE: varchar(45)\n2. NULL: YES\n3. KEY: \n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: \n---
+## TABLE: vend_suppliers\n### FIELD: contact_person\n1. TYPE: varchar(45)\n2. NULL: YES\n3. KEY: \n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: \n---
+## TABLE: vend_suppliers\n### FIELD: brand_logo_url\n1. TYPE: varchar(45)\n2. NULL: YES\n3. KEY: \n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: \n---
+## TABLE: vend_suppliers\n### FIELD: primary_color\n1. TYPE: varchar(45)\n2. NULL: YES\n3. KEY: \n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: \n---
+## TABLE: vend_suppliers\n### FIELD: secondary_color\n1. TYPE: varchar(45)\n2. NULL: YES\n3. KEY: \n4. DEFAULT: NULL\n5. EXTRA: \n6. COMMENT: \n---
