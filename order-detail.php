@@ -246,14 +246,14 @@ require_once __DIR__ . '/components/html-header.php';
 
                     <!-- Quick Actions -->
                     <div class="d-grid gap-2">
+                        <?php if ($order['state'] === 'OPEN' || $order['state'] === 'SENT'): ?>
+                            <button class="btn btn-success" onclick="addTrackingWithOptions(<?php echo $orderId; ?>)">
+                                <i class="fas fa-plus me-2"></i>Add Tracking
+                            </button>
+                        <?php endif; ?>
                         <?php if ($order['state'] === 'SENT' || $order['state'] === 'RECEIVING'): ?>
                             <button class="btn btn-warning" onclick="updateTracking()">
                                 <i class="fas fa-shipping-fast me-2"></i>Update Tracking
-                            </button>
-                        <?php endif; ?>
-                        <?php if ($order['state'] === 'OPEN'): ?>
-                            <button class="btn btn-success" onclick="markAsShipped()">
-                                <i class="fas fa-truck me-2"></i>Mark as Shipped
                             </button>
                         <?php endif; ?>
                         <button class="btn btn-outline-secondary" onclick="window.print()">
@@ -476,5 +476,8 @@ function showToast(message, type = 'info') {
     });
 }
 </script>
+
+<!-- Add Tracking Modal Script -->
+<script src="/supplier/assets/js/add-tracking-modal.js"></script>
 
 <?php require_once __DIR__ . '/components/html-footer.php'; ?>

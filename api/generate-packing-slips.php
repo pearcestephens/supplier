@@ -40,11 +40,11 @@ try {
             c.created_at,
             c.expected_delivery_date as due_date,
             o.name as outlet_name,
-            o.address_line_1,
-            o.address_line_2,
-            o.suburb,
-            o.city,
-            o.postcode,
+            o.physical_address_1,
+            o.physical_address_2,
+            o.physical_suburb as suburb,
+            o.physical_city as city,
+            o.physical_postcode as postcode,
             o.phone,
             COUNT(DISTINCT li.product_id) as items_count,
             SUM(li.qty_arrived) as units_count
@@ -55,7 +55,7 @@ try {
         AND c.supplier_id = ?
         AND c.deleted_at IS NULL
         GROUP BY c.id, c.public_id, c.state, c.total_cost, c.created_at, c.expected_delivery_date,
-                 o.name, o.address_line_1, o.address_line_2, o.suburb, o.city, o.postcode, o.phone
+                 o.name, o.physical_address_1, o.physical_address_2, o.physical_suburb, o.physical_city, o.physical_postcode, o.phone
         ORDER BY c.created_at DESC
     ");
 
