@@ -1,0 +1,373 @@
+<!--
+    Empty State Templates
+    Ready-to-use templates for "no data" scenarios
+    Copy the relevant section and customize as needed
+-->
+
+<!-- ========================================
+     ORDERS - No Orders Found
+     ======================================== -->
+<div class="empty-state" id="empty-orders">
+    <div class="empty-state-icon">
+        <i class="fas fa-shopping-cart fa-4x"></i>
+    </div>
+    <h4 class="empty-state-title">No Orders Found</h4>
+    <p class="empty-state-text">
+        You don't have any purchase orders yet, or your filters didn't match any results.
+    </p>
+    <div class="empty-state-actions">
+        <button class="btn btn-primary" onclick="window.location.reload()">
+            <i class="fas fa-redo me-2"></i>Clear Filters
+        </button>
+    </div>
+</div>
+
+<!-- ========================================
+     WARRANTIES - No Claims
+     ======================================== -->
+<div class="empty-state" id="empty-warranties">
+    <div class="empty-state-icon">
+        <i class="fas fa-shield-alt fa-4x"></i>
+    </div>
+    <h4 class="empty-state-title">No Warranty Claims</h4>
+    <p class="empty-state-text">
+        You haven't submitted any warranty claims yet.
+    </p>
+    <div class="empty-state-actions">
+        <a href="/supplier/warranty.php?action=new" class="btn btn-primary">
+            <i class="fas fa-plus me-2"></i>Submit New Claim
+        </a>
+    </div>
+</div>
+
+<!-- ========================================
+     PRODUCTS - No Products
+     ======================================== -->
+<div class="empty-state" id="empty-products">
+    <div class="empty-state-icon">
+        <i class="fas fa-box-open fa-4x"></i>
+    </div>
+    <h4 class="empty-state-title">No Products Found</h4>
+    <p class="empty-state-text">
+        No products match your current search or filters.
+    </p>
+    <div class="empty-state-actions">
+        <button class="btn btn-outline-primary" onclick="document.getElementById('search').value=''; document.querySelector('form').submit();">
+            <i class="fas fa-times me-2"></i>Clear Search
+        </button>
+        <a href="/supplier/products.php" class="btn btn-primary">
+            <i class="fas fa-list me-2"></i>View All Products
+        </a>
+    </div>
+</div>
+
+<!-- ========================================
+     REPORTS - No Data Available
+     ======================================== -->
+<div class="empty-state" id="empty-reports">
+    <div class="empty-state-icon">
+        <i class="fas fa-chart-line fa-4x"></i>
+    </div>
+    <h4 class="empty-state-title">No Data Available</h4>
+    <p class="empty-state-text">
+        There's no data for the selected date range.
+    </p>
+    <div class="empty-state-actions">
+        <button class="btn btn-primary" onclick="document.getElementById('date-range-form').reset(); document.getElementById('date-range-form').submit();">
+            <i class="fas fa-calendar me-2"></i>View All Time
+        </button>
+    </div>
+</div>
+
+<!-- ========================================
+     DOWNLOADS - No Files
+     ======================================== -->
+<div class="empty-state" id="empty-downloads">
+    <div class="empty-state-icon">
+        <i class="fas fa-download fa-4x"></i>
+    </div>
+    <h4 class="empty-state-title">No Downloads Available</h4>
+    <p class="empty-state-text">
+        There are no files available for download at this time.
+    </p>
+    <div class="empty-state-actions">
+        <button class="btn btn-primary" onclick="window.location.reload()">
+            <i class="fas fa-redo me-2"></i>Refresh Page
+        </button>
+    </div>
+</div>
+
+<!-- ========================================
+     SEARCH RESULTS - No Results
+     ======================================== -->
+<div class="empty-state" id="empty-search">
+    <div class="empty-state-icon">
+        <i class="fas fa-search fa-4x"></i>
+    </div>
+    <h4 class="empty-state-title">No Results Found</h4>
+    <p class="empty-state-text">
+        We couldn't find anything matching "<strong class="search-term"></strong>".
+    </p>
+    <div class="empty-state-suggestions">
+        <p class="mb-2"><strong>Try:</strong></p>
+        <ul class="list-unstyled">
+            <li><i class="fas fa-check-circle text-success me-2"></i>Checking your spelling</li>
+            <li><i class="fas fa-check-circle text-success me-2"></i>Using different keywords</li>
+            <li><i class="fas fa-check-circle text-success me-2"></i>Using more general terms</li>
+        </ul>
+    </div>
+</div>
+
+<!-- ========================================
+     NOTIFICATIONS - No Notifications
+     ======================================== -->
+<div class="empty-state empty-state-compact" id="empty-notifications">
+    <div class="empty-state-icon">
+        <i class="fas fa-bell-slash fa-2x"></i>
+    </div>
+    <p class="empty-state-text mb-0">
+        No new notifications
+    </p>
+</div>
+
+<!-- ========================================
+     ACTIVITY LOG - No Activity
+     ======================================== -->
+<div class="empty-state empty-state-compact" id="empty-activity">
+    <div class="empty-state-icon">
+        <i class="fas fa-history fa-2x"></i>
+    </div>
+    <p class="empty-state-text mb-0">
+        No recent activity
+    </p>
+</div>
+
+<!-- ========================================
+     GENERIC - Customizable Template
+     ======================================== -->
+<div class="empty-state" id="empty-generic">
+    <div class="empty-state-icon">
+        <i class="fas fa-inbox fa-4x"></i>
+    </div>
+    <h4 class="empty-state-title">No Items</h4>
+    <p class="empty-state-text">
+        There are no items to display.
+    </p>
+</div>
+
+<!-- ========================================
+     ERROR STATE - Something Went Wrong
+     ======================================== -->
+<div class="empty-state empty-state-error" id="error-state">
+    <div class="empty-state-icon text-danger">
+        <i class="fas fa-exclamation-triangle fa-4x"></i>
+    </div>
+    <h4 class="empty-state-title">Something Went Wrong</h4>
+    <p class="empty-state-text">
+        We couldn't load this data. Please try again.
+    </p>
+    <div class="empty-state-actions">
+        <button class="btn btn-primary" onclick="window.location.reload()">
+            <i class="fas fa-redo me-2"></i>Try Again
+        </button>
+    </div>
+</div>
+
+<!-- ========================================
+     LOADING STATE - Skeleton Loader
+     ======================================== -->
+<div class="skeleton-loader" id="loading-state">
+    <div class="skeleton-header"></div>
+    <div class="skeleton-line"></div>
+    <div class="skeleton-line"></div>
+    <div class="skeleton-line short"></div>
+</div>
+
+<!-- ========================================
+     TABLE LOADING STATE
+     ======================================== -->
+<tbody class="skeleton-table" id="table-loading">
+    <tr>
+        <td><div class="skeleton-line"></div></td>
+        <td><div class="skeleton-line"></div></td>
+        <td><div class="skeleton-line"></div></td>
+        <td><div class="skeleton-line"></div></td>
+    </tr>
+    <tr>
+        <td><div class="skeleton-line"></div></td>
+        <td><div class="skeleton-line"></div></td>
+        <td><div class="skeleton-line"></div></td>
+        <td><div class="skeleton-line"></div></td>
+    </tr>
+    <tr>
+        <td><div class="skeleton-line"></div></td>
+        <td><div class="skeleton-line"></div></td>
+        <td><div class="skeleton-line"></div></td>
+        <td><div class="skeleton-line"></div></td>
+    </tr>
+</tbody>
+
+<!-- ========================================
+     USAGE EXAMPLES (JavaScript)
+     ======================================== -->
+<script>
+// Example 1: Show empty state when no orders
+function displayOrders(orders) {
+    const container = document.getElementById('orders-table-body');
+
+    if (orders.length === 0) {
+        const emptyState = document.getElementById('empty-orders').cloneNode(true);
+        container.innerHTML = '';
+        container.parentElement.insertAdjacentElement('afterend', emptyState);
+    } else {
+        // Display orders normally
+        orders.forEach(order => {
+            // ... render order rows
+        });
+    }
+}
+
+// Example 2: Replace loading skeleton with empty state
+function loadData() {
+    const container = document.getElementById('data-container');
+
+    // Show loading
+    container.innerHTML = document.getElementById('loading-state').innerHTML;
+
+    fetch('/api/data')
+        .then(response => response.json())
+        .then(data => {
+            if (data.length === 0) {
+                container.innerHTML = document.getElementById('empty-generic').innerHTML;
+            } else {
+                // Render data
+            }
+        })
+        .catch(error => {
+            container.innerHTML = document.getElementById('error-state').innerHTML;
+        });
+}
+
+// Example 3: Show empty search results
+function showSearchResults(results, query) {
+    const container = document.getElementById('results');
+
+    if (results.length === 0) {
+        const emptyState = document.getElementById('empty-search').cloneNode(true);
+        emptyState.querySelector('.search-term').textContent = query;
+        container.innerHTML = '';
+        container.appendChild(emptyState);
+    } else {
+        // Display results
+    }
+}
+</script>
+
+<!-- ========================================
+     REQUIRED CSS (already in ux-enhancements.css)
+     ======================================== -->
+<style>
+/* Empty State Styles */
+.empty-state {
+    text-align: center;
+    padding: 3rem 1.5rem;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-radius: 0.5rem;
+    margin: 2rem 0;
+}
+
+.empty-state-icon {
+    color: #6c757d;
+    margin-bottom: 1.5rem;
+    animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+.empty-state-title {
+    font-weight: 600;
+    color: #212529;
+    margin-bottom: 0.75rem;
+}
+
+.empty-state-text {
+    color: #6c757d;
+    margin-bottom: 1.5rem;
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.empty-state-actions {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.empty-state-compact {
+    padding: 2rem 1rem;
+}
+
+.empty-state-compact .empty-state-icon {
+    margin-bottom: 0.75rem;
+}
+
+.empty-state-error .empty-state-title {
+    color: #dc3545;
+}
+
+.empty-state-suggestions {
+    text-align: left;
+    max-width: 400px;
+    margin: 1.5rem auto 0;
+    padding: 1rem;
+    background: white;
+    border-radius: 0.375rem;
+    border-left: 3px solid #0d6efd;
+}
+
+/* Skeleton Loader */
+.skeleton-loader {
+    padding: 1.5rem;
+}
+
+.skeleton-header {
+    height: 2rem;
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: skeleton-shimmer 1.5s infinite;
+    border-radius: 0.25rem;
+    margin-bottom: 1rem;
+    width: 60%;
+}
+
+.skeleton-line {
+    height: 1rem;
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: skeleton-shimmer 1.5s infinite;
+    border-radius: 0.25rem;
+    margin-bottom: 0.75rem;
+}
+
+.skeleton-line.short {
+    width: 40%;
+}
+
+@keyframes skeleton-shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+.skeleton-table td {
+    padding: 1rem;
+}
+
+.skeleton-table .skeleton-line {
+    margin: 0;
+}
+</style>
