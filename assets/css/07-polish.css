@@ -609,3 +609,382 @@ a:hover {
         scroll-behavior: auto !important;
     }
 }
+
+/* ============================================================================
+   STATUS BADGES - Consistent Styling Across All Pages
+   ============================================================================ */
+
+.status-badge,
+.badge-status {
+    display: inline-block;
+    padding: 0.35em 0.65em;
+    font-size: 0.85em;
+    font-weight: 500;
+    line-height: 1;
+    color: #fff;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: baseline;
+    border-radius: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Order Status Colors */
+.badge-status.open,
+.status-badge.open {
+    background-color: var(--color-secondary);
+}
+
+.badge-status.sent,
+.status-badge.sent {
+    background-color: var(--color-info);
+}
+
+.badge-status.receiving,
+.status-badge.receiving {
+    background-color: var(--color-warning);
+}
+
+.badge-status.received,
+.badge-status.completed,
+.status-badge.received,
+.status-badge.completed {
+    background-color: var(--color-success);
+}
+
+.badge-status.cancelled,
+.badge-status.closed,
+.status-badge.cancelled,
+.status-badge.closed {
+    background-color: #95a5a6;
+}
+
+/* Warranty Status Colors */
+.badge-status.pending,
+.status-badge.pending {
+    background-color: var(--color-warning);
+}
+
+.badge-status.approved,
+.status-badge.approved {
+    background-color: var(--color-success);
+}
+
+.badge-status.rejected,
+.status-badge.rejected {
+    background-color: var(--color-danger);
+}
+
+/* Stock Status Colors */
+.badge-status.in-stock,
+.status-badge.in-stock {
+    background-color: var(--color-success);
+}
+
+.badge-status.low-stock,
+.status-badge.low-stock {
+    background-color: var(--color-warning);
+}
+
+.badge-status.out-of-stock,
+.status-badge.out-of-stock {
+    background-color: var(--color-danger);
+}
+
+/* ============================================================================
+   DASHBOARD ENHANCEMENTS - Brand Colors
+   ============================================================================ */
+
+/* Metric cards color variants */
+.metric-card.color-primary {
+    background: linear-gradient(135deg, var(--color-primary) 0%, #34495e 100%);
+}
+
+.metric-card.color-secondary {
+    background: linear-gradient(135deg, var(--color-secondary) 0%, #5dade2 100%);
+}
+
+.metric-card.color-success {
+    background: linear-gradient(135deg, var(--color-success) 0%, #52be80 100%);
+}
+
+.metric-card.color-warning {
+    background: linear-gradient(135deg, var(--color-warning) 0%, #f8c471 100%);
+}
+
+.metric-card.color-danger {
+    background: linear-gradient(135deg, var(--color-danger) 0%, #ec7063 100%);
+}
+
+/* ============================================================================
+   FLIP CARDS - Brand Colors
+   ============================================================================ */
+
+.flip-card .flip-front.color-cyan,
+.flip-card .flip-front.color-primary {
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+}
+
+.flip-card .flip-front.color-blue,
+.flip-card .flip-front.color-secondary {
+    background: linear-gradient(135deg, var(--color-secondary) 0%, #5dade2 100%);
+}
+
+.flip-card .flip-front.color-green,
+.flip-card .flip-front.color-success {
+    background: linear-gradient(135deg, var(--color-success) 0%, #52be80 100%);
+}
+
+.flip-card .flip-front.color-orange,
+.flip-card .flip-front.color-warning {
+    background: linear-gradient(135deg, var(--color-warning) 0%, #f8c471 100%);
+}
+
+.flip-card .flip-front.color-red,
+.flip-card .flip-front.color-danger {
+    background: linear-gradient(135deg, var(--color-danger) 0%, #ec7063 100%);
+}
+
+.flip-card .flip-front.color-purple {
+    background: linear-gradient(135deg, #9b59b6 0%, #bb8fce 100%);
+}
+
+/* ============================================================================
+   SIDEBAR ENHANCEMENTS
+   ============================================================================ */
+
+.sidebar .activity-icon.bg-primary {
+    background-color: var(--color-primary) !important;
+}
+
+.sidebar .activity-icon.bg-success {
+    background-color: var(--color-success) !important;
+}
+
+.sidebar .activity-icon.bg-warning {
+    background-color: var(--color-warning) !important;
+}
+
+.sidebar .activity-icon.bg-danger {
+    background-color: var(--color-danger) !important;
+}
+
+.sidebar .activity-icon.bg-info {
+    background-color: var(--color-info) !important;
+}
+
+/* ============================================================================
+   PAGE HEADER ENHANCEMENTS
+   ============================================================================ */
+
+.page-header {
+    background: #fff;
+    border-bottom: 1px solid var(--color-border);
+    padding: 1rem 2rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.page-header .page-title {
+    color: var(--color-text);
+    font-weight: 700;
+    font-size: 1.75rem;
+    margin: 0;
+}
+
+.page-header .page-description {
+    color: var(--color-text-muted);
+    font-size: 0.95rem;
+    margin: 0.25rem 0 0 0;
+}
+
+/* ============================================================================
+   BREADCRUMB ENHANCEMENTS
+   ============================================================================ */
+
+.breadcrumb {
+    background: transparent;
+    padding: 0;
+    margin: 0;
+}
+
+.breadcrumb-item + .breadcrumb-item::before {
+    color: var(--color-text-muted);
+}
+
+.breadcrumb-item.active {
+    color: var(--color-text);
+}
+
+.breadcrumb-item a {
+    color: var(--color-secondary);
+}
+
+.breadcrumb-item a:hover {
+    color: var(--color-primary);
+}
+
+/* ============================================================================
+   DROPDOWN MENU ENHANCEMENTS
+   ============================================================================ */
+
+.dropdown-menu {
+    border: 1px solid var(--color-border);
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.dropdown-item:hover,
+.dropdown-item:focus {
+    background-color: rgba(52, 152, 219, 0.1);
+    color: var(--color-text);
+}
+
+.dropdown-item.active,
+.dropdown-item:active {
+    background-color: var(--color-secondary);
+    color: #fff;
+}
+
+/* ============================================================================
+   NAV TABS ENHANCEMENTS
+   ============================================================================ */
+
+.nav-tabs {
+    border-bottom: 2px solid var(--color-border);
+}
+
+.nav-tabs .nav-link {
+    color: var(--color-text-muted);
+    border: none;
+    border-bottom: 2px solid transparent;
+    transition: all 0.3s ease;
+}
+
+.nav-tabs .nav-link:hover {
+    color: var(--color-secondary);
+    border-bottom-color: var(--color-secondary);
+}
+
+.nav-tabs .nav-link.active {
+    color: var(--color-secondary);
+    border-bottom-color: var(--color-secondary);
+    background: transparent;
+}
+
+/* ============================================================================
+   LIST GROUP ENHANCEMENTS
+   ============================================================================ */
+
+.list-group-item {
+    border-color: var(--color-border);
+}
+
+.list-group-item.active {
+    background-color: var(--color-secondary);
+    border-color: var(--color-secondary);
+}
+
+.list-group-item-action:hover,
+.list-group-item-action:focus {
+    background-color: rgba(52, 152, 219, 0.08);
+}
+
+/* ============================================================================
+   CUSTOM SCROLLBAR
+   ============================================================================ */
+
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--color-secondary);
+    border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--color-primary);
+}
+
+/* ============================================================================
+   UTILITY CLASSES
+   ============================================================================ */
+
+.text-primary {
+    color: var(--color-primary) !important;
+}
+
+.text-secondary {
+    color: var(--color-secondary) !important;
+}
+
+.text-success {
+    color: var(--color-success) !important;
+}
+
+.text-danger {
+    color: var(--color-danger) !important;
+}
+
+.text-warning {
+    color: var(--color-warning) !important;
+}
+
+.text-info {
+    color: var(--color-info) !important;
+}
+
+.bg-primary {
+    background-color: var(--color-primary) !important;
+}
+
+.bg-secondary {
+    background-color: var(--color-secondary) !important;
+}
+
+.bg-success {
+    background-color: var(--color-success) !important;
+}
+
+.bg-danger {
+    background-color: var(--color-danger) !important;
+}
+
+.bg-warning {
+    background-color: var(--color-warning) !important;
+}
+
+.bg-info {
+    background-color: var(--color-info) !important;
+}
+
+.border-primary {
+    border-color: var(--color-primary) !important;
+}
+
+.border-secondary {
+    border-color: var(--color-secondary) !important;
+}
+
+.border-success {
+    border-color: var(--color-success) !important;
+}
+
+.border-danger {
+    border-color: var(--color-danger) !important;
+}
+
+.border-warning {
+    border-color: var(--color-warning) !important;
+}
+
+.border-info {
+    border-color: var(--color-info) !important;
+}
