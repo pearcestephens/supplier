@@ -77,7 +77,7 @@
 </head>
 <body>
     <h1>🧪 Supplier Portal - Browser Testing Suite</h1>
-    
+
     <!-- Console Error Check -->
     <div class="test-section">
         <h2>1. JavaScript Console Errors</h2>
@@ -91,13 +91,13 @@
     <div class="test-section">
         <h2>2. API Endpoint Tests</h2>
         <p>Test all 5 newly created API endpoints</p>
-        
+
         <button class="test-button" onclick="testSearchOrders()">Test Search Orders</button>
         <button class="test-button" onclick="testGetOrderDetail()">Test Get Order Detail</button>
         <button class="test-button" onclick="testGetWarrantyDetail()">Test Get Warranty Detail</button>
         <button class="test-button" onclick="testSearchProducts()">Test Search Products</button>
         <button class="test-button" onclick="testUpdateAccount()">Test Update Account</button>
-        
+
         <div id="api-results"></div>
     </div>
 
@@ -105,12 +105,12 @@
     <div class="test-section">
         <h2>3. JavaScript Features</h2>
         <p>Test individual UX enhancement features</p>
-        
+
         <button class="test-button" onclick="testToast()">Test Toast Notification</button>
         <button class="test-button" onclick="testConfirmDialog()">Test Confirm Dialog</button>
         <button class="test-button" onclick="testButtonLoading()">Test Button Loading</button>
         <button class="test-button" onclick="testFormValidation()">Test Form Validation</button>
-        
+
         <div id="feature-results"></div>
     </div>
 
@@ -269,7 +269,7 @@
         window.addEventListener('load', () => {
             const resources = performance.getEntriesByType('resource');
             const failed = resources.filter(r => r.transferSize === 0);
-            
+
             const resourceStatus = document.getElementById('resource-status');
             if (failed.length === 0) {
                 resourceStatus.className = 'result success';

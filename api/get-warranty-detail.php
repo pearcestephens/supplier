@@ -2,7 +2,7 @@
 /**
  * Get Warranty Detail API Endpoint
  * Returns detailed warranty claim information for modal display
- * 
+ *
  * @package SupplierPortal
  * @version 1.0.0
  */
@@ -21,27 +21,27 @@ try {
     if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
         throw new Exception('Invalid request method');
     }
-    
+
     // Get claim ID
     $claimId = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
-    
+
     if (!$claimId) {
         throw new Exception('Invalid claim ID');
     }
-    
+
     // Get supplier ID from session
     $supplierId = Auth::getSupplierId();
-    
+
     if (!$supplierId) {
         throw new Exception('Supplier ID not found in session');
     }
-    
+
     // Get warranty claim details
     $db = Database::getInstance();
     $mysqli = $db->getConnection();
-    
+
     $stmt = $mysqli->prepare("
-        SELECT 
+        SELECT
             wc.id,
             wc.claim_number,
             wc.status,
@@ -61,20 +61,20 @@ try {
         WHERE wc.id = ?
         AND wc.supplier_id = ?
     ");
-    
+
     $stmt->bind_param('ii', $claimId, $supplierId);
     $stmt->execute();
     $result = $stmt->get_result();
-    
+
     if ($result->num_rows === 0) {
         throw new Exception('Warranty claim not found');
     }
-    
+
     $claim = $result->fetch_assoc();
-    
+
     // Get claim notes/history
     $stmt = $mysqli->prepare("
-        SELECT 
+        SELECT
             note,
             created_by,
             created_at
@@ -82,21 +82,21 @@ try {
         WHERE claim_id = ?
         ORDER BY created_at DESC
     ");
-    
+
     $stmt->bind_param('i', $claimId);
     $stmt->execute();
     $notesResult = $stmt->get_result();
-    
+
     $notes = [];
     while ($note = $notesResult->fetch_assoc()) {
         $notes[] = $note;
     }
-    
+
     // Generate HTML for modal
     $statusBadge = renderStatusBadge($claim['status'], 'warranty', true, true);
-    
+
     $html = '<div class="warranty-detail-modal">';
-    
+
     // Header section
     $html .= '<div class="row mb-4">';
     $html .= '<div class="col-md-6">';
@@ -108,7 +108,7 @@ try {
         $html .= '<p class="mb-1"><strong>Resolved:</strong> ' . date('M d, Y', strtotime($claim['resolution_date'])) . '</p>';
     }
     $html .= '</div>';
-    
+
     $html .= '<div class="col-md-6">';
     $html .= '<h5 class="mb-2">Customer Information</h5>';
     $html .= '<p class="mb-1"><strong>Name:</strong> ' . htmlspecialchars($claim['customer_name']) . '</p>';
@@ -116,7 +116,7 @@ try {
     $html .= '<p class="mb-1"><strong>Outlet:</strong> ' . htmlspecialchars($claim['outlet_name'] ?? 'N/A') . '</p>';
     $html .= '</div>';
     $html .= '</div>';
-    
+
     // Product section
     $html .= '<div class="mb-4">';
     $html .= '<h5 class="mb-2">Product Information</h5>';
@@ -128,13 +128,13 @@ try {
     $html .= '</div>';
     $html .= '</div>';
     $html .= '</div>';
-    
+
     // Issue description
     $html .= '<div class="mb-4">';
     $html .= '<h5 class="mb-2">Issue Description</h5>';
     $html .= '<div class="alert alert-warning">' . nl2br(htmlspecialchars($claim['issue_description'])) . '</div>';
     $html .= '</div>';
-    
+
     // Images
     if ($claim['images']) {
         $images = json_decode($claim['images'], true);
@@ -151,7 +151,7 @@ try {
             $html .= '</div>';
         }
     }
-    
+
     // Resolution
     if ($claim['resolution']) {
         $html .= '<div class="mb-4">';
@@ -159,7 +159,7 @@ try {
         $html .= '<div class="alert alert-success">' . nl2br(htmlspecialchars($claim['resolution'])) . '</div>';
         $html .= '</div>';
     }
-    
+
     // Notes/History
     if (count($notes) > 0) {
         $html .= '<div class="mb-4">';
@@ -176,18 +176,18 @@ try {
         }
         $html .= '</div>';
     }
-    
+
     $html .= '</div>';
-    
+
     echo json_encode([
         'success' => true,
         'html' => $html,
         'claim' => $claim
     ]);
-    
+
 } catch (Exception $e) {
     error_log("Get Warranty Detail API Error: " . $e->getMessage());
-    
+
     http_response_code(500);
     echo json_encode([
         'success' => false,

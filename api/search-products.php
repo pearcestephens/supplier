@@ -2,7 +2,7 @@
 /**
  * Search Products API Endpoint
  * Provides autocomplete search functionality for products
- * 
+ *
  * @package SupplierPortal
  * @version 1.0.0
  */
@@ -21,10 +21,10 @@ try {
     if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
         throw new Exception('Invalid request method');
     }
-    
+
     // Get search query
     $query = $_GET['q'] ?? '';
-    
+
     if (strlen($query) < 2) {
         echo json_encode([
             'success' => true,
@@ -33,22 +33,22 @@ try {
         ]);
         exit;
     }
-    
+
     // Get supplier ID from session
     $supplierId = Auth::getSupplierId();
-    
+
     if (!$supplierId) {
         throw new Exception('Supplier ID not found in session');
     }
-    
+
     // Search products (name, SKU)
     $db = Database::getInstance();
     $mysqli = $db->getConnection();
-    
+
     $searchTerm = '%' . $query . '%';
-    
+
     $stmt = $mysqli->prepare("
-        SELECT 
+        SELECT
             sp.id,
             sp.product_name,
             sp.sku,
@@ -66,17 +66,17 @@ try {
         ORDER BY sp.product_name
         LIMIT 10
     ");
-    
+
     $stmt->bind_param('iss', $supplierId, $searchTerm, $searchTerm);
     $stmt->execute();
     $result = $stmt->get_result();
-    
+
     $results = [];
     while ($row = $result->fetch_assoc()) {
         // Determine stock status
         $stockStatus = 'in stock';
         $stockClass = 'success';
-        
+
         if ($row['current_stock'] <= 0) {
             $stockStatus = 'out of stock';
             $stockClass = 'danger';
@@ -84,7 +84,7 @@ try {
             $stockStatus = 'low stock';
             $stockClass = 'warning';
         }
-        
+
         $results[] = [
             'id' => $row['id'],
             'title' => $row['product_name'],
@@ -98,16 +98,16 @@ try {
             'icon' => 'box'
         ];
     }
-    
+
     echo json_encode([
         'success' => true,
         'results' => $results,
         'count' => count($results)
     ]);
-    
+
 } catch (Exception $e) {
     error_log("Search Products API Error: " . $e->getMessage());
-    
+
     http_response_code(500);
     echo json_encode([
         'success' => false,

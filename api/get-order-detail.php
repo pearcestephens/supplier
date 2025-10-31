@@ -2,7 +2,7 @@
 /**
  * Get Order Detail API Endpoint
  * Returns detailed order information for modal display
- * 
+ *
  * @package SupplierPortal
  * @version 1.0.0
  */
@@ -21,28 +21,28 @@ try {
     if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
         throw new Exception('Invalid request method');
     }
-    
+
     // Get order ID
     $orderId = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
-    
+
     if (!$orderId) {
         throw new Exception('Invalid order ID');
     }
-    
+
     // Get supplier ID from session
     $supplierId = Auth::getSupplierId();
-    
+
     if (!$supplierId) {
         throw new Exception('Supplier ID not found in session');
     }
-    
+
     // Get order details
     $db = Database::getInstance();
     $mysqli = $db->getConnection();
-    
+
     // Get order header
     $stmt = $mysqli->prepare("
-        SELECT 
+        SELECT
             po.id,
             po.po_number,
             po.status,
@@ -58,20 +58,20 @@ try {
         WHERE po.id = ?
         AND po.supplier_id = ?
     ");
-    
+
     $stmt->bind_param('ii', $orderId, $supplierId);
     $stmt->execute();
     $result = $stmt->get_result();
-    
+
     if ($result->num_rows === 0) {
         throw new Exception('Order not found');
     }
-    
+
     $order = $result->fetch_assoc();
-    
+
     // Get order items
     $stmt = $mysqli->prepare("
-        SELECT 
+        SELECT
             poi.id,
             poi.product_name,
             poi.sku,
@@ -82,21 +82,21 @@ try {
         WHERE poi.purchase_order_id = ?
         ORDER BY poi.product_name
     ");
-    
+
     $stmt->bind_param('i', $orderId);
     $stmt->execute();
     $itemsResult = $stmt->get_result();
-    
+
     $items = [];
     while ($item = $itemsResult->fetch_assoc()) {
         $items[] = $item;
     }
-    
+
     // Generate HTML for modal
     $statusBadge = renderStatusBadge($order['status'], 'order', true, true);
-    
+
     $html = '<div class="order-detail-modal">';
-    
+
     // Header section
     $html .= '<div class="row mb-4">';
     $html .= '<div class="col-md-6">';
@@ -106,7 +106,7 @@ try {
     $html .= '<p class="mb-1"><strong>Created:</strong> ' . date('M d, Y g:i A', strtotime($order['created_at'])) . '</p>';
     $html .= '<p class="mb-1"><strong>Updated:</strong> ' . date('M d, Y g:i A', strtotime($order['updated_at'])) . '</p>';
     $html .= '</div>';
-    
+
     $html .= '<div class="col-md-6">';
     $html .= '<h5 class="mb-2">Delivery Information</h5>';
     $html .= '<p class="mb-1"><strong>Outlet:</strong> ' . htmlspecialchars($order['outlet_name']) . '</p>';
@@ -116,7 +116,7 @@ try {
     }
     $html .= '</div>';
     $html .= '</div>';
-    
+
     // Items table
     $html .= '<h5 class="mb-3">Order Items</h5>';
     $html .= '<div class="table-responsive">';
@@ -131,7 +131,7 @@ try {
     $html .= '</tr>';
     $html .= '</thead>';
     $html .= '<tbody>';
-    
+
     foreach ($items as $item) {
         $html .= '<tr>';
         $html .= '<td>' . htmlspecialchars($item['product_name']) . '</td>';
@@ -141,7 +141,7 @@ try {
         $html .= '<td class="text-end fw-bold">$' . number_format((float)$item['line_total'], 2) . '</td>';
         $html .= '</tr>';
     }
-    
+
     $html .= '</tbody>';
     $html .= '<tfoot class="table-light">';
     $html .= '<tr>';
@@ -151,7 +151,7 @@ try {
     $html .= '</tfoot>';
     $html .= '</table>';
     $html .= '</div>';
-    
+
     // Notes section
     if ($order['notes']) {
         $html .= '<div class="mt-4">';
@@ -159,18 +159,18 @@ try {
         $html .= '<div class="alert alert-info">' . nl2br(htmlspecialchars($order['notes'])) . '</div>';
         $html .= '</div>';
     }
-    
+
     $html .= '</div>';
-    
+
     echo json_encode([
         'success' => true,
         'html' => $html,
         'order' => $order
     ]);
-    
+
 } catch (Exception $e) {
     error_log("Get Order Detail API Error: " . $e->getMessage());
-    
+
     http_response_code(500);
     echo json_encode([
         'success' => false,
