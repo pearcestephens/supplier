@@ -105,11 +105,11 @@ function sendLoginEmail(string $email, string $name, string $loginUrl): bool
         <style>
             body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; line-height: 1.6; color: #333; background: #f5f5f5; }
             .container { max-width: 600px; margin: 40px auto; background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
-            .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 40px 30px; text-align: center; }
+            .header { background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%); color: white; padding: 40px 30px; text-align: center; }
             .header h1 { margin: 0; font-size: 28px; font-weight: 700; }
             .header p { margin: 10px 0 0 0; opacity: 0.9; font-size: 14px; }
             .content { padding: 40px 30px; }
-            .button { display: inline-block; padding: 16px 40px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white !important; text-decoration: none; border-radius: 8px; font-weight: 600; margin: 20px 0; font-size: 16px; }
+            .button { display: inline-block; padding: 16px 40px; background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%); color: white !important; text-decoration: none; border-radius: 8px; font-weight: 600; margin: 20px 0; font-size: 16px; }
             .button:hover { opacity: 0.9; }
             .warning { background: #fff3cd; border-left: 4px solid #ffc107; padding: 20px; margin: 20px 0; border-radius: 4px; }
             .warning strong { color: #856404; display: block; margin-bottom: 10px; }
@@ -117,7 +117,7 @@ function sendLoginEmail(string $email, string $name, string $loginUrl): bool
             .warning li { color: #856404; font-size: 14px; margin-bottom: 5px; }
             .code-box { background: #f8f9fa; border: 1px solid #e0e0e0; padding: 15px; border-radius: 4px; word-break: break-all; font-family: monospace; font-size: 13px; color: #666; margin-top: 10px; }
             .footer { text-align: center; padding: 30px; background: #f8f9fa; color: #666; font-size: 13px; }
-            .footer a { color: #667eea; text-decoration: none; }
+            .footer a { color: #3498db; text-decoration: none; }
         </style>
     </head>
     <body>
@@ -199,6 +199,9 @@ function sendLoginEmail(string $email, string $name, string $loginUrl): bool
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
+    <!-- Login Page Specific Styles -->
+    <link rel="stylesheet" href="/supplier/assets/css/06-login.css?v=<?php echo time(); ?>">
+    
     <style>
         * {
             margin: 0;
@@ -208,7 +211,7 @@ function sendLoginEmail(string $email, string $name, string $loginUrl): bool
         
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -275,7 +278,7 @@ function sendLoginEmail(string $email, string $name, string $loginUrl): bool
         }
         
         .login-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
             color: white;
             padding: 50px 35px;
             text-align: center;
@@ -335,7 +338,7 @@ function sendLoginEmail(string $email, string $name, string $loginUrl): bool
         
         .info-box {
             background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-            border-left: 4px solid #667eea;
+            border-left: 4px solid #3498db;
             padding: 22px;
             border-radius: 12px;
             margin-bottom: 30px;
@@ -353,7 +356,7 @@ function sendLoginEmail(string $email, string $name, string $loginUrl): bool
         
         .info-box h5 i {
             margin-right: 10px;
-            color: #667eea;
+            color: #3498db;
             font-size: 18px;
         }
         
@@ -375,7 +378,7 @@ function sendLoginEmail(string $email, string $name, string $loginUrl): bool
         
         .form-group label i {
             margin-right: 8px;
-            color: #667eea;
+            color: #3498db;
         }
         
         .form-control {
@@ -388,13 +391,13 @@ function sendLoginEmail(string $email, string $name, string $loginUrl): bool
         }
         
         .form-control:focus {
-            border-color: #667eea;
-            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+            border-color: #3498db;
+            box-shadow: 0 0 0 4px rgba(52, 152, 219, 0.1);
             background: white;
         }
         
         .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
             border: none;
             border-radius: 12px;
             padding: 16px 32px;
@@ -402,7 +405,7 @@ function sendLoginEmail(string $email, string $name, string $loginUrl): bool
             font-weight: 600;
             width: 100%;
             transition: all 0.3s ease;
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 6px 20px rgba(52, 152, 219, 0.4);
             position: relative;
             overflow: hidden;
         }
@@ -424,7 +427,7 @@ function sendLoginEmail(string $email, string $name, string $loginUrl): bool
         
         .btn-primary:hover {
             transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.5);
+            box-shadow: 0 8px 25px rgba(52, 152, 219, 0.5);
         }
         
         .btn-primary:active {
@@ -528,14 +531,14 @@ function sendLoginEmail(string $email, string $name, string $loginUrl): bool
         }
         
         .footer-text a {
-            color: #667eea;
+            color: #3498db;
             text-decoration: none;
             font-weight: 600;
             transition: color 0.3s ease;
         }
         
         .footer-text a:hover {
-            color: #764ba2;
+            color: #2c3e50;
             text-decoration: underline;
         }
         
@@ -636,6 +639,9 @@ function sendLoginEmail(string $email, string $name, string $loginUrl): bool
     
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Login Page JavaScript -->
+    <script src="/supplier/assets/js/13-login.js?v=<?php echo time(); ?>"></script>
     
     <script>
         $(document).ready(function() {

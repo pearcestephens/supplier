@@ -46,5 +46,8 @@ if (!isset($pageTitle)) {
 
     <!-- UX Enhancements CSS -->
     <link rel="stylesheet" href="/supplier/assets/css/ux-enhancements.css?v=<?php echo time(); ?>">
+    
+    <!-- Polish & Brand Consistency CSS -->
+    <link rel="stylesheet" href="/supplier/assets/css/07-polish.css?v=<?php echo time(); ?>">
 </head>
 <body>

@@ -78,5 +78,8 @@
 <script src="/supplier/assets/js/modal-templates.js?v=<?php echo time(); ?>"></script>
 <script src="/supplier/assets/js/lazy-loading.js?v=<?php echo time(); ?>"></script>
 
+<!-- Global UI Helpers -->
+<script src="/supplier/assets/js/14-global-ui.js?v=<?php echo time(); ?>"></script>
+
 <!-- NOTE: Page-specific JavaScript should be included by each page AFTER this component -->
 <!-- Then close </body></html> in each page file -->
