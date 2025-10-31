@@ -94,6 +94,7 @@ $ordersQuery = "
         t.outlet_to,
         t.state,
         t.created_at,
+        t.updated_at,
         t.expected_delivery_date,
         t.tracking_number,
         COALESCE(SUM(ti.quantity * ti.unit_cost), 0) as total_value,
@@ -105,7 +106,7 @@ $ordersQuery = "
     LEFT JOIN vend_consignment_line_items ti ON t.id = ti.transfer_id AND ti.deleted_at IS NULL
     LEFT JOIN vend_outlets o ON t.outlet_to = o.id
     WHERE {$whereClause}
-    GROUP BY t.id, t.public_id, t.vend_number, t.supplier_id, t.outlet_to, t.state, t.created_at, t.expected_delivery_date, t.tracking_number, o.name, o.id
+    GROUP BY t.id, t.public_id, t.vend_number, t.supplier_id, t.outlet_to, t.state, t.created_at, t.updated_at, t.expected_delivery_date, t.tracking_number, o.name, o.id
     ORDER BY t.created_at DESC
     LIMIT ? OFFSET ?
 ";
@@ -120,6 +121,15 @@ $orders = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
 $stmt->close();
 
 $totalPages = ceil($totalOrders / $perPage);
+
+// Check if any orders have expected delivery dates
+$hasExpectedDelivery = false;
+foreach ($orders as $order) {
+    if (!empty($order['expected_delivery_date']) && $order['expected_delivery_date'] !== '0000-00-00' && $order['expected_delivery_date'] !== '0000-00-00 00:00:00') {
+        $hasExpectedDelivery = true;
+        break;
+    }
+}
 
 // ============================================================================
 // QUERY 3: Get Available Outlets (for filter dropdown)
@@ -369,19 +379,19 @@ $actionButtons = '
                 <div>
                     <!-- Bulk Actions Toolbar -->
                     <div class="btn-group me-2" role="group">
-                        <button class="btn btn-sm btn-outline-primary" onclick="bulkDownloadPackingSlips()" title="Download Packing Slips">
+                        <button class="btn btn-sm btn-outline-primary bulk-action-btn" id="bulkPackingSlipsBtn" onclick="bulkDownloadPackingSlips()" title="Download Packing Slips" disabled>
                             <i class="fas fa-file-invoice"></i> Packing Slips
                         </button>
-                        <button class="btn btn-sm btn-outline-success" onclick="bulkAddTracking()" title="Add Tracking Numbers">
+                        <button class="btn btn-sm btn-outline-success bulk-action-btn" id="bulkAddTrackingBtn" onclick="bulkAddTracking()" title="Add Tracking Numbers" disabled>
                             <i class="fas fa-shipping-fast"></i> Add Tracking
                         </button>
-                        <button class="btn btn-sm btn-outline-warning" onclick="bulkMarkShipped()" title="Mark as Shipped">
+                        <button class="btn btn-sm btn-outline-warning bulk-action-btn" id="bulkMarkShippedBtn" onclick="bulkMarkShipped()" title="Mark as Shipped" disabled>
                             <i class="fas fa-truck"></i> Mark Shipped
                         </button>
-                        <button class="btn btn-sm btn-outline-info" onclick="bulkExportCSV()" title="Export to CSV">
+                        <button class="btn btn-sm btn-outline-info bulk-action-btn" id="bulkExportCSVBtn" onclick="bulkExportCSV()" title="Export to CSV" disabled>
                             <i class="fas fa-file-csv"></i> Export CSV
                         </button>
-                        <button class="btn btn-sm btn-outline-secondary" onclick="bulkDownloadZip()" title="Download as ZIP">
+                        <button class="btn btn-sm btn-outline-secondary bulk-action-btn" id="bulkDownloadZipBtn" onclick="bulkDownloadZip()" title="Download as ZIP" disabled>
                             <i class="fas fa-file-archive"></i> Download ZIP
                         </button>
                     </div>
@@ -401,12 +411,13 @@ $actionButtons = '
                             <th width="40px" class="text-center">
                                 <input type="checkbox" class="form-check-input" id="selectAllOrdersHeader" onclick="toggleAllOrders(this)">
                             </th>
-                            <th>Order #</th>
+                            <th>#</th>
                             <th>Store Location</th>
                             <th>Date Ordered</th>
-                            <th>Expected Delivery</th>
+                            <?php if ($hasExpectedDelivery): ?>
+                                <th>Expected Delivery</th>
+                            <?php endif; ?>
                             <th class="text-center">Items</th>
-                            <th class="text-end">Qty</th>
                             <th class="text-end">Value</th>
                             <th class="text-center">Status</th>
                             <th class="text-center">Tracking</th>
@@ -434,32 +445,31 @@ $actionButtons = '
                                     </td>
                                     <td>
                                         <div class="fw-bold"><?php echo htmlspecialchars($order['outlet_name']); ?></div>
-                                        <small class="text-muted"><?php echo htmlspecialchars($order['store_code'] ?? ''); ?></small>
                                     </td>
                                     <td>
                                         <div><?php echo date('M d, Y', strtotime($order['created_at'])); ?></div>
-                                        <small class="text-muted"><?php echo date('g:i A', strtotime($order['created_at'])); ?></small>
                                     </td>
-                                    <td>
-                                        <?php if ($order['expected_delivery_date']): ?>
-                                            <div><?php echo date('M d, Y', strtotime($order['expected_delivery_date'])); ?></div>
-                                            <?php
-                                            $daysUntil = floor((strtotime($order['expected_delivery_date']) - time()) / 86400);
-                                            if ($daysUntil < 0): ?>
-                                                <small class="text-danger"><i class="fas fa-exclamation-circle"></i> <?php echo abs($daysUntil); ?> days overdue</small>
-                                            <?php elseif ($daysUntil <= 3): ?>
-                                                <small class="text-warning"><i class="fas fa-clock"></i> <?php echo $daysUntil; ?> days left</small>
+                                    <?php if ($hasExpectedDelivery): ?>
+                                        <td>
+                                            <?php if ($order['expected_delivery_date']): ?>
+                                                <div><?php echo date('M d, Y', strtotime($order['expected_delivery_date'])); ?></div>
+                                                <?php
+                                                $daysUntil = floor((strtotime($order['expected_delivery_date']) - time()) / 86400);
+                                                if ($daysUntil < 0): ?>
+                                                    <small class="text-danger"><i class="fas fa-exclamation-circle"></i> <?php echo abs($daysUntil); ?> days overdue</small>
+                                                <?php elseif ($daysUntil <= 3): ?>
+                                                    <small class="text-warning"><i class="fas fa-clock"></i> <?php echo $daysUntil; ?> days left</small>
+                                                <?php else: ?>
+                                                    <small class="text-muted"><?php echo $daysUntil; ?> days</small>
+                                                <?php endif; ?>
                                             <?php else: ?>
-                                                <small class="text-muted"><?php echo $daysUntil; ?> days</small>
+                                                <small class="text-muted">Not specified</small>
                                             <?php endif; ?>
-                                        <?php else: ?>
-                                            <small class="text-muted">Not specified</small>
-                                        <?php endif; ?>
-                                    </td>
+                                        </td>
+                                    <?php endif; ?>
                                     <td class="text-center">
                                         <span class="badge bg-secondary"><?php echo number_format((float)($order['item_count'] ?? 0)); ?></span>
                                     </td>
-                                    <td class="text-end"><?php echo number_format((float)($order['total_quantity'] ?? 0)); ?></td>
                                     <td class="text-end fw-bold">
                                         <?php
                                         $value = (float)($order['total_value'] ?? 0);
@@ -476,22 +486,62 @@ $actionButtons = '
                                         </span>
                                     </td>
                                     <td class="text-center" onclick="event.stopPropagation();">
-                                        <?php if ($order['state'] === 'SENT' || $order['state'] === 'RECEIVING'): ?>
-                                            <button class="btn btn-sm btn-warning" onclick="updateTracking(<?php echo $order['id']; ?>)" title="Add/Update Tracking">
-                                                <i class="fas fa-shipping-fast"></i>
-                                            </button>
+                                        <?php
+                                        // Check if status allows modifications
+                                        $lockedStatuses = ['RECEIVED', 'RECEIVING', 'CANCELLED', 'CLOSED'];
+                                        $isStatusLocked = in_array($order['state'], $lockedStatuses);
+
+                                        if (!empty($order['tracking_number'])):
+                                        ?>
+                                            <span class="badge bg-success" title="<?php echo htmlspecialchars($order['tracking_number']); ?>">
+                                                <i class="fas fa-check-circle"></i> Has Tracking
+                                            </span>
+                                        <?php elseif ($isStatusLocked): ?>
+                                            <span class="badge bg-secondary" title="Cannot attach tracking - order is <?php echo $order['state']; ?>">
+                                                <i class="fas fa-lock"></i> Locked
+                                            </span>
                                         <?php else: ?>
-                                            <span class="text-muted">-</span>
+                                            <button class="btn btn-sm btn-outline-dark" onclick="addTrackingModal(<?php echo $order['id']; ?>, '<?php echo htmlspecialchars($order['vend_number'] ?? ''); ?>')" title="Add Tracking">
+                                                <i class="fas fa-plus-circle"></i> Attach
+                                            </button>
                                         <?php endif; ?>
                                     </td>
-                                    <td class="text-center" onclick="event.stopPropagation();">
+                                    <td class="text-center no-click" onclick="event.stopPropagation();">
+                                        <?php
+                                        // Check 24-hour lock: if tracking exists or status is SENT, check if updated within 24h
+                                        $canEdit = false;
+                                        $lockReason = '';
+
+                                        if ($order['state'] === 'OPEN' || $order['state'] === 'SENT') {
+                                            // Check if it's been more than 24 hours since last update
+                                            $hoursSinceUpdate = (time() - strtotime($order['updated_at'])) / 3600;
+
+                                            if ($order['state'] === 'SENT' || !empty($order['tracking_number'])) {
+                                                if ($hoursSinceUpdate < 24) {
+                                                    $canEdit = true;
+                                                } else {
+                                                    $lockReason = 'Locked after 24 hours';
+                                                }
+                                            } else {
+                                                // OPEN status with no tracking - always editable
+                                                $canEdit = true;
+                                            }
+                                        }
+                                        ?>
                                         <div class="btn-group btn-group-sm">
-                                            <a href="/supplier/order-detail.php?id=<?php echo $order['id']; ?>" class="btn btn-primary" title="View Full Details">
-                                                <i class="fas fa-eye"></i> View
+                                            <button class="btn btn-sm btn-outline-primary" onclick="quickViewOrder(<?php echo $order['id']; ?>)" title="Quick Preview">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <a href="/supplier/order-detail.php?id=<?php echo $order['id']; ?>" class="btn btn-sm btn-primary" title="Full Details">
+                                                <i class="fas fa-external-link-alt"></i>
                                             </a>
-                                            <?php if ($order['state'] === 'OPEN' || $order['state'] === 'SENT'): ?>
-                                                <button class="btn btn-warning" onclick="updateOrder(<?php echo $order['id']; ?>)" title="Update Status">
+                                            <?php if ($canEdit): ?>
+                                                <button class="btn btn-sm btn-warning" onclick="editOrder(<?php echo $order['id']; ?>)" title="Edit Order">
                                                     <i class="fas fa-edit"></i>
+                                                </button>
+                                            <?php elseif (!empty($lockReason)): ?>
+                                                <button class="btn btn-sm btn-secondary" disabled title="<?php echo $lockReason; ?>">
+                                                    <i class="fas fa-lock"></i>
                                                 </button>
                                             <?php endif; ?>
                                         </div>
@@ -540,173 +590,6 @@ $actionButtons = '
                 </nav>
             </div>
         <?php endif; ?>
-    </div>
-
-    <!-- Additional Widgets Row -->
-    <div class="row g-4 mb-4">
-
-        <!-- Widget 1: Active Orders Status (always show) -->
-        <div class="col-lg-4 col-md-6">
-            <div class="card h-100">
-                <div class="card-header bg-primary text-white">
-                    <h6 class="mb-0"><i class="fas fa-tasks"></i> Orders to Fulfill</h6>
-                </div>
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h3 class="mb-0"><?php echo number_format((float)($activeStats['active_count'] ?? 0)); ?></h3>
-                        <i class="fas fa-box-open fa-2x text-primary opacity-25"></i>
-                    </div>
-                    <div class="mt-3">
-                        <div class="d-flex justify-content-between mb-2">
-                            <span class="text-muted small">New Orders</span>
-                            <span class="badge bg-primary"><?php echo number_format((float)($activeStats['open_count'] ?? 0)); ?></span>
-                        </div>
-                        <div class="d-flex justify-content-between mb-2">
-                            <span class="text-muted small">Shipped</span>
-                            <span class="badge bg-info"><?php echo number_format((float)($activeStats['sent_count'] ?? 0)); ?></span>
-                        </div>
-                        <div class="d-flex justify-content-between">
-                            <span class="text-muted small">Being Received</span>
-                            <span class="badge bg-warning"><?php echo number_format((float)($activeStats['receiving_count'] ?? 0)); ?></span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Widget 2: Monthly Performance (show if has data) -->
-        <?php if ($monthlyStats['orders_this_month'] > 0): ?>
-        <div class="col-lg-4 col-md-6">
-            <div class="card h-100">
-                <div class="card-header bg-success text-white">
-                    <h6 class="mb-0"><i class="fas fa-chart-line"></i> Your Sales This Month</h6>
-                </div>
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h3 class="mb-0"><?php echo number_format((float)($monthlyStats['orders_this_month'] ?? 0)); ?></h3>
-                        <i class="fas fa-dollar-sign fa-2x text-success opacity-25"></i>
-                    </div>
-                    <div class="mt-3">
-                        <div class="d-flex justify-content-between mb-2">
-                            <span class="text-muted small">Units Sold</span>
-                            <strong><?php echo number_format((float)($monthlyStats['units_this_month'] ?? 0)); ?></strong>
-                        </div>
-                        <div class="d-flex justify-content-between">
-                            <span class="text-muted small">Revenue Generated</span>
-                            <strong class="text-success">$<?php echo number_format((float)($monthlyStats['value_this_month'] ?? 0), 2); ?></strong>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <?php endif; ?>
-
-        <!-- Widget 3: Pending Deliveries (show if has data) -->
-        <?php if ($pendingDeliveries['pending_count'] > 0): ?>
-        <div class="col-lg-4 col-md-6">
-            <div class="card h-100">
-                <div class="card-header bg-warning text-dark">
-                    <h6 class="mb-0"><i class="fas fa-truck"></i> Shipments Due</h6>
-                </div>
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h3 class="mb-0"><?php echo number_format((float)($pendingDeliveries['pending_count'] ?? 0)); ?></h3>
-                        <i class="fas fa-clock fa-2x text-warning opacity-25"></i>
-                    </div>
-                    <div class="mt-3">
-                        <div class="d-flex justify-content-between mb-2">
-                            <span class="text-muted small">Past Due Date</span>
-                            <span class="badge bg-danger"><?php echo number_format((float)($pendingDeliveries['overdue_count'] ?? 0)); ?></span>
-                        </div>
-                        <div class="d-flex justify-content-between">
-                            <span class="text-muted small">Due This Week</span>
-                            <span class="badge bg-warning"><?php echo number_format((float)($pendingDeliveries['due_soon_count'] ?? 0)); ?></span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <?php endif; ?>
-
-    </div>
-
-    <!-- Additional Widgets Row 2 -->
-    <div class="row g-4">
-
-        <!-- Widget 4: Top Outlets (show if has data) -->
-        <?php if (!empty($topOutlets)): ?>
-        <div class="col-lg-6">
-            <div class="card h-100">
-                <div class="card-header bg-light">
-                    <h6 class="mb-0"><i class="fas fa-store"></i> Top Customers (Last 30 Days)</h6>
-                </div>
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-sm mb-0">
-                            <thead>
-                                <tr>
-                                    <th>Store Location</th>
-                                    <th class="text-center">Orders</th>
-                                    <th class="text-end">Your Revenue</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php foreach ($topOutlets as $outlet): ?>
-                                    <tr>
-                                        <td>
-                                            <div><?php echo htmlspecialchars($outlet['outlet_name']); ?></div>
-                                            <small class="text-muted"><?php echo htmlspecialchars($outlet['store_code'] ?? ''); ?></small>
-                                        </td>
-                                        <td class="text-center">
-                                            <span class="badge bg-primary"><?php echo number_format((float)($outlet['order_count'] ?? 0)); ?></span>
-                                        </td>
-                                        <td class="text-end fw-bold">$<?php echo number_format((float)($outlet['total_value'] ?? 0), 2); ?></td>
-                                    </tr>
-                                <?php endforeach; ?>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <?php endif; ?>
-
-        <!-- Widget 5: Recent Activity (show if has data) -->
-        <?php if (!empty($recentActivity)): ?>
-        <div class="col-lg-6">
-            <div class="card h-100">
-                <div class="card-header bg-light">
-                    <h6 class="mb-0"><i class="fas fa-history"></i> Recent Activity</h6>
-                </div>
-                <div class="card-body">
-                    <div class="list-group list-group-flush">
-                        <?php foreach ($recentActivity as $activity): ?>
-                            <div class="list-group-item px-0">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <strong><?php echo htmlspecialchars($activity['public_id']); ?></strong>
-                                        <div class="small text-muted">
-                                            <?php echo htmlspecialchars($activity['outlet_name']); ?> •
-                                            <?php echo $activity['item_count']; ?> items
-                                        </div>
-                                    </div>
-                                    <div class="text-end">
-                                        <span class="badge bg-<?php echo getStatusBadgeClass($activity['state']); ?> mb-1">
-                                            <?php echo $activity['state']; ?>
-                                        </span>
-                                        <div class="small text-muted">
-                                            <?php echo date('M d, g:i A', strtotime($activity['created_at'])); ?>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        <?php endforeach; ?>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <?php endif; ?>
-
     </div>
 
 </div>

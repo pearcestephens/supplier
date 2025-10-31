@@ -68,7 +68,6 @@ try {
     // Get order items
     $stmt = $pdo->prepare("
         SELECT
-            li.id,
             p.name as product_name,
             p.sku,
             li.order_qty as quantity,

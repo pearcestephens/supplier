@@ -32,6 +32,7 @@ require_once __DIR__ . '/lib/Session.php';
 require_once __DIR__ . '/lib/Auth.php';
 require_once __DIR__ . '/lib/Utils.php';
 require_once __DIR__ . '/lib/status-badge-helper.php';
+require_once __DIR__ . '/includes/asset-loader.php'; // Asset auto-loader
 
 // ============================================================================
 // STEP 3: Initialize session (MUST be before Auth)
@@ -117,6 +118,19 @@ try {
     }
     exit;
 }
+
+// ============================================================================
+// STEP 4.5: Initialize Enhanced Logger (AI-Powered Event Tracking)
+// ============================================================================
+try {
+    require_once __DIR__ . '/lib/logger-bootstrap.php';
+    // Logger is now available globally as $logger
+    // Auto-logs page views and provides helper functions
+} catch (Exception $e) {
+    // Logger is optional - log error but don't halt application
+    error_log("Logger initialization failed: " . $e->getMessage());
+}
+
 
 // ============================================================================
 // STEP 5: Set application-wide error handlers (ENHANCED)

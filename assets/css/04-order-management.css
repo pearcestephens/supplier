@@ -1,0 +1,439 @@
+/**
+ * Order Management Styles
+ * Handles order editing, status changes, tracking, and notes
+ *
+ * @version 1.0.0
+ * @date 2025-10-31
+ */
+
+/* =============================================================================
+   ORDER STATUS BADGES
+   ============================================================================= */
+
+.status-badge {
+    padding: 0.35rem 0.75rem;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.status-badge.status-open {
+    background-color: #e3f2fd;
+    color: #1976d2;
+    border: 1px solid #90caf9;
+}
+
+.status-badge.status-sent {
+    background-color: #f3e5f5;
+    color: #7b1fa2;
+    border: 1px solid #ce93d8;
+}
+
+.status-badge.status-received {
+    background-color: #e8f5e9;
+    color: #388e3c;
+    border: 1px solid #81c784;
+}
+
+.status-badge.status-cancelled {
+    background-color: #ffebee;
+    color: #c62828;
+    border: 1px solid #ef9a9a;
+}
+
+/* =============================================================================
+   EDIT ORDER MODAL
+   ============================================================================= */
+
+.edit-order-section {
+    background: #f8f9fa;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    border: 1px solid #dee2e6;
+}
+
+.edit-order-section h6 {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #495057;
+    margin-bottom: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.order-info-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.order-info-row:last-child {
+    border-bottom: none;
+}
+
+.order-info-label {
+    font-weight: 600;
+    color: #6c757d;
+}
+
+.order-info-value {
+    color: #212529;
+    font-family: 'Courier New', monospace;
+}
+
+/* =============================================================================
+   TRACKING INPUT (STREAMLINED)
+   ============================================================================= */
+
+.tracking-input-group {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+}
+
+.tracking-input-group input {
+    flex: 1;
+    font-family: 'Courier New', monospace;
+    font-size: 0.95rem;
+}
+
+.tracking-input-group .btn-add {
+    min-width: 80px;
+}
+
+.parcel-counter {
+    background-color: #e9ecef !important;
+    font-weight: 700;
+    font-size: 1.2rem;
+    text-align: center;
+    color: #495057;
+    border: 2px solid #adb5bd !important;
+}
+
+.tracking-list {
+    max-height: 180px;
+    overflow-y: auto;
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    background: white;
+}
+
+.tracking-list-empty {
+    padding: 2rem;
+    text-align: center;
+    color: #6c757d;
+    font-style: italic;
+}
+
+.tracking-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid #f1f3f5;
+    transition: background-color 0.15s ease;
+}
+
+.tracking-item:last-child {
+    border-bottom: none;
+}
+
+.tracking-item:hover {
+    background-color: #f8f9fa;
+}
+
+.tracking-item-number {
+    font-family: 'Courier New', monospace;
+    font-weight: 600;
+    color: #212529;
+}
+
+.tracking-item-badge {
+    background: #e7f5ff;
+    color: #1971c2;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    margin-right: 0.5rem;
+}
+
+/* =============================================================================
+   NOTES SECTION
+   ============================================================================= */
+
+.notes-container {
+    background: white;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-top: 1.5rem;
+}
+
+.notes-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid #e9ecef;
+}
+
+.notes-header h5 {
+    margin: 0;
+    font-weight: 700;
+    color: #212529;
+}
+
+.notes-input-section {
+    margin-bottom: 1.5rem;
+}
+
+.notes-textarea {
+    width: 100%;
+    min-height: 100px;
+    padding: 0.75rem;
+    border: 1px solid #ced4da;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    resize: vertical;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+.notes-textarea:focus {
+    border-color: #80bdff;
+    outline: 0;
+    box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+}
+
+.notes-history {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.note-item {
+    padding: 1rem;
+    border-left: 3px solid #0d6efd;
+    background: #f8f9fa;
+    border-radius: 6px;
+    margin-bottom: 1rem;
+}
+
+.note-item:last-child {
+    margin-bottom: 0;
+}
+
+.note-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.note-author {
+    font-weight: 700;
+    color: #495057;
+}
+
+.note-date {
+    font-size: 0.85rem;
+    color: #6c757d;
+}
+
+.note-content {
+    color: #212529;
+    line-height: 1.6;
+    white-space: pre-wrap;
+}
+
+.note-system {
+    border-left-color: #6c757d;
+    background: #e9ecef;
+}
+
+.note-system .note-author {
+    color: #6c757d;
+}
+
+/* =============================================================================
+   STATUS CHANGE INDICATOR
+   ============================================================================= */
+
+.status-change-warning {
+    background: #fff3cd;
+    border: 1px solid #ffc107;
+    border-radius: 6px;
+    padding: 0.75rem 1rem;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.status-change-warning i {
+    color: #856404;
+    font-size: 1.25rem;
+}
+
+.status-change-warning p {
+    margin: 0;
+    color: #856404;
+    font-size: 0.9rem;
+}
+
+.status-locked {
+    background: #f8d7da;
+    border-color: #dc3545;
+}
+
+.status-locked i {
+    color: #721c24;
+}
+
+.status-locked p {
+    color: #721c24;
+}
+
+/* =============================================================================
+   CARRIER SELECTION
+   ============================================================================= */
+
+.carrier-select {
+    padding: 0.5rem 0.75rem;
+    border: 1px solid #ced4da;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    background-color: white;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    background-size: 16px 12px;
+    padding-right: 2.5rem;
+}
+
+.carrier-select:focus {
+    border-color: #80bdff;
+    outline: 0;
+    box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+}
+
+/* =============================================================================
+   QUICK MODAL VIEW
+   ============================================================================= */
+
+.quick-modal-body {
+    padding: 1.5rem;
+}
+
+.quick-modal-section {
+    margin-bottom: 1.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.quick-modal-section:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+.quick-modal-section h6 {
+    font-weight: 700;
+    margin-bottom: 1rem;
+    color: #495057;
+}
+
+.quick-info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+@media (max-width: 768px) {
+    .quick-info-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.quick-info-item {
+    display: flex;
+    flex-direction: column;
+}
+
+.quick-info-label {
+    font-size: 0.8rem;
+    color: #6c757d;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 0.25rem;
+}
+
+.quick-info-value {
+    font-size: 1rem;
+    color: #212529;
+    font-weight: 500;
+}
+
+/* =============================================================================
+   RESPONSIVE ADJUSTMENTS
+   ============================================================================= */
+
+@media (max-width: 576px) {
+    .tracking-input-group {
+        flex-direction: column;
+    }
+
+    .tracking-input-group .btn-add {
+        width: 100%;
+    }
+
+    .tracking-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+
+    .order-info-row {
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+}
+
+/* =============================================================================
+   UTILITY CLASSES
+   ============================================================================= */
+
+.readonly-field {
+    background-color: #e9ecef !important;
+    cursor: not-allowed;
+}
+
+.highlight-info {
+    background-color: #d1ecf1;
+    border: 1px solid #bee5eb;
+    padding: 0.5rem 0.75rem;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    color: #0c5460;
+}
+
+.compact-form-group {
+    margin-bottom: 0.75rem;
+}
+
+.compact-form-group:last-child {
+    margin-bottom: 0;
+}
+
+.label-bold {
+    font-weight: 700;
+    color: #495057;
+}

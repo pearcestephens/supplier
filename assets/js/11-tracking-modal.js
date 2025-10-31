@@ -31,10 +31,10 @@ function showAddTrackingModal(orderId) {
                 <div class="form-group mb-3">
                     <label class="font-weight-bold">Add Tracking Number (1 per parcel)</label>
                     <div class="input-group">
-                        <input
-                            type="text"
-                            id="tracking_input"
-                            class="form-control"
+                        <input 
+                            type="text" 
+                            id="tracking_input" 
+                            class="form-control" 
                             placeholder="Enter tracking number"
                             onkeypress="if(event.key==='Enter'){event.preventDefault();document.getElementById('add_tracking_btn').click();}"
                             style="font-family: monospace;"
@@ -51,12 +51,12 @@ function showAddTrackingModal(orderId) {
 
                 <div class="form-group mb-3">
                     <label class="font-weight-bold">Parcel Count (readonly)</label>
-                    <input
-                        type="text"
-                        class="form-control"
-                        id="parcel_counter"
-                        value="${trackingList.length}"
-                        readonly
+                    <input 
+                        type="text" 
+                        class="form-control" 
+                        id="parcel_counter" 
+                        value="${trackingList.length}" 
+                        readonly 
                         style="background-color: #e9ecef; font-weight: bold; font-size: 1.1em; text-align: center;"
                     >
                 </div>
@@ -84,7 +84,7 @@ function showAddTrackingModal(orderId) {
 
                 <div class="alert alert-info mb-0">
                     <small>
-                        <strong>Note:</strong> Each tracking number = 1 parcel/box.
+                        <strong>Note:</strong> Each tracking number = 1 parcel/box. 
                         The system will create ${trackingList.length || 0} consignment box${trackingList.length === 1 ? '' : 'es'} when marked as sent.
                     </small>
                 </div>
@@ -104,7 +104,7 @@ function showAddTrackingModal(orderId) {
     function attachAddButtonListener() {
         const addBtn = document.getElementById('add_tracking_btn');
         const input = document.getElementById('tracking_input');
-
+        
         if (addBtn && input) {
             addBtn.onclick = () => {
                 const value = input.value.trim();

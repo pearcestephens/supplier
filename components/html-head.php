@@ -41,10 +41,14 @@ if (!isset($pageTitle)) {
     <!-- SweetAlert2 for confirmations -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 
-    <!-- Custom Styles - FORCE RELOAD -->
-    <link rel="stylesheet" href="/supplier/assets/css/style.css?v=<?php echo time() . '-' . rand(1000, 9999); ?>">
-
-    <!-- UX Enhancements CSS -->
-    <link rel="stylesheet" href="/supplier/assets/css/ux-enhancements.css?v=<?php echo time(); ?>">
+    <?php if (function_exists('loadCSS')): ?>
+        <?php loadCSS('assets/css'); ?>
+    <?php else: ?>
+        <!-- Fallback: direct links if asset loader unavailable -->
+        <link rel="stylesheet" href="/supplier/assets/css/01-base.css?v=<?php echo time(); ?>">
+        <link rel="stylesheet" href="/supplier/assets/css/02-ux-enhancements.css?v=<?php echo time(); ?>">
+        <link rel="stylesheet" href="/supplier/assets/css/03-dashboard-metrics.css?v=<?php echo time(); ?>">
+        <link rel="stylesheet" href="/supplier/assets/css/04-order-management.css?v=<?php echo time(); ?>">
+    <?php endif; ?>
 </head>
 <body>

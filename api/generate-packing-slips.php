@@ -45,7 +45,7 @@ try {
             o.physical_suburb as suburb,
             o.physical_city as city,
             o.physical_postcode as postcode,
-            o.phone,
+            o.physical_phone_number as phone,
             COUNT(DISTINCT li.product_id) as items_count,
             SUM(li.qty_arrived) as units_count
         FROM vend_consignments c
@@ -55,7 +55,7 @@ try {
         AND c.supplier_id = ?
         AND c.deleted_at IS NULL
         GROUP BY c.id, c.public_id, c.state, c.total_cost, c.created_at, c.expected_delivery_date,
-                 o.name, o.physical_address_1, o.physical_address_2, o.physical_suburb, o.physical_city, o.physical_postcode, o.phone
+                 o.name, o.physical_address_1, o.physical_address_2, o.physical_suburb, o.physical_city, o.physical_postcode, o.physical_phone_number
         ORDER BY c.created_at DESC
     ");
 

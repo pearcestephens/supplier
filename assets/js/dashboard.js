@@ -284,72 +284,106 @@ async function loadStockAlerts() {
 
         if (!result.success) throw new Error(result.error || 'Failed to load stock alerts');
 
-        const data = result.data;
+        const stores = result.stores || [];
+        const alerts = result.alerts || [];
 
-        // Update last updated time (if element exists)
+        // Update last updated time
         const alertsLastUpdatedEl = document.getElementById('alerts-last-updated');
         if (alertsLastUpdatedEl) {
-            alertsLastUpdatedEl.textContent = '2 hours ago';
+            alertsLastUpdatedEl.textContent = 'just now';
+        }
+
+        // Update total stores count
+        const alertsTotalStoresEl = document.getElementById('alerts-total-stores');
+        if (alertsTotalStoresEl) {
+            alertsTotalStoresEl.textContent = result.total_stores || 0;
+        }
+
+        // Update alerts count
+        const alertsCountEl = document.getElementById('alerts-count');
+        if (alertsCountEl) {
+            alertsCountEl.textContent = alerts.length;
         }
 
         let html = '';
-        data.stores.forEach(store => {
-            const severityClass = store.severity;
-            const badgeClass = store.severity === 'critical' ? 'bg-danger' :
-                               store.severity === 'high' ? 'bg-warning text-dark' : 'bg-info';
-            const iconClass = store.severity === 'critical' ? 'fa-exclamation-circle' :
-                             store.severity === 'high' ? 'fa-exclamation-triangle' : 'fa-info-circle';
-            const btnClass = store.severity === 'critical' ? 'btn-danger' :
-                            store.severity === 'high' ? 'btn-warning' : 'btn-info';
-            const outOfStockClass = store.severity === 'critical' ? 'text-danger' :
-                                   store.severity === 'high' ? 'text-warning' : 'text-info';
 
-            html += `
-                <div class="stock-alert-card ${severityClass} clickable">
-                    <div class="store-header">
-                        <div>
-                            <h6 class="store-name mb-0">
-                                <i class="fas fa-store-alt me-2"></i>
-                                ${store.name}
-                            </h6>
-                            <span class="badge ${badgeClass} mt-1">${store.severity.charAt(0).toUpperCase() + store.severity.slice(1)}</span>
-                        </div>
-                        <div class="alert-icon">
-                            <i class="fas ${iconClass}"></i>
-                        </div>
-                    </div>
-                    <div class="stock-metrics">
-                        <div class="metric">
-                            <span class="metric-value">${store.low_stock.toLocaleString()}</span>
-                            <span class="metric-label">Low Stock Items</span>
-                        </div>
-                        <div class="metric">
-                            <span class="metric-value ${outOfStockClass}">${store.out_of_stock.toLocaleString()}</span>
-                            <span class="metric-label">Out of Stock</span>
-                        </div>
-                    </div>
-                    <button class="btn btn-sm ${btnClass} btn-block mt-2">
-                        <i class="fas fa-box me-1"></i>
-                        View Products
-                    </button>
+        if (stores.length === 0) {
+            html = `
+                <div class="text-center py-4 text-success">
+                    <i class="fas fa-check-circle fa-3x mb-3"></i>
+                    <h5>All stores well-stocked!</h5>
+                    <p class="text-muted">No low inventory alerts based on sales velocity</p>
                 </div>
             `;
-        });
+        } else {
+            stores.forEach(store => {
+                const severityClass = store.severity;
+                const badgeClass = store.severity === 'critical' ? 'bg-danger' :
+                                   store.severity === 'high' ? 'bg-warning text-dark' : 'bg-info';
+                const iconClass = store.severity === 'critical' ? 'fa-exclamation-circle' :
+                                 store.severity === 'high' ? 'fa-exclamation-triangle' : 'fa-info-circle';
+                const btnClass = store.severity === 'critical' ? 'btn-danger' :
+                                store.severity === 'high' ? 'btn-warning' : 'btn-info';
+                const outOfStockClass = store.severity === 'critical' ? 'text-danger' :
+                                       store.severity === 'high' ? 'text-warning' : 'text-info';
+
+                const lowStock = parseInt(store.low_stock) || 0;
+                const outOfStock = parseInt(store.out_of_stock) || 0;
+                const daysLeft = parseInt(store.days_until_stockout) || 0;
+
+                html += `
+                    <div class="stock-alert-card ${severityClass} clickable">
+                        <div class="store-header">
+                            <div>
+                                <h6 class="store-name mb-0">
+                                    <i class="fas fa-store-alt me-2"></i>
+                                    ${store.outlet_name}
+                                </h6>
+                                <span class="badge ${badgeClass} mt-1">${store.severity.charAt(0).toUpperCase() + store.severity.slice(1)}</span>
+                                ${daysLeft < 999 ? `<small class="text-muted d-block mt-1">~${daysLeft} days until stockout</small>` : ''}
+                            </div>
+                            <div class="alert-icon">
+                                <i class="fas ${iconClass}"></i>
+                            </div>
+                        </div>
+                        <div class="stock-metrics">
+                            <div class="metric">
+                                <span class="metric-value">${lowStock.toLocaleString()}</span>
+                                <span class="metric-label">Low Stock Items</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-value ${outOfStockClass}">${outOfStock.toLocaleString()}</span>
+                                <span class="metric-label">Out of Stock</span>
+                            </div>
+                        </div>
+                        <button class="btn btn-sm ${btnClass} btn-block mt-2">
+                            <i class="fas fa-box me-1"></i>
+                            View Products
+                        </button>
+                    </div>
+                `;
+            });
+        }
 
         const stockAlertsGrid = document.getElementById('stock-alerts-grid');
         if (stockAlertsGrid) {
             stockAlertsGrid.innerHTML = html;
         }
 
-        console.log('✅ Stock alerts loaded');
+        console.log('✅ Stock alerts loaded (sales velocity-based):', {
+            stores: stores.length,
+            alerts: alerts.length,
+            algorithm: result.algorithm
+        });
     } catch (error) {
         console.error('❌ Stock alerts error:', error);
         const stockAlertsGrid = document.getElementById('stock-alerts-grid');
         if (stockAlertsGrid) {
             stockAlertsGrid.innerHTML = `
                 <div class="text-center py-4 text-danger">
-                    <i class="fas fa-exclamation-triangle me-2"></i>
-                    Error loading stock alerts
+                    <i class="fas fa-exclamation-triangle fa-2x mb-2"></i>
+                    <p class="mb-0">Error loading stock alerts</p>
+                    <small class="text-muted">${error.message}</small>
                 </div>
             `;
         }
@@ -358,50 +392,50 @@ async function loadStockAlerts() {
 
 /**
  * Load and initialize Chart.js charts
+ * Uses separate API endpoints for each chart (AJAX loaded)
  */
 async function loadCharts() {
+    // Load both charts in parallel
+    await Promise.all([
+        loadItemsSoldChart(),
+        loadWarrantyClaimsChart()
+    ]);
+}
+
+/**
+ * Load Items Sold Chart (Last 3 Months)
+ */
+async function loadItemsSoldChart() {
     try {
-        const response = await fetch('/supplier/api/dashboard-charts.php');
-        const result = await response.json();
-
-        if (!result.success) throw new Error(result.error || 'Failed to load charts');
-
-        const data = result.data;
-
-        // CHART 1: Items Sold (Line Chart)
         const itemsSoldCanvas = document.getElementById('itemsSoldChart');
         if (!itemsSoldCanvas) {
-            console.warn('⚠️ itemsSoldChart canvas not found, skipping chart');
+            console.warn('⚠️ itemsSoldChart canvas not found, skipping');
             return;
         }
+
+        const response = await fetch('/supplier/api/dashboard-items-sold.php');
+        const result = await response.json();
+
+        if (!result.success) throw new Error(result.error || 'Failed to load items sold');
+
+        const chartData = result.chart_data;
+
         const itemsSoldCtx = itemsSoldCanvas.getContext('2d');
         new Chart(itemsSoldCtx, {
             type: 'line',
-            data: {
-                labels: data.items_sold.labels,
-                datasets: [{
-                    label: 'Units Sold',
-                    data: data.items_sold.data,
-                    borderColor: '#3b82f6',
-                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                    borderWidth: 3,
-                    fill: true,
-                    tension: 0.4,
-                    pointRadius: 5,
-                    pointHoverRadius: 7
-                }]
-            },
+            data: chartData,
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
                 plugins: {
                     legend: {
-                        display: false
+                        display: true,
+                        position: 'top'
                     },
                     tooltip: {
                         callbacks: {
                             label: function(context) {
-                                return context.parsed.y.toLocaleString() + ' units sold';
+                                return context.dataset.label + ': ' + context.parsed.y.toLocaleString();
                             }
                         }
                     }
@@ -411,7 +445,10 @@ async function loadCharts() {
                         beginAtZero: true,
                         ticks: {
                             callback: function(value) {
-                                return (value / 1000).toFixed(1) + 'k';
+                                if (value >= 1000) {
+                                    return (value / 1000).toFixed(1) + 'k';
+                                }
+                                return value;
                             }
                         }
                     }
@@ -419,26 +456,42 @@ async function loadCharts() {
             }
         });
 
-        // CHART 2: Warranty Claims (Stacked Bar Chart)
+        console.log('✅ Items Sold chart loaded:', result.summary);
+    } catch (error) {
+        console.error('❌ Items Sold chart error:', error);
+        const itemsSoldCanvas = document.getElementById('itemsSoldChart');
+        if (itemsSoldCanvas) {
+            const ctx = itemsSoldCanvas.getContext('2d');
+            ctx.font = '14px Arial';
+            ctx.fillStyle = '#ef4444';
+            ctx.textAlign = 'center';
+            ctx.fillText('Error loading chart', itemsSoldCanvas.width / 2, itemsSoldCanvas.height / 2);
+        }
+    }
+}
+
+/**
+ * Load Warranty Claims Chart (Last 6 Months)
+ */
+async function loadWarrantyClaimsChart() {
+    try {
         const warrantyCanvas = document.getElementById('warrantyChart');
         if (!warrantyCanvas) {
-            console.warn('⚠️ warrantyChart canvas not found, skipping chart');
+            console.warn('⚠️ warrantyChart canvas not found, skipping');
             return;
         }
-        const warrantyCtx = warrantyCanvas.getContext('2d');
-        const datasets = data.warranty_claims.datasets.map(ds => ({
-            label: ds.label,
-            data: ds.data,
-            backgroundColor: ds.color,
-            stack: 'stack1'
-        }));
 
+        const response = await fetch('/supplier/api/dashboard-warranty-claims.php');
+        const result = await response.json();
+
+        if (!result.success) throw new Error(result.error || 'Failed to load warranty claims');
+
+        const chartData = result.chart_data;
+
+        const warrantyCtx = warrantyCanvas.getContext('2d');
         new Chart(warrantyCtx, {
             type: 'bar',
-            data: {
-                labels: data.warranty_claims.labels,
-                datasets: datasets
-            },
+            data: chartData,
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
@@ -461,15 +514,26 @@ async function loadCharts() {
                     },
                     y: {
                         stacked: true,
-                        beginAtZero: true
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 1
+                        }
                     }
                 }
             }
         });
 
-        console.log('✅ Charts loaded');
+        console.log('✅ Warranty Claims chart loaded:', result.summary);
     } catch (error) {
-        console.error('❌ Charts error:', error);
+        console.error('❌ Warranty Claims chart error:', error);
+        const warrantyCanvas = document.getElementById('warrantyChart');
+        if (warrantyCanvas) {
+            const ctx = warrantyCanvas.getContext('2d');
+            ctx.font = '14px Arial';
+            ctx.fillStyle = '#ef4444';
+            ctx.textAlign = 'center';
+            ctx.fillText('Error loading chart', warrantyCanvas.width / 2, warrantyCanvas.height / 2);
+        }
     }
 }
 

@@ -1,9 +1,9 @@
 <?php
 /**
  * Add Order Note
- * 
+ *
  * Allows suppliers to add notes to orders
- * 
+ *
  * @package CIS\Supplier\API
  * @version 4.0.0 - Unified with bootstrap
  */
@@ -33,21 +33,20 @@ if (!$input) {
 
 // Validate required fields
 $orderId = $input['order_id'] ?? null;
-$note = $input['note'] ?? null;
+$noteText = $input['note_text'] ?? $input['note'] ?? null;
 
-if (!$orderId || !$note) {
+if (!$orderId || !$noteText) {
     sendJsonResponse(false, null, 'Missing required fields: order_id, note', 400);
     exit;
 }
 
-// Verify order belongs to this supplier
+// Verify order belongs to this supplier and get username
 $verifyQuery = "
-    SELECT id, public_id, notes 
-    FROM vend_consignments 
-    WHERE id = ? 
-      AND supplier_id = ? 
-      AND transfer_category = 'PURCHASE_ORDER'
-      AND deleted_at IS NULL
+    SELECT st.id, st.vend_number, s.name as supplier_name
+    FROM staff_transfers st
+    LEFT JOIN suppliers s ON s.id = st.supplier_id
+    WHERE st.id = ?
+      AND st.supplier_id = ?
 ";
 $stmt = $pdo->prepare($verifyQuery);
 $stmt->execute([$orderId, $supplierID]);
@@ -58,38 +57,21 @@ if (!$order) {
     exit;
 }
 
-// Append new note to existing notes
-$existingNotes = $order['notes'] ?? '';
-$timestamp = date('Y-m-d H:i:s');
-$supplierName = Auth::getSupplierName();
-$newNote = "\n\n[{$timestamp}] {$supplierName}:\n{$note}";
-$updatedNotes = $existingNotes . $newNote;
-
-// Update notes
-$updateQuery = "
-    UPDATE vend_consignments 
-    SET notes = ?
-    WHERE id = ?
+// Add note to order_history table
+$insertQuery = "
+    INSERT INTO order_history
+    (order_id, action, note, created_by, created_at)
+    VALUES (?, 'Note added', ?, ?, NOW())
 ";
-$stmt = $pdo->prepare($updateQuery);
+$stmt = $pdo->prepare($insertQuery);
 
-if ($stmt->execute([$updatedNotes, $orderId])) {
-    // Log the note addition
-    $logQuery = "
-        INSERT INTO supplier_activity_log 
-        (supplier_id, order_id, action_type, action_details, created_at)
-        VALUES (?, ?, 'note_added', ?, NOW())
-    ";
-    $logStmt = $pdo->prepare($logQuery);
-    $actionDetails = json_encode(['note' => $note]);
-    $logStmt->execute([$supplierID, $orderId, $actionDetails]);
-    
+if ($stmt->execute([$orderId, $noteText, $order['supplier_name'] ?? 'Supplier'])) {
     sendJsonResponse(true, [
+        'id' => $pdo->lastInsertId(),
         'order_id' => $orderId,
-        'public_id' => $order['public_id'],
-        'note' => $note
+        'note' => $noteText,
+        'created_at' => date('Y-m-d H:i:s')
     ], 'Note added successfully');
-} else {
     sendJsonResponse(false, [
         'error_type' => 'database_error'
     ], 'Failed to add note', 500);

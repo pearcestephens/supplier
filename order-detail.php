@@ -37,7 +37,7 @@ $stmt = $db->prepare("
         t.expected_delivery_date,
         t.tracking_number,
         t.consignment_notes,
-        t.reference,
+        t.supplier_reference,
         o.name as outlet_name,
         o.physical_address_1,
         o.physical_address_2,
@@ -45,7 +45,7 @@ $stmt = $db->prepare("
         o.physical_city,
         o.physical_postcode,
         o.physical_state,
-        o.phone,
+        o.physical_phone_number as phone,
         o.email
     FROM vend_consignments t
     LEFT JOIN vend_outlets o ON t.outlet_to = o.id
@@ -73,7 +73,7 @@ $stmt = $db->prepare("
         ti.product_id,
         ti.quantity,
         ti.unit_cost,
-        ti.received_qty,
+        ti.quantity_sent,
         p.name as product_name,
         p.sku,
         p.active
@@ -95,7 +95,7 @@ $totalQuantity = array_sum(array_column($lineItems, 'quantity'));
 $totalValue = array_sum(array_map(function($item) {
     return $item['quantity'] * $item['unit_cost'];
 }, $lineItems));
-$totalReceived = array_sum(array_column($lineItems, 'received_qty'));
+$totalReceived = array_sum(array_column($lineItems, 'quantity_sent'));
 
 // Calculate days until delivery
 $daysUntilDelivery = null;
@@ -177,8 +177,8 @@ require_once __DIR__ . '/components/html-header.php';
                             </button>
                         <?php else: ?>
                             <span class="text-muted">Not provided</span>
-                            <?php if ($order['state'] === 'SENT' || $order['state'] === 'RECEIVING'): ?>
-                                <button class="btn btn-sm btn-warning ms-2" onclick="updateTracking()">
+                            <?php if ($order['state'] === 'OPEN' || $order['state'] === 'SENT' || $order['state'] === 'RECEIVING'): ?>
+                                <button class="btn btn-sm btn-success ms-2" onclick="addTrackingWithOptions(<?php echo $orderId; ?>)">
                                     <i class="fas fa-plus"></i> Add
                                 </button>
                             <?php endif; ?>
@@ -246,14 +246,19 @@ require_once __DIR__ . '/components/html-header.php';
 
                     <!-- Quick Actions -->
                     <div class="d-grid gap-2">
+                        <?php if ($order['state'] === 'OPEN'): ?>
+                            <button class="btn btn-primary" onclick="markAsShipped()">
+                                <i class="fas fa-shipping-fast me-2"></i>Mark as Shipped
+                            </button>
+                        <?php endif; ?>
                         <?php if ($order['state'] === 'OPEN' || $order['state'] === 'SENT'): ?>
                             <button class="btn btn-success" onclick="addTrackingWithOptions(<?php echo $orderId; ?>)">
                                 <i class="fas fa-plus me-2"></i>Add Tracking
                             </button>
                         <?php endif; ?>
                         <?php if ($order['state'] === 'SENT' || $order['state'] === 'RECEIVING'): ?>
-                            <button class="btn btn-warning" onclick="updateTracking()">
-                                <i class="fas fa-shipping-fast me-2"></i>Update Tracking
+                            <button class="btn btn-outline-info" onclick="viewTrackingDetails(<?php echo $orderId; ?>)">
+                                <i class="fas fa-box me-2"></i>View Boxes/Tracking
                             </button>
                         <?php endif; ?>
                         <button class="btn btn-outline-secondary" onclick="window.print()">
@@ -324,7 +329,7 @@ require_once __DIR__ . '/components/html-header.php';
                             <?php foreach ($lineItems as $item): ?>
                                 <?php
                                 $lineTotal = $item['quantity'] * $item['unit_cost'];
-                                $receivedPercent = $item['quantity'] > 0 ? ($item['received_qty'] / $item['quantity']) * 100 : 0;
+                                $receivedPercent = $item['quantity'] > 0 ? ($item['quantity_sent'] / $item['quantity']) * 100 : 0;
                                 ?>
                                 <tr>
                                     <td>
@@ -340,8 +345,8 @@ require_once __DIR__ . '/components/html-header.php';
                                         <span class="badge bg-secondary"><?php echo number_format($item['quantity']); ?></span>
                                     </td>
                                     <td class="text-center">
-                                        <?php if ($item['received_qty'] > 0): ?>
-                                            <span class="badge bg-success"><?php echo number_format($item['received_qty']); ?></span>
+                                        <?php if ($item['quantity_sent'] > 0): ?>
+                                            <span class="badge bg-success"><?php echo number_format($item['quantity_sent']); ?></span>
                                             <div class="progress mt-1" style="height: 4px;">
                                                 <div class="progress-bar bg-success" style="width: <?php echo $receivedPercent; ?>%"></div>
                                             </div>
@@ -380,44 +385,56 @@ function copyTracking() {
     });
 }
 
-// Update tracking modal
-function updateTracking() {
+// Old tracking function - DEPRECATED - Use addTrackingWithOptions() instead
+// function updateTracking() {
+//     Swal.fire({
+//         title: 'Update Tracking Number',
+//         html: `
+//             <input type="text" id="tracking_number" class="swal2-input" placeholder="Enter tracking number" value="<?php echo htmlspecialchars($order['tracking_number'] ?? ''); ?>">
+//             <input type="text" id="carrier" class="swal2-input" placeholder="Carrier (optional)">
+//         `,
+//         showCancelButton: true,
+//         confirmButtonText: 'Update',
+//         preConfirm: () => {
+//             return {
+//                 tracking: document.getElementById('tracking_number').value,
+//                 carrier: document.getElementById('carrier').value
+//             };
+//         }
+//     }).then((result) => {
+//         if (result.isConfirmed && result.value.tracking) {
+//             // Send update via API
+//             fetch('/supplier/api/update-tracking.php', {
+//                 method: 'POST',
+//                 headers: {'Content-Type': 'application/json'},
+//                 body: JSON.stringify({
+//                     order_id: <?php echo $orderId; ?>,
+//                     tracking_number: result.value.tracking,
+//                     carrier: result.value.carrier
+//                 })
+//             })
+//             .then(r => r.json())
+//             .then(data => {
+//                 if (data.success) {
+//                     showToast('Tracking updated!', 'success');
+//                     setTimeout(() => location.reload(), 1000);
+//                 } else {
+//                     showToast(data.message || 'Update failed', 'error');
+//                 }
+//             });
+//         }
+//     });
+// }
+
+// View tracking details and boxes
+function viewTrackingDetails(orderId) {
+    // TODO: Implement tracking details view
+    // This should fetch and display all shipments and parcels for this order
     Swal.fire({
-        title: 'Update Tracking Number',
-        html: `
-            <input type="text" id="tracking_number" class="swal2-input" placeholder="Enter tracking number" value="<?php echo htmlspecialchars($order['tracking_number'] ?? ''); ?>">
-            <input type="text" id="carrier" class="swal2-input" placeholder="Carrier (optional)">
-        `,
-        showCancelButton: true,
-        confirmButtonText: 'Update',
-        preConfirm: () => {
-            return {
-                tracking: document.getElementById('tracking_number').value,
-                carrier: document.getElementById('carrier').value
-            };
-        }
-    }).then((result) => {
-        if (result.isConfirmed && result.value.tracking) {
-            // Send update via API
-            fetch('/supplier/api/update-tracking.php', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({
-                    order_id: <?php echo $orderId; ?>,
-                    tracking_number: result.value.tracking,
-                    carrier: result.value.carrier
-                })
-            })
-            .then(r => r.json())
-            .then(data => {
-                if (data.success) {
-                    showToast('Tracking updated!', 'success');
-                    setTimeout(() => location.reload(), 1000);
-                } else {
-                    showToast(data.message || 'Update failed', 'error');
-                }
-            });
-        }
+        title: 'Tracking Details',
+        html: '<p class="text-muted">Loading tracking information...</p>',
+        icon: 'info',
+        showConfirmButton: true
     });
 }
 
@@ -429,9 +446,20 @@ function markAsShipped() {
         icon: 'question',
         showCancelButton: true,
         confirmButtonText: 'Yes, Ship It',
-        confirmButtonColor: '#28a745'
+        confirmButtonColor: '#28a745',
+        cancelButtonText: 'Cancel'
     }).then((result) => {
         if (result.isConfirmed) {
+            // Show loading
+            Swal.fire({
+                title: 'Updating...',
+                text: 'Please wait',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
             // Send API request
             fetch('/supplier/api/update-order-status.php', {
                 method: 'POST',
@@ -441,14 +469,36 @@ function markAsShipped() {
                     status: 'SENT'
                 })
             })
-            .then(r => r.json())
+            .then(r => {
+                if (!r.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return r.json();
+            })
             .then(data => {
                 if (data.success) {
-                    showToast('Order marked as shipped!', 'success');
-                    setTimeout(() => location.reload(), 1000);
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success!',
+                        text: 'Order marked as shipped!',
+                        timer: 2000,
+                        showConfirmButton: false
+                    }).then(() => location.reload());
                 } else {
-                    showToast(data.message || 'Update failed', 'error');
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: data.message || 'Update failed'
+                    });
                 }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Failed to update order status. Please try again.'
+                });
             });
         }
     });
@@ -456,12 +506,27 @@ function markAsShipped() {
 
 // Export items to CSV
 function exportItemsCSV() {
-    window.location.href = '/supplier/api/export-order-items.php?id=<?php echo $orderId; ?>';
+    showToast('Preparing CSV export...', 'info');
+    try {
+        window.location.href = '/supplier/api/export-order-items.php?id=<?php echo $orderId; ?>';
+    } catch (error) {
+        showToast('Export failed. Please try again.', 'error');
+        console.error('CSV export error:', error);
+    }
 }
 
 // Export to PDF
 function exportPDF() {
-    window.open('/supplier/api/export-order-pdf.php?id=<?php echo $orderId; ?>', '_blank');
+    showToast('Opening PDF document...', 'info');
+    try {
+        const pdfWindow = window.open('/supplier/api/export-order-pdf.php?id=<?php echo $orderId; ?>', '_blank');
+        if (!pdfWindow) {
+            showToast('Please allow pop-ups to view PDF', 'warning');
+        }
+    } catch (error) {
+        showToast('Export failed. Please try again.', 'error');
+        console.error('PDF export error:', error);
+    }
 }
 
 // Toast helper

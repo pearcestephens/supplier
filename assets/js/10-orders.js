@@ -8,150 +8,6 @@
  */
 
 // =============================================================================
-// QUICK EDIT ORDER (STREAMLINED)
-// =============================================================================
-
-/**
- * Quick edit modal - Status, Tracking, Notes
- * Allows OPEN ↔ SENT with 24-hour grace period
- */
-function quickEditOrder(orderId, orderNumber, currentStatus, storeName, trackingNumber, updatedAt) {
-    // Check if within 24-hour edit window
-    const updatedDate = new Date(updatedAt);
-    const now = new Date();
-    const hoursSinceUpdate = (now - updatedDate) / (1000 * 60 * 60);
-    const canRevertStatus = hoursSinceUpdate < 24;
-
-    // Determine available status transitions
-    let statusOptions = '';
-    if (currentStatus === 'OPEN') {
-        statusOptions = `
-            <option value="OPEN" selected>OPEN</option>
-            <option value="SENT">SENT</option>
-        `;
-    } else if (currentStatus === 'SENT' && canRevertStatus) {
-        statusOptions = `
-            <option value="OPEN">OPEN (revert)</option>
-            <option value="SENT" selected>SENT</option>
-        `;
-    } else if (currentStatus === 'SENT' && !canRevertStatus) {
-        statusOptions = `<option value="SENT" selected disabled>SENT (locked after 24h)</option>`;
-    } else if (currentStatus === 'RECEIVING' || currentStatus === 'RECEIVED') {
-        statusOptions = `<option value="${currentStatus}" selected disabled>${currentStatus} (locked)</option>`;
-    } else {
-        statusOptions = `<option value="${currentStatus}" selected>${currentStatus}</option>`;
-    }
-
-    Swal.fire({
-        title: `Quick Edit: ${orderNumber}`,
-        html: `
-            <div class="text-start">
-                <div class="alert alert-info small mb-3">
-                    <strong>Store:</strong> ${storeName}<br>
-                    <strong>Order:</strong> ${orderNumber}
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label fw-bold">Status</label>
-                    <select id="quick-status" class="form-select">
-                        ${statusOptions}
-                    </select>
-                    ${!canRevertStatus && currentStatus === 'SENT' ?
-                        '<small class="text-muted">Status locked after 24 hours</small>' : ''}
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label fw-bold">Carrier</label>
-                    <select id="quick-carrier" class="form-select">
-                        <option value="">-- Select Carrier --</option>
-                        <option value="NZ Post">NZ Post</option>
-                        <option value="CourierPost">CourierPost</option>
-                        <option value="Aramex">Aramex</option>
-                        <option value="DHL">DHL</option>
-                        <option value="FedEx">FedEx</option>
-                        <option value="UPS">UPS</option>
-                        <option value="Fastway">Fastway</option>
-                        <option value="Other">Other</option>
-                    </select>
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label fw-bold">Tracking Number</label>
-                    <input type="text" id="quick-tracking" class="form-control"
-                           placeholder="Enter tracking number (optional)"
-                           value="${trackingNumber || ''}">
-                    <small class="text-muted">For multiple parcels, use "Add Tracking" instead</small>
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label fw-bold">Add Note (optional)</label>
-                    <textarea id="quick-note" class="form-control" rows="3"
-                              placeholder="Enter any notes about this order..."></textarea>
-                </div>
-            </div>
-        `,
-        width: '500px',
-        showCancelButton: true,
-        confirmButtonText: '<i class="fas fa-save"></i> Save Changes',
-        cancelButtonText: 'Cancel',
-        preConfirm: () => {
-            const status = document.getElementById('quick-status').value;
-            const carrier = document.getElementById('quick-carrier').value;
-            const tracking = document.getElementById('quick-tracking').value.trim();
-            const note = document.getElementById('quick-note').value.trim();
-
-            return { status, carrier, tracking, note };
-        }
-    }).then((result) => {
-        if (result.isConfirmed) {
-            const { status, carrier, tracking, note } = result.value;
-
-            Swal.fire({
-                title: 'Saving...',
-                html: '<i class="fas fa-spinner fa-spin fa-2x"></i>',
-                showConfirmButton: false,
-                allowOutsideClick: false
-            });
-
-            fetch('/supplier/api/quick-update-order.php', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-Requested-With': 'XMLHttpRequest'
-                },
-                body: JSON.stringify({
-                    order_id: orderId,
-                    status: status,
-                    carrier: carrier,
-                    tracking_number: tracking,
-                    note: note
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Updated!',
-                        text: data.message || 'Order updated successfully',
-                        timer: 1500,
-                        showConfirmButton: false
-                    }).then(() => {
-                        location.reload();
-                    });
-                } else {
-                    Swal.fire('Error', data.message || 'Failed to update order', 'error');
-                }
-            })
-            .catch(error => {
-                console.error('Update error:', error);
-                Swal.fire('Error', 'Failed to update order', 'error');
-            });
-        }
-    });
-}
-
-// =============================================================================
 // CSV EXPORT
 // =============================================================================
 
@@ -444,7 +300,7 @@ function addTrackingModal(orderId, orderNumber) {
                         <option value="Other">Other</option>
                     </select>
                 </div>
-
+                
                 <div class="mb-3">
                     <label class="form-label fw-bold">Add Tracking Number (1 per parcel)</label>
                     <div class="input-group">
@@ -497,7 +353,7 @@ function addTrackingModal(orderId, orderNumber) {
     function attachAddButtonListener() {
         const addBtn = document.getElementById('add-tracking-btn');
         const input = document.getElementById('tracking-input');
-
+        
         if (addBtn && input) {
             addBtn.onclick = () => {
                 const value = input.value.trim();
@@ -798,7 +654,7 @@ function editOrderModal(orderId, currentStatus) {
  */
 function bulkAddTracking() {
     const selectedOrders = getSelectedOrders();
-
+    
     if (selectedOrders.length === 0) {
         Swal.fire('No Orders Selected', 'Please select at least one order to add tracking', 'warning');
         return;
@@ -825,7 +681,7 @@ function bulkAddTracking() {
                         <option value="Other">Other</option>
                     </select>
                 </div>
-
+                
                 <div class="mb-3">
                     <label class="form-label fw-bold">Add Tracking Number</label>
                     <div class="input-group">
@@ -880,7 +736,7 @@ function bulkAddTracking() {
     function attachBulkAddButtonListener() {
         const addBtn = document.getElementById('bulk-add-tracking-btn');
         const input = document.getElementById('bulk-tracking-input');
-
+        
         if (addBtn && input) {
             addBtn.onclick = () => {
                 const value = input.value.trim();

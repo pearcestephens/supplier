@@ -53,30 +53,24 @@
 <!-- Chart.js 3.9.1 -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
 
-<!-- API Handler (must load before page scripts) -->
-<script src="/supplier/assets/js/api-handler.js?v=<?php echo time(); ?>"></script>
-
-<!-- Main App JS -->
-<script src="/supplier/assets/js/app.js?v=<?php echo time(); ?>"></script>
-
 <!-- ============================================================================
-     UX ENHANCEMENT SCRIPTS
+     APPLICATION SCRIPTS (AUTO-LOADED)
      ========================================================================== -->
+<?php if (function_exists('loadJS')): ?>
+    <?php loadJS('assets/js'); ?>
+<?php else: ?>
+    <!-- Fallback loading if asset loader unavailable -->
+    <script src="/supplier/assets/js/01-app.js?v=<?php echo time(); ?>"></script>
+    <script src="/supplier/assets/js/02-api-handler.js?v=<?php echo time(); ?>"></script>
+    <script src="/supplier/assets/js/03-error-handler.js?v=<?php echo time(); ?>"></script>
+    <script src="/supplier/assets/js/04-form-validation.js?v=<?php echo time(); ?>"></script>
+    <script src="/supplier/assets/js/10-orders.js?v=<?php echo time(); ?>"></script>
+    <script src="/supplier/assets/js/11-tracking-modal.js?v=<?php echo time(); ?>"></script>
+    <script src="/supplier/assets/js/12-order-management.js?v=<?php echo time(); ?>"></script>
+<?php endif; ?>
+
 <!-- SweetAlert2 for confirmations -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-<!-- UX Enhancement Utilities -->
-<script src="/supplier/assets/js/toast.js?v=<?php echo time(); ?>"></script>
-<script src="/supplier/assets/js/button-loading.js?v=<?php echo time(); ?>"></script>
-<script src="/supplier/assets/js/confirm-dialogs.js?v=<?php echo time(); ?>"></script>
-<script src="/supplier/assets/js/form-validation.js?v=<?php echo time(); ?>"></script>
-<script src="/supplier/assets/js/mobile-menu.js?v=<?php echo time(); ?>"></script>
-<script src="/supplier/assets/js/copy-clipboard.js?v=<?php echo time(); ?>"></script>
-<script src="/supplier/assets/js/table-sorting.js?v=<?php echo time(); ?>"></script>
-<script src="/supplier/assets/js/autocomplete.js?v=<?php echo time(); ?>"></script>
-<script src="/supplier/assets/js/inline-edit.js?v=<?php echo time(); ?>"></script>
-<script src="/supplier/assets/js/modal-templates.js?v=<?php echo time(); ?>"></script>
-<script src="/supplier/assets/js/lazy-loading.js?v=<?php echo time(); ?>"></script>
 
 <!-- NOTE: Page-specific JavaScript should be included by each page AFTER this component -->
 <!-- Then close </body></html> in each page file -->
