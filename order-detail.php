@@ -79,7 +79,7 @@ $stmt = $db->prepare("
         p.active
     FROM vend_consignment_line_items ti
     LEFT JOIN vend_products p ON ti.product_id = p.id
-    WHERE ti.consignment_id = ?
+    WHERE ti.transfer_id = ?
     AND ti.deleted_at IS NULL
     ORDER BY p.name ASC
 ");

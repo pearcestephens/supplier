@@ -84,8 +84,7 @@ $stmt->close();
 // ============================================================================
 // QUERY 2: Get Orders with Line Items
 // ============================================================================
-// FIXED: Changed column name from ti.transfer_id to ti.consignment_id
-// This ensures proper JOIN between vend_consignments and vend_consignment_line_items
+// Using transfer_id for JOIN with vend_consignment_line_items
 $ordersQuery = "
     SELECT
         t.id,
@@ -100,10 +99,10 @@ $ordersQuery = "
         COALESCE(SUM(ti.quantity * ti.unit_cost), 0) as total_value,
         o.name as outlet_name,
         o.id as store_code,
-        COUNT(ti.id) as item_count,
-        SUM(ti.quantity) as total_quantity
+        COUNT(DISTINCT ti.id) as item_count,
+        COALESCE(SUM(ti.quantity), 0) as total_quantity
     FROM vend_consignments t
-    LEFT JOIN vend_consignment_line_items ti ON t.id = ti.transfer_id
+    LEFT JOIN vend_consignment_line_items ti ON t.id = ti.transfer_id AND ti.deleted_at IS NULL
     LEFT JOIN vend_outlets o ON t.outlet_to = o.id
     WHERE {$whereClause}
     GROUP BY t.id, t.public_id, t.vend_number, t.supplier_id, t.outlet_to, t.state, t.created_at, t.expected_delivery_date, t.tracking_number, o.name, o.id
@@ -363,12 +362,35 @@ $actionButtons = '
     <div class="card mb-4">
         <div class="card-header bg-light">
             <div class="d-flex justify-content-between align-items-center">
-                <h5 class="mb-0">Orders List</h5>
-                <small class="text-muted">
-                    Showing <?php echo number_format((float)min($offset + 1, $totalOrders)); ?>
-                    to <?php echo number_format((float)min($offset + $perPage, $totalOrders)); ?>
-                    of <?php echo number_format((float)$totalOrders); ?>
-                </small>
+                <h5 class="mb-0">
+                    <input type="checkbox" id="selectAllOrders" class="form-check-input me-2" title="Select All">
+                    Orders List
+                </h5>
+                <div>
+                    <!-- Bulk Actions Toolbar -->
+                    <div class="btn-group me-2" role="group">
+                        <button class="btn btn-sm btn-outline-primary" onclick="bulkDownloadPackingSlips()" title="Download Packing Slips">
+                            <i class="fas fa-file-invoice"></i> Packing Slips
+                        </button>
+                        <button class="btn btn-sm btn-outline-success" onclick="bulkAddTracking()" title="Add Tracking Numbers">
+                            <i class="fas fa-shipping-fast"></i> Add Tracking
+                        </button>
+                        <button class="btn btn-sm btn-outline-warning" onclick="bulkMarkShipped()" title="Mark as Shipped">
+                            <i class="fas fa-truck"></i> Mark Shipped
+                        </button>
+                        <button class="btn btn-sm btn-outline-info" onclick="bulkExportCSV()" title="Export to CSV">
+                            <i class="fas fa-file-csv"></i> Export CSV
+                        </button>
+                        <button class="btn btn-sm btn-outline-secondary" onclick="bulkDownloadZip()" title="Download as ZIP">
+                            <i class="fas fa-file-archive"></i> Download ZIP
+                        </button>
+                    </div>
+                    <small class="text-muted">
+                        Showing <?php echo number_format((float)min($offset + 1, $totalOrders)); ?>
+                        to <?php echo number_format((float)min($offset + $perPage, $totalOrders)); ?>
+                        of <?php echo number_format((float)$totalOrders); ?>
+                    </small>
+                </div>
             </div>
         </div>
         <div class="card-body p-0">
@@ -376,6 +398,9 @@ $actionButtons = '
                 <table class="table table-hover table-striped mb-0 orders-table">
                     <thead class="table-dark">
                         <tr>
+                            <th width="40px" class="text-center">
+                                <input type="checkbox" class="form-check-input" id="selectAllOrdersHeader" onclick="toggleAllOrders(this)">
+                            </th>
                             <th>Order #</th>
                             <th>Store Location</th>
                             <th>Date Ordered</th>
@@ -391,15 +416,22 @@ $actionButtons = '
                     <tbody>
                         <?php if (empty($orders)): ?>
                             <tr>
-                                <td colspan="10" class="text-center py-5 text-muted">
+                                <td colspan="11" class="text-center py-5 text-muted">
                                     <i class="fas fa-inbox fa-3x mb-3 d-block"></i>
                                     <p class="mb-0">No purchase orders found matching your criteria</p>
                                 </td>
                             </tr>
                         <?php else: ?>
                             <?php foreach ($orders as $order): ?>
-                                <tr class="clickable-row" onclick="window.location.href='/supplier/order-detail.php?id=<?php echo $order['id']; ?>'" style="cursor: pointer;">
-                                    <td class="fw-bold"><?php echo htmlspecialchars($order['vend_number'] ?? $order['public_id'] ?? 'N/A'); ?></td>
+                                <tr class="clickable-row" data-order-id="<?php echo $order['id']; ?>" onclick="if(!event.target.closest('.no-click')) window.location.href='/supplier/order-detail.php?id=<?php echo $order['id']; ?>'" style="cursor: pointer;">
+                                    <td class="text-center no-click" onclick="event.stopPropagation();">
+                                        <input type="checkbox" class="form-check-input order-checkbox" value="<?php echo $order['id']; ?>" data-order-number="<?php echo htmlspecialchars($order['vend_number'] ?? '-'); ?>">
+                                    </td>                                    <td class="fw-bold">
+                                        <?php
+                                        // Show vend_number if exists, otherwise show blank (not hash ID)
+                                        echo !empty($order['vend_number']) ? htmlspecialchars($order['vend_number']) : '-';
+                                        ?>
+                                    </td>
                                     <td>
                                         <div class="fw-bold"><?php echo htmlspecialchars($order['outlet_name']); ?></div>
                                         <small class="text-muted"><?php echo htmlspecialchars($order['store_code'] ?? ''); ?></small>
@@ -428,7 +460,16 @@ $actionButtons = '
                                         <span class="badge bg-secondary"><?php echo number_format((float)($order['item_count'] ?? 0)); ?></span>
                                     </td>
                                     <td class="text-end"><?php echo number_format((float)($order['total_quantity'] ?? 0)); ?></td>
-                                    <td class="text-end fw-bold">$<?php echo number_format((float)($order['total_value'] ?? 0), 2); ?></td>
+                                    <td class="text-end fw-bold">
+                                        <?php
+                                        $value = (float)($order['total_value'] ?? 0);
+                                        if ($value > 0) {
+                                            echo '$' . number_format($value, 2);
+                                        } else {
+                                            echo '<span class="text-muted">-</span>';
+                                        }
+                                        ?>
+                                    </td>
                                     <td class="text-center">
                                         <span class="badge bg-<?php echo getStatusBadgeClass($order['state']); ?>">
                                             <?php echo htmlspecialchars($order['state']); ?>
