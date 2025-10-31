@@ -70,24 +70,7 @@ try {
 
     // Get claim notes/history - since there's no notes table, just create empty array
     $notes = [];
-    // TODO: If notes table exists, uncomment below
-    /*
-    $stmt = $pdo->prepare("
-        SELECT
-            note,
-            created_by,
-            created_at
-        FROM warranty_claim_notes
-        WHERE claim_id = ?
-        ORDER BY created_at DESC
-    ");
-
-    $stmt->execute([$claimId]);
-
-    while ($note = $stmt->fetch(PDO::FETCH_ASSOC)) {
-        $notes[] = $note;
-    }
-
+    
     // Generate HTML for modal
     $statusBadge = renderStatusBadge($claim['status'], 'warranty', true, true);
 
