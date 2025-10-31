@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Supplier Management System</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <nav class="navbar">
+                <div class="nav-brand">
+                    <h1>Supplier Management</h1>
+                </div>
+                <ul class="nav-menu">
+                    <li><a href="index.html" class="active">Dashboard</a></li>
+                    <li><a href="add-supplier.html">Add Supplier</a></li>
+                    <li><a href="#" onclick="showAbout()">About</a></li>
+                </ul>
+            </nav>
+        </header>
+
+        <main>
+            <section class="hero">
+                <h2>Supplier Dashboard</h2>
+                <p>Manage your suppliers efficiently and effectively</p>
+            </section>
+
+            <section class="actions">
+                <div class="search-bar">
+                    <input type="text" id="searchInput" placeholder="Search suppliers..." onkeyup="filterTable()">
+                </div>
+                <div class="action-buttons">
+                    <button class="btn btn-primary" onclick="window.location.href='add-supplier.html'">
+                        <span>+</span> Add New Supplier
+                    </button>
+                    <button class="btn btn-secondary" onclick="exportData()">
+                        <span>↓</span> Export
+                    </button>
+                </div>
+            </section>
+
+            <section class="table-section">
+                <div class="table-container">
+                    <table id="supplierTable" class="data-table">
+                        <thead>
+                            <tr>
+                                <th onclick="sortTable(0)">ID <span class="sort-arrow">↕</span></th>
+                                <th onclick="sortTable(1)">Company Name <span class="sort-arrow">↕</span></th>
+                                <th onclick="sortTable(2)">Contact Person <span class="sort-arrow">↕</span></th>
+                                <th onclick="sortTable(3)">Email <span class="sort-arrow">↕</span></th>
+                                <th onclick="sortTable(4)">Phone <span class="sort-arrow">↕</span></th>
+                                <th onclick="sortTable(5)">Country <span class="sort-arrow">↕</span></th>
+                                <th onclick="sortTable(6)">Status <span class="sort-arrow">↕</span></th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="supplierTableBody">
+                            <tr>
+                                <td>001</td>
+                                <td>Acme Corporation</td>
+                                <td>John Smith</td>
+                                <td>john.smith@acme.com</td>
+                                <td>+1-555-0100</td>
+                                <td>USA</td>
+                                <td><span class="status-badge status-active">Active</span></td>
+                                <td class="action-cell">
+                                    <button class="btn-icon" onclick="viewSupplier(1)" title="View">👁</button>
+                                    <button class="btn-icon" onclick="editSupplier(1)" title="Edit">✏️</button>
+                                    <button class="btn-icon btn-delete" onclick="deleteSupplier(1)" title="Delete">🗑</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>002</td>
+                                <td>Global Supplies Ltd</td>
+                                <td>Sarah Johnson</td>
+                                <td>sarah.j@globalsupplies.com</td>
+                                <td>+44-20-7946-0958</td>
+                                <td>UK</td>
+                                <td><span class="status-badge status-active">Active</span></td>
+                                <td class="action-cell">
+                                    <button class="btn-icon" onclick="viewSupplier(2)" title="View">👁</button>
+                                    <button class="btn-icon" onclick="editSupplier(2)" title="Edit">✏️</button>
+                                    <button class="btn-icon btn-delete" onclick="deleteSupplier(2)" title="Delete">🗑</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>003</td>
+                                <td>Tech Distributors Inc</td>
+                                <td>Michael Chen</td>
+                                <td>m.chen@techdist.com</td>
+                                <td>+86-10-8888-9999</td>
+                                <td>China</td>
+                                <td><span class="status-badge status-active">Active</span></td>
+                                <td class="action-cell">
+                                    <button class="btn-icon" onclick="viewSupplier(3)" title="View">👁</button>
+                                    <button class="btn-icon" onclick="editSupplier(3)" title="Edit">✏️</button>
+                                    <button class="btn-icon btn-delete" onclick="deleteSupplier(3)" title="Delete">🗑</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>004</td>
+                                <td>Prime Materials Group</td>
+                                <td>Emma Williams</td>
+                                <td>e.williams@primematerials.com</td>
+                                <td>+61-2-9876-5432</td>
+                                <td>Australia</td>
+                                <td><span class="status-badge status-pending">Pending</span></td>
+                                <td class="action-cell">
+                                    <button class="btn-icon" onclick="viewSupplier(4)" title="View">👁</button>
+                                    <button class="btn-icon" onclick="editSupplier(4)" title="Edit">✏️</button>
+                                    <button class="btn-icon btn-delete" onclick="deleteSupplier(4)" title="Delete">🗑</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>005</td>
+                                <td>Industrial Partners Co</td>
+                                <td>Robert Brown</td>
+                                <td>r.brown@indpartners.de</td>
+                                <td>+49-30-1234-5678</td>
+                                <td>Germany</td>
+                                <td><span class="status-badge status-active">Active</span></td>
+                                <td class="action-cell">
+                                    <button class="btn-icon" onclick="viewSupplier(5)" title="View">👁</button>
+                                    <button class="btn-icon" onclick="editSupplier(5)" title="Edit">✏️</button>
+                                    <button class="btn-icon btn-delete" onclick="deleteSupplier(5)" title="Delete">🗑</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>006</td>
+                                <td>Pacific Wholesale</td>
+                                <td>Lisa Anderson</td>
+                                <td>lisa@pacificwholesale.jp</td>
+                                <td>+81-3-1234-5678</td>
+                                <td>Japan</td>
+                                <td><span class="status-badge status-inactive">Inactive</span></td>
+                                <td class="action-cell">
+                                    <button class="btn-icon" onclick="viewSupplier(6)" title="View">👁</button>
+                                    <button class="btn-icon" onclick="editSupplier(6)" title="Edit">✏️</button>
+                                    <button class="btn-icon btn-delete" onclick="deleteSupplier(6)" title="Delete">🗑</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>007</td>
+                                <td>Euro Supply Chain</td>
+                                <td>Pierre Dubois</td>
+                                <td>p.dubois@eurosupply.fr</td>
+                                <td>+33-1-4321-8765</td>
+                                <td>France</td>
+                                <td><span class="status-badge status-active">Active</span></td>
+                                <td class="action-cell">
+                                    <button class="btn-icon" onclick="viewSupplier(7)" title="View">👁</button>
+                                    <button class="btn-icon" onclick="editSupplier(7)" title="Edit">✏️</button>
+                                    <button class="btn-icon btn-delete" onclick="deleteSupplier(7)" title="Delete">🗑</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>008</td>
+                                <td>Americas Trading Corp</td>
+                                <td>Carlos Rodriguez</td>
+                                <td>carlos.r@americastrading.mx</td>
+                                <td>+52-55-5555-1234</td>
+                                <td>Mexico</td>
+                                <td><span class="status-badge status-pending">Pending</span></td>
+                                <td class="action-cell">
+                                    <button class="btn-icon" onclick="viewSupplier(8)" title="View">👁</button>
+                                    <button class="btn-icon" onclick="editSupplier(8)" title="Edit">✏️</button>
+                                    <button class="btn-icon btn-delete" onclick="deleteSupplier(8)" title="Delete">🗑</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="table-footer">
+                    <div class="table-info">
+                        Showing <span id="displayedRows">8</span> of <span id="totalRows">8</span> suppliers
+                    </div>
+                    <div class="pagination">
+                        <button class="btn-page" onclick="previousPage()" disabled>Previous</button>
+                        <span class="page-info">Page <span id="currentPage">1</span> of <span id="totalPages">1</span></span>
+                        <button class="btn-page" onclick="nextPage()" disabled>Next</button>
+                    </div>
+                </div>
+            </section>
+
+            <section class="stats">
+                <div class="stat-card">
+                    <div class="stat-icon">📊</div>
+                    <div class="stat-content">
+                        <h3>Total Suppliers</h3>
+                        <p class="stat-number">8</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">✓</div>
+                    <div class="stat-content">
+                        <h3>Active</h3>
+                        <p class="stat-number">6</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">⏱</div>
+                    <div class="stat-content">
+                        <h3>Pending</h3>
+                        <p class="stat-number">2</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">✗</div>
+                    <div class="stat-content">
+                        <h3>Inactive</h3>
+                        <p class="stat-number">1</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <p>&copy; 2025 Supplier Management System. All rights reserved.</p>
+        </footer>
+    </div>
+
+    <!-- Modal for viewing supplier details -->
+    <div id="viewModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('viewModal')">&times;</span>
+            <h2>Supplier Details</h2>
+            <div id="supplierDetails"></div>
+        </div>
+    </div>
+
+    <script src="js/main.js"></script>
+</body>
+</html>
