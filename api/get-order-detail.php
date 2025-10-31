@@ -40,20 +40,22 @@ try {
     // Get order header
     $stmt = $pdo->prepare("
         SELECT
-            po.id,
-            po.po_number,
-            po.status,
-            po.total_amount,
-            po.notes,
-            po.tracking_number,
-            po.created_at,
-            po.updated_at,
-            o.outlet_name,
-            o.outlet_address
-        FROM purchase_orders po
-        LEFT JOIN vend_outlets o ON po.outlet_id = o.outlet_id
-        WHERE po.id = ?
-        AND po.supplier_id = ?
+            c.id,
+            c.public_id as po_number,
+            c.state as status,
+            c.total_cost as total_amount,
+            c.consignment_notes as notes,
+            c.tracking_number,
+            c.created_at,
+            c.updated_at,
+            o.name as outlet_name,
+            CONCAT(o.physical_address_1, ', ', o.physical_city, ', ', o.physical_postcode) as outlet_address
+        FROM vend_consignments c
+        LEFT JOIN vend_outlets o ON c.outlet_to = o.id
+        WHERE c.id = ?
+        AND c.supplier_id = ?
+        AND c.deleted_at IS NULL
+        AND c.transfer_category = 'PURCHASE_ORDER'
     ");
 
     $stmt->execute([$orderId, $supplierId]);
@@ -66,15 +68,18 @@ try {
     // Get order items
     $stmt = $pdo->prepare("
         SELECT
-            poi.id,
-            poi.product_name,
-            poi.sku,
-            poi.quantity,
-            poi.unit_price,
-            (poi.quantity * poi.unit_price) as line_total
-        FROM purchase_order_items poi
-        WHERE poi.purchase_order_id = ?
-        ORDER BY poi.product_name
+            li.id,
+            p.name as product_name,
+            p.sku,
+            li.order_qty as quantity,
+            li.order_purchase_price as unit_price,
+            (li.order_qty * li.order_purchase_price) as line_total
+        FROM purchase_order_line_items li
+        LEFT JOIN vend_products p ON li.product_id = p.id
+        WHERE li.purchase_order_id = ?
+        AND li.deleted_at IS NULL
+        AND (p.deleted_at IS NULL OR p.deleted_at = '0000-00-00 00:00:00')
+        ORDER BY p.name
     ");
 
     $stmt->execute([$orderId]);

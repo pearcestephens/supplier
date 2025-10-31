@@ -80,10 +80,11 @@ try {
     $pdo = pdo();
 
     $stmt = $pdo->prepare("
-        UPDATE suppliers
+        UPDATE vend_suppliers
         SET {$field} = ?,
             updated_at = NOW()
         WHERE id = ?
+        AND deleted_at IS NULL
     ");
 
     $stmt->execute([$value, $supplierId]);

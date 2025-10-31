@@ -39,24 +39,26 @@ try {
 
     $stmt = $pdo->prepare("
         SELECT
-            wc.id,
-            wc.claim_number,
-            wc.status,
-            wc.product_name,
-            wc.sku,
-            wc.issue_description,
-            wc.customer_name,
-            wc.customer_email,
-            wc.purchase_date,
-            wc.claim_date,
-            wc.resolution,
-            wc.resolution_date,
-            wc.images,
-            o.outlet_name
-        FROM warranty_claims wc
-        LEFT JOIN vend_outlets o ON wc.outlet_id = o.outlet_id
-        WHERE wc.id = ?
-        AND wc.supplier_id = ?
+            fp.id,
+            fp.id as claim_number,
+            fp.supplier_status as status,
+            p.name as product_name,
+            p.sku,
+            fp.fault_desc as issue_description,
+            fp.staff_member as customer_name,
+            '' as customer_email,
+            DATE_SUB(fp.time_created, INTERVAL 30 DAY) as purchase_date,
+            fp.time_created as claim_date,
+            fp.fault_resolution as resolution,
+            fp.supplier_status_timestamp as resolution_date,
+            fp.fileName as images,
+            o.name as outlet_name
+        FROM faulty_products fp
+        LEFT JOIN vend_products p ON fp.product_id = p.id
+        LEFT JOIN vend_outlets o ON fp.store_location = o.id
+        WHERE fp.id = ?
+        AND p.supplier_id = ?
+        AND p.deleted_at = '0000-00-00 00:00:00'
     ");
 
     $stmt->execute([$claimId, $supplierId]);
@@ -66,7 +68,10 @@ try {
         throw new Exception('Warranty claim not found');
     }
 
-    // Get claim notes/history
+    // Get claim notes/history - since there's no notes table, just create empty array
+    $notes = [];
+    // TODO: If notes table exists, uncomment below
+    /*
     $stmt = $pdo->prepare("
         SELECT
             note,
@@ -79,7 +84,6 @@ try {
 
     $stmt->execute([$claimId]);
 
-    $notes = [];
     while ($note = $stmt->fetch(PDO::FETCH_ASSOC)) {
         $notes[] = $note;
     }

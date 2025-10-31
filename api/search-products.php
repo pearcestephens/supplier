@@ -46,21 +46,22 @@ try {
 
     $stmt = $pdo->prepare("
         SELECT
-            sp.id,
-            sp.product_name,
-            sp.sku,
-            sp.current_stock,
-            sp.unit_price,
-            sp.status,
-            vp.id as vend_product_id
-        FROM supplier_products sp
-        LEFT JOIN vend_products vp ON sp.sku = vp.sku
-        WHERE sp.supplier_id = ?
+            p.id,
+            p.name as product_name,
+            p.sku,
+            COALESCE(vi.inventory_level, 0) as current_stock,
+            p.supply_price as unit_price,
+            p.active as status,
+            p.id as vend_product_id
+        FROM vend_products p
+        LEFT JOIN vend_inventory vi ON p.id = vi.product_id
+        WHERE p.supplier_id = ?
+        AND p.deleted_at = '0000-00-00 00:00:00'
         AND (
-            sp.product_name LIKE ?
-            OR sp.sku LIKE ?
+            p.name LIKE ?
+            OR p.sku LIKE ?
         )
-        ORDER BY sp.product_name
+        ORDER BY p.name
         LIMIT 10
     ");
 

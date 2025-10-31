@@ -46,20 +46,22 @@ try {
 
     $stmt = $pdo->prepare("
         SELECT
-            po.id,
-            po.po_number,
-            po.status,
-            po.total_amount,
-            po.created_at,
-            o.outlet_name
-        FROM purchase_orders po
-        LEFT JOIN vend_outlets o ON po.outlet_id = o.outlet_id
-        WHERE po.supplier_id = ?
+            c.id,
+            c.public_id as po_number,
+            c.state as status,
+            c.total_cost as total_amount,
+            c.created_at,
+            o.name as outlet_name
+        FROM vend_consignments c
+        LEFT JOIN vend_outlets o ON c.outlet_to = o.id
+        WHERE c.supplier_id = ?
+        AND c.deleted_at IS NULL
+        AND c.transfer_category = 'PURCHASE_ORDER'
         AND (
-            po.po_number LIKE ?
-            OR o.outlet_name LIKE ?
+            c.public_id LIKE ?
+            OR o.name LIKE ?
         )
-        ORDER BY po.created_at DESC
+        ORDER BY c.created_at DESC
         LIMIT 10
     ");
 
