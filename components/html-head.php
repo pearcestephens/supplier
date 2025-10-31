@@ -51,3 +51,5 @@ if (!isset($pageTitle)) {
     <link rel="stylesheet" href="/supplier/assets/css/07-polish.css?v=<?php echo time(); ?>">
 </head>
 <body>
+    <!-- Skip to content link for accessibility -->
+    <a href="#main-content" class="skip-link">Skip to main content</a>

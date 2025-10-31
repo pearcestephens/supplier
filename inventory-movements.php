@@ -371,7 +371,7 @@ try {
 <div class="wrapper">
     <?php include __DIR__ . '/components/sidebar-new.php'; ?>
 
-    <div class="main-content">
+    <div class="main-content" id="main-content">
         <?php include __DIR__ . '/components/page-header.php'; ?>
 
         <div class="container-fluid p-4">
