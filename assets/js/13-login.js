@@ -64,7 +64,11 @@
             // Enter key submits form (default behavior, but ensure focus is correct)
             if (e.key === 'Enter' && document.activeElement === emailInput) {
                 if (emailInput.value.trim()) {
-                    loginForm.requestSubmit();
+                    // Use submit button click for better compatibility
+                    const submitBtn = loginForm.querySelector('button[type="submit"]');
+                    if (submitBtn) {
+                        submitBtn.click();
+                    }
                 }
             }
 

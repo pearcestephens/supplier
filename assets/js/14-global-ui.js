@@ -35,6 +35,12 @@
      * Initialize Bootstrap tooltips
      */
     function initTooltips() {
+        // Check if Bootstrap is available
+        if (typeof bootstrap === 'undefined') {
+            console.warn('Bootstrap is not loaded. Tooltip initialization skipped.');
+            return;
+        }
+
         // Bootstrap 5 tooltip initialization
         const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
         tooltipTriggerList.forEach(function (tooltipTriggerEl) {
@@ -59,6 +65,12 @@
      * Initialize Bootstrap popovers
      */
     function initPopovers() {
+        // Check if Bootstrap is available
+        if (typeof bootstrap === 'undefined') {
+            console.warn('Bootstrap is not loaded. Popover initialization skipped.');
+            return;
+        }
+
         const popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'));
         popoverTriggerList.forEach(function (popoverTriggerEl) {
             new bootstrap.Popover(popoverTriggerEl);
@@ -137,13 +149,15 @@
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
                 // Close any open modals
-                const openModals = document.querySelectorAll('.modal.show');
-                openModals.forEach(modal => {
-                    const bsModal = bootstrap.Modal.getInstance(modal);
-                    if (bsModal) {
-                        bsModal.hide();
-                    }
-                });
+                if (typeof bootstrap !== 'undefined') {
+                    const openModals = document.querySelectorAll('.modal.show');
+                    openModals.forEach(modal => {
+                        const bsModal = bootstrap.Modal.getInstance(modal);
+                        if (bsModal) {
+                            bsModal.hide();
+                        }
+                    });
+                }
             }
         });
 
