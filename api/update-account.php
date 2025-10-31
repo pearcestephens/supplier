@@ -22,7 +22,7 @@ try {
         http_response_code(405);
         throw new Exception('Invalid request method');
     }
-    
+
     // Get supplier ID from session
     $supplierId = getSupplierID();    if (!$supplierId) {
         throw new Exception('Supplier ID not found in session');
@@ -77,20 +77,19 @@ try {
     }
 
     // Update the field
-    $db = Database::getInstance();
-    $mysqli = $db->getConnection();
+    $pdo = pdo();
 
-    $stmt = $mysqli->prepare("
+    $stmt = $pdo->prepare("
         UPDATE suppliers
         SET {$field} = ?,
             updated_at = NOW()
         WHERE id = ?
     ");
 
-    $stmt->bind_param('si', $value, $supplierId);
+    $stmt->execute([$value, $supplierId]);
 
-    if (!$stmt->execute()) {
-        throw new Exception('Failed to update field');
+    if ($stmt->rowCount() === 0) {
+        throw new Exception('Failed to update field or no changes made');
     }
 
     // Log the change

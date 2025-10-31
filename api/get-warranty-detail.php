@@ -21,24 +21,23 @@ try {
     if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
         throw new Exception('Invalid request method');
     }
-    
+
     // Get and validate claim ID
     $claimId = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
-    
+
     if (!$claimId) {
         throw new Exception('Invalid claim ID');
     }
-    
+
     // Get supplier ID from session
     $supplierId = getSupplierID();    if (!$supplierId) {
         throw new Exception('Supplier ID not found in session');
     }
 
     // Get warranty claim details
-    $db = Database::getInstance();
-    $mysqli = $db->getConnection();
+    $pdo = pdo();
 
-    $stmt = $mysqli->prepare("
+    $stmt = $pdo->prepare("
         SELECT
             wc.id,
             wc.claim_number,
@@ -60,18 +59,15 @@ try {
         AND wc.supplier_id = ?
     ");
 
-    $stmt->bind_param('ii', $claimId, $supplierId);
-    $stmt->execute();
-    $result = $stmt->get_result();
+    $stmt->execute([$claimId, $supplierId]);
+    $claim = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    if ($result->num_rows === 0) {
+    if (!$claim) {
         throw new Exception('Warranty claim not found');
     }
 
-    $claim = $result->fetch_assoc();
-
     // Get claim notes/history
-    $stmt = $mysqli->prepare("
+    $stmt = $pdo->prepare("
         SELECT
             note,
             created_by,
@@ -81,12 +77,10 @@ try {
         ORDER BY created_at DESC
     ");
 
-    $stmt->bind_param('i', $claimId);
-    $stmt->execute();
-    $notesResult = $stmt->get_result();
+    $stmt->execute([$claimId]);
 
     $notes = [];
-    while ($note = $notesResult->fetch_assoc()) {
+    while ($note = $stmt->fetch(PDO::FETCH_ASSOC)) {
         $notes[] = $note;
     }
 

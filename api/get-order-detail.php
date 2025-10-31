@@ -21,25 +21,24 @@ try {
     if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
         throw new Exception('Invalid request method');
     }
-    
+
     // Get and validate order ID
     $orderId = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
-    
+
     if (!$orderId) {
         throw new Exception('Invalid order ID');
     }
-    
+
     // Get supplier ID from session
     $supplierId = getSupplierID();    if (!$supplierId) {
         throw new Exception('Supplier ID not found in session');
     }
 
     // Get order details
-    $db = Database::getInstance();
-    $mysqli = $db->getConnection();
+    $pdo = pdo();
 
     // Get order header
-    $stmt = $mysqli->prepare("
+    $stmt = $pdo->prepare("
         SELECT
             po.id,
             po.po_number,
@@ -57,18 +56,15 @@ try {
         AND po.supplier_id = ?
     ");
 
-    $stmt->bind_param('ii', $orderId, $supplierId);
-    $stmt->execute();
-    $result = $stmt->get_result();
+    $stmt->execute([$orderId, $supplierId]);
+    $order = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    if ($result->num_rows === 0) {
+    if (!$order) {
         throw new Exception('Order not found');
     }
 
-    $order = $result->fetch_assoc();
-
     // Get order items
-    $stmt = $mysqli->prepare("
+    $stmt = $pdo->prepare("
         SELECT
             poi.id,
             poi.product_name,
@@ -81,12 +77,10 @@ try {
         ORDER BY poi.product_name
     ");
 
-    $stmt->bind_param('i', $orderId);
-    $stmt->execute();
-    $itemsResult = $stmt->get_result();
+    $stmt->execute([$orderId]);
 
     $items = [];
-    while ($item = $itemsResult->fetch_assoc()) {
+    while ($item = $stmt->fetch(PDO::FETCH_ASSOC)) {
         $items[] = $item;
     }
 

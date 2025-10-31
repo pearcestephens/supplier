@@ -21,10 +21,10 @@ try {
     if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
         throw new Exception('Invalid request method');
     }
-    
+
     // Get search query
     $query = $_GET['q'] ?? '';
-    
+
     if (strlen($query) < 2) {
         echo json_encode([
             'success' => true,
@@ -33,19 +33,18 @@ try {
         ]);
         exit;
     }
-    
+
     // Get supplier ID from session
     $supplierId = getSupplierID();    if (!$supplierId) {
         throw new Exception('Supplier ID not found in session');
     }
 
     // Search products (name, SKU)
-    $db = Database::getInstance();
-    $mysqli = $db->getConnection();
+    $pdo = pdo();
 
     $searchTerm = '%' . $query . '%';
 
-    $stmt = $mysqli->prepare("
+    $stmt = $pdo->prepare("
         SELECT
             sp.id,
             sp.product_name,
@@ -65,12 +64,10 @@ try {
         LIMIT 10
     ");
 
-    $stmt->bind_param('iss', $supplierId, $searchTerm, $searchTerm);
-    $stmt->execute();
-    $result = $stmt->get_result();
+    $stmt->execute([$supplierId, $searchTerm, $searchTerm]);
 
     $results = [];
-    while ($row = $result->fetch_assoc()) {
+    while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
         // Determine stock status
         $stockStatus = 'in stock';
         $stockClass = 'success';
