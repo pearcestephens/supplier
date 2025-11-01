@@ -190,6 +190,30 @@ $breadcrumb = [
             </div>
         </div>
 
+        <!-- Email Addresses Card -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-white border-bottom">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="fa-solid fa-envelope text-secondary me-2"></i> Email Addresses</h5>
+                    <button class="btn btn-sm btn-primary" onclick="showAddEmailModal()">
+                        <i class="fa-solid fa-plus"></i> Add Email
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                <p class="text-muted small mb-3">
+                    Manage email addresses for receiving reports and notifications. Your primary email is used for important account communications.
+                </p>
+                <div id="emailListContainer">
+                    <div class="text-center py-3">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- NZ Bank Account Card -->
         <div class="card shadow-sm mb-4">
             <div class="card-header bg-white border-bottom">
@@ -395,10 +419,54 @@ $breadcrumb = [
     </div><!-- /.content-wrapper -->
 </div><!-- /.main-content -->
 
+<!-- Add Email Modal -->
+<div class="modal fade" id="addEmailModal" tabindex="-1" aria-labelledby="addEmailModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addEmailModalLabel">
+                    <i class="fa-solid fa-envelope-circle-check me-2"></i>Add Email Address
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form onsubmit="addEmail(event)">
+                <div class="modal-body">
+                    <div class="alert alert-info">
+                        <i class="fa-solid fa-info-circle me-2"></i>
+                        A verification email will be sent to the address you enter. You must verify the email before it can be set as primary.
+                    </div>
+                    <div class="mb-3">
+                        <label for="newEmailAddress" class="form-label fw-semibold">
+                            Email Address <span class="text-danger">*</span>
+                        </label>
+                        <input 
+                            type="email" 
+                            class="form-control" 
+                            id="newEmailAddress" 
+                            placeholder="supplier@example.com" 
+                            required
+                        >
+                        <small class="form-text text-muted">
+                            Make sure you have access to this email inbox to verify it.
+                        </small>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fa-solid fa-plus me-1"></i>Add Email
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <?php include __DIR__ . '/components/html-footer.php'; ?>
 
 <!-- Account JavaScript -->
 <script src="/supplier/assets/js/account.js?v=<?php echo time(); ?>"></script>
+<script src="/supplier/assets/js/16-email-management.js?v=<?php echo time(); ?>"></script>
 
 </body>
 </html>
