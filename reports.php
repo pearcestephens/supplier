@@ -175,6 +175,9 @@ $breadcrumb = [
 ?>
 <?php include __DIR__ . '/components/html-head.php'; ?>
 
+<!-- Reports Specific CSS -->
+<link rel="stylesheet" href="/supplier/assets/css/05-reports.css?v=<?php echo time(); ?>">
+
 <!-- Sidebar -->
 <?php include __DIR__ . '/components/sidebar-new.php'; ?>
 
@@ -191,39 +194,50 @@ $breadcrumb = [
 <!-- Supplier Reports Page -->
 <div class="reports-page">
 
-    <!-- Date Range Filter -->
-    <div class="card mb-4">
-        <div class="card-body">
-            <form method="GET" action="" class="row g-3 align-items-end">
-                <input type="hidden" name="tab" value="reports">
+    <!-- Filter Bar & Export Toolbar -->
+    <div class="filter-bar">
+        <form method="GET" action="" class="d-flex gap-3 flex-wrap align-items-end w-100">
+            <input type="hidden" name="tab" value="reports">
 
-                <div class="col-md-3">
-                    <label class="form-label small fw-bold">Start Date</label>
-                    <input type="date" name="start_date" class="form-control" value="<?php echo htmlspecialchars($startDate); ?>">
-                </div>
+            <div class="filter-group">
+                <label>Start Date</label>
+                <input type="date" name="start_date" class="form-control" value="<?php echo htmlspecialchars($startDate); ?>">
+            </div>
 
-                <div class="col-md-3">
-                    <label class="form-label small fw-bold">End Date</label>
-                    <input type="date" name="end_date" class="form-control" value="<?php echo htmlspecialchars($endDate); ?>">
-                </div>
+            <div class="filter-group">
+                <label>End Date</label>
+                <input type="date" name="end_date" class="form-control" value="<?php echo htmlspecialchars($endDate); ?>">
+            </div>
 
-                <div class="col-md-3">
-                    <label class="form-label small fw-bold">Report Type</label>
-                    <select name="report_type" class="form-select">
-                        <option value="overview" <?php echo $reportType === 'overview' ? 'selected' : ''; ?>>Overview</option>
-                        <option value="products" <?php echo $reportType === 'products' ? 'selected' : ''; ?>>Product Analysis</option>
-                        <option value="stores" <?php echo $reportType === 'stores' ? 'selected' : ''; ?>>Store Performance</option>
-                        <option value="fulfillment" <?php echo $reportType === 'fulfillment' ? 'selected' : ''; ?>>Fulfillment Metrics</option>
-                    </select>
-                </div>
+            <div class="filter-group">
+                <label>Report Type</label>
+                <select name="report_type" class="form-select">
+                    <option value="overview" <?php echo $reportType === 'overview' ? 'selected' : ''; ?>>Overview</option>
+                    <option value="products" <?php echo $reportType === 'products' ? 'selected' : ''; ?>>Product Analysis</option>
+                    <option value="stores" <?php echo $reportType === 'stores' ? 'selected' : ''; ?>>Store Performance</option>
+                    <option value="fulfillment" <?php echo $reportType === 'fulfillment' ? 'selected' : ''; ?>>Fulfillment Metrics</option>
+                </select>
+            </div>
 
-                <div class="col-md-3">
-                    <button type="submit" class="btn btn-primary w-100">
-                        <i class="fas fa-sync"></i> Update Report
-                    </button>
-                </div>
-            </form>
-        </div>
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-sync"></i> Update
+            </button>
+
+            <div class="ms-auto export-toolbar">
+                <button type="button" class="export-btn" id="exportCSV" title="Export to CSV">
+                    <i class="fas fa-file-csv"></i> CSV
+                </button>
+                <button type="button" class="export-btn" id="exportExcel" title="Export to Excel">
+                    <i class="fas fa-file-excel"></i> Excel
+                </button>
+                <button type="button" class="export-btn" id="exportPDF" title="Export to PDF">
+                    <i class="fas fa-file-pdf"></i> PDF
+                </button>
+                <button type="button" class="export-btn" id="refreshData" title="Refresh Data">
+                    <i class="fas fa-sync-alt"></i>
+                </button>
+            </div>
+        </form>
     </div>
 
     <!-- Key Performance Indicators -->
@@ -289,6 +303,83 @@ $breadcrumb = [
             </div>
         </div>
 
+    </div>
+
+    <!-- ML Forecast Section -->
+    <div class="card mb-4">
+        <div class="card-header bg-light d-flex justify-content-between align-items-center">
+            <h6 class="mb-0"><i class="fas fa-brain"></i> ML Sales Forecast (Next 8 Weeks)</h6>
+            <span class="badge bg-primary">AI-Powered</span>
+        </div>
+        <div class="card-body">
+            <!-- Forecast Summary Metrics -->
+            <div id="forecastSummary" class="mb-4">
+                <div class="text-center text-muted py-4">
+                    <div class="loading-spinner mx-auto"></div>
+                    <p class="mt-3">Loading forecast data...</p>
+                </div>
+            </div>
+            
+            <!-- Forecast Chart -->
+            <div class="forecast-chart-container">
+                <canvas id="forecastChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Week Navigation for Detailed View -->
+    <div class="week-navigation">
+        <button class="week-nav-btn" id="prevWeek" title="Previous Week">
+            <i class="fas fa-chevron-left"></i>
+        </button>
+        <div class="week-nav-label" id="currentWeekLabel">
+            Select date range above
+        </div>
+        <button class="week-nav-btn" id="nextWeek" title="Next Week">
+            <i class="fas fa-chevron-right"></i>
+        </button>
+    </div>
+
+    <!-- Weekly Stats Container (Dynamic) -->
+    <div id="weeklyStatsContainer" class="mb-4"></div>
+
+    <!-- Product Performance Table (Compact) -->
+    <div class="card mb-4">
+        <div class="card-header bg-light d-flex justify-content-between align-items-center">
+            <h6 class="mb-0"><i class="fas fa-chart-line"></i> Product Performance Analytics</h6>
+            <div class="input-group" style="width: 250px;">
+                <span class="input-group-text"><i class="fas fa-search"></i></span>
+                <input type="text" class="form-control form-control-sm" id="productSearch" 
+                       placeholder="Search products...">
+            </div>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0 reports-table-compact">
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>SKU</th>
+                            <th class="text-center">Orders</th>
+                            <th class="text-end">Units</th>
+                            <th class="text-end">Revenue</th>
+                            <th class="text-end">Velocity</th>
+                            <th class="text-end">Growth</th>
+                            <th>Lifecycle</th>
+                            <th style="width: 100px;">Performance</th>
+                        </tr>
+                    </thead>
+                    <tbody id="productPerformanceBody">
+                        <tr>
+                            <td colspan="9" class="text-center text-muted py-4">
+                                <div class="loading-spinner mx-auto"></div>
+                                <p class="mt-3">Loading product performance data...</p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
 
     <!-- Charts Row -->
@@ -435,7 +526,12 @@ $breadcrumb = [
 <?php include __DIR__ . '/components/html-footer.php'; ?>
 
 <!-- Reports JavaScript -->
-<script src="/supplier/assets/js/reports.js?v=<?php echo time(); ?>"></script>
+<script>
+// Pass PHP data to JavaScript
+const monthlyTrend = <?php echo json_encode($monthlyTrend); ?>;
+const fulfillmentMetrics = <?php echo json_encode($fulfillmentMetrics); ?>;
+</script>
+<script src="/supplier/assets/js/15-reports.js?v=<?php echo time(); ?>"></script>
 
 </body>
 </html>

@@ -244,6 +244,7 @@ define('CACHE_PATH', BASE_PATH . 'cache/');
 // ============================================================================
 
 define('BASE_URL', '/supplier/');
+define('SITE_URL', 'https://' . ($_SERVER['HTTP_HOST'] ?? 'vapeshed.co.nz')); // Define full site URL
 define('API_URL', BASE_URL . 'api/endpoint.php');
 define('ASSETS_URL', BASE_URL . 'assets/');
 define('UPLOADS_URL', BASE_URL . 'uploads/');
