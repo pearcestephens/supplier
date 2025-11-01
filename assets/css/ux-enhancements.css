@@ -105,7 +105,7 @@
 }
 
 .table-hover tbody tr:hover td:first-child {
-    border-left: 3px solid #0d6efd;
+    border-left: 3px solid #3498db;
     padding-left: calc(0.75rem - 3px);
 }
 
@@ -168,7 +168,7 @@
 }
 
 .form-control:focus, .form-select:focus {
-    border-color: #0d6efd;
+    border-color: #3498db;
     box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.15);
     outline: none;
 }
@@ -190,7 +190,7 @@
 
 .form-floating > .form-control:focus ~ label,
 .form-floating > .form-control:not(:placeholder-shown) ~ label {
-    color: #0d6efd;
+    color: #3498db;
 }
 
 /* ============================================================================
@@ -313,7 +313,7 @@
    ============================================================================ */
 
 *:focus-visible {
-    outline: 2px solid #0d6efd;
+    outline: 2px solid #3498db;
     outline-offset: 2px;
     border-radius: 0.25rem;
 }
@@ -328,7 +328,7 @@
     position: absolute;
     top: -40px;
     left: 0;
-    background: #0d6efd;
+    background: #3498db;
     color: white;
     padding: 8px;
     text-decoration: none;
@@ -420,9 +420,9 @@
 }
 
 .chip-active {
-    background: #0d6efd;
+    background: #3498db;
     color: white;
-    border-color: #0d6efd;
+    border-color: #3498db;
 }
 
 .chip-active:hover {
@@ -443,8 +443,8 @@
 }
 
 .pagination .page-item.active .page-link {
-    background: #0d6efd;
-    border-color: #0d6efd;
+    background: #3498db;
+    border-color: #3498db;
     box-shadow: 0 2px 4px rgba(13, 110, 253, 0.3);
 }
 

@@ -67,7 +67,7 @@ $breadcrumb = [
 <?php include __DIR__ . '/components/page-header.php'; ?>
 
 <!-- Main Content Area -->
-<div class="main-content">
+<div class="main-content" id="main-content">
     <div class="content-wrapper p-4">
 
         <!-- Page Title Section -->

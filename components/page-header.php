@@ -10,16 +10,16 @@
 
 <!-- Page Header Top Bar - Fixed -->
 <div class="page-header-wrapper">
-    <div class="page-header-top">
+    <div class="page-header-top" role="banner">
         <div class="container-fluid px-4">
             <div class="d-flex justify-content-between align-items-center">
                 <!-- Mobile Menu Toggle Button -->
-                <button class="btn btn-link d-md-none me-2 p-0" onclick="toggleMobileMenu()" style="color: #d4af37; font-size: 1.5rem;" aria-label="Toggle menu">
+                <button class="btn btn-link d-md-none me-2 p-0" onclick="toggleMobileMenu()" style="color: #d4af37; font-size: 1.5rem;" aria-label="Toggle navigation menu" aria-expanded="false">
                     <i class="fas fa-bars"></i>
                 </button>
 
                 <!-- Welcome Message -->
-                <div class="welcome-message mb-0">
+                <div class="welcome-message mb-0" role="heading" aria-level="1">
                     Welcome back, <span class="fw-semibold"><?php echo htmlspecialchars($supplierName ?? 'User'); ?></span>
                 </div>
 
@@ -27,10 +27,10 @@
                 <div class="d-flex align-items-center gap-3">
                     <!-- Notifications -->
                     <div class="dropdown">
-                        <button class="btn btn-icon position-relative" type="button" data-bs-toggle="dropdown">
+                        <button class="btn btn-icon position-relative" type="button" data-bs-toggle="dropdown" aria-label="Notifications" aria-haspopup="true" aria-expanded="false">
                             <i class="fa-solid fa-bell"></i>
                             <?php if (($warrantyClaimsCount ?? 0) > 0 || ($pendingOrdersCount ?? 0) > 0): ?>
-                                <span class="notification-badge">
+                                <span class="notification-badge" aria-label="<?php echo ($warrantyClaimsCount ?? 0) + ($pendingOrdersCount ?? 0); ?> notifications">
                                     <?php echo ($warrantyClaimsCount ?? 0) + ($pendingOrdersCount ?? 0); ?>
                                 </span>
                             <?php endif; ?>
@@ -62,7 +62,7 @@
 
                     <!-- User Menu -->
                     <div class="dropdown">
-                        <button class="btn btn-icon" type="button" data-bs-toggle="dropdown">
+                        <button class="btn btn-icon" type="button" data-bs-toggle="dropdown" aria-label="User menu" aria-haspopup="true" aria-expanded="false">
                             <i class="fa-solid fa-user-circle"></i>
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end shadow-sm">

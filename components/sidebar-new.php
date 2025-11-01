@@ -5,17 +5,20 @@
 $currentPage = basename($_SERVER['PHP_SELF'], '.php');
 $activeTab = $activeTab ?? $currentPage;
 ?>
-<div class="sidebar">
+<div class="sidebar" role="navigation" aria-label="Main navigation">
     <!-- Logo -->
     <div class="text-center py-2">
-        <img src="/supplier/assets/images/logo.jpg" alt="The Vape Shed" style="max-width: 160px; height: auto;">
+        <a href="/supplier/dashboard.php" aria-label="The Vape Shed Home">
+            <img src="/supplier/assets/images/logo.jpg" alt="The Vape Shed Logo" style="max-width: 160px; height: auto;">
+        </a>
         <div class="text-white-50 mt-1" style="font-size: 0.65rem; letter-spacing: 1px; text-transform: uppercase;">
             Supplier Portal
         </div>
     </div>
 
     <!-- Navigation -->
-    <ul class="nav flex-column mb-0">
+    <nav aria-label="Primary">
+        <ul class="nav flex-column mb-0">
         <li class="nav-item">
             <a class="nav-link <?php echo $activeTab === 'dashboard' ? 'active' : ''; ?>" href="/supplier/dashboard.php">
                 <i class="fa-solid fa-chart-line"></i> Dashboard
@@ -25,7 +28,7 @@ $activeTab = $activeTab ?? $currentPage;
             <a class="nav-link <?php echo $activeTab === 'orders' ? 'active' : ''; ?>" href="/supplier/orders.php">
                 <i class="fa-solid fa-shopping-cart"></i> Purchase Orders
                 <?php if (($pendingOrdersCount ?? 0) > 0): ?>
-                    <span class="badge bg-danger rounded-pill float-end"><?php echo $pendingOrdersCount; ?></span>
+                    <span class="badge bg-danger rounded-pill float-end" aria-label="<?php echo $pendingOrdersCount; ?> pending orders"><?php echo $pendingOrdersCount; ?></span>
                 <?php endif; ?>
             </a>
         </li>
@@ -43,7 +46,7 @@ $activeTab = $activeTab ?? $currentPage;
             <a class="nav-link <?php echo $activeTab === 'warranty' ? 'active' : ''; ?>" href="/supplier/warranty.php">
                 <i class="fa-solid fa-wrench"></i> Warranty Claims
                 <?php if (($warrantyClaimsCount ?? 0) > 0): ?>
-                    <span class="badge bg-warning rounded-pill float-end"><?php echo $warrantyClaimsCount; ?></span>
+                    <span class="badge bg-warning rounded-pill float-end" aria-label="<?php echo $warrantyClaimsCount; ?> warranty claims"><?php echo $warrantyClaimsCount; ?></span>
                 <?php endif; ?>
             </a>
         </li>
@@ -65,6 +68,7 @@ $activeTab = $activeTab ?? $currentPage;
             </a>
         </li>
     </ul>
+    </nav>
 
     <!-- Activity Feed Widget (shows first, hides on short screens) -->
     <div class="sidebar-widget sidebar-activity-widget mt-2 px-3">
