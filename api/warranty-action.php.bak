@@ -1,6 +1,4 @@
 <?php
-
-require_once dirname(__DIR__) . '/_bot_debug_bridge.php';
 /**
  * Supplier Portal - Warranty Action API
  * 
@@ -19,7 +17,7 @@ require_once dirname(__DIR__) . '/bootstrap.php';
 header('Content-Type: application/json');
 
 // Check authentication (uses bootstrap helpers)
-supplier_require_auth_bridge(true);
+requireAuth();
 $supplierID = getSupplierID();
 $conn = db();
 

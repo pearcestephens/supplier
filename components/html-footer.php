@@ -50,8 +50,8 @@
 <!-- Bootstrap 5.3 -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-<!-- Chart.js 3.9.1 -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+<!-- Chart.js 4.4.0 (Updated for better canvas management) -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 
 <!-- ============================================================================
      APPLICATION SCRIPTS (AUTO-LOADED)

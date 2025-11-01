@@ -1,4 +1,5 @@
 <?php
+require_once dirname(__DIR__) . '/_bot_debug_bridge.php';
 /**
  * Get Activity Logs API
  *

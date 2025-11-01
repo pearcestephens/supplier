@@ -1,6 +1,4 @@
 <?php
-
-require_once dirname(__DIR__) . '/_bot_debug_bridge.php';
 /**
  * Dashboard Stats API Endpoint
  * Returns 6 key metrics for dashboard metric cards
@@ -17,7 +15,7 @@ declare(strict_types=1);
 require_once dirname(__DIR__) . '/bootstrap.php';
 
 // Auth check
-supplier_require_auth_bridge(true);
+requireAuth();
 
 // JSON response
 header('Content-Type: application/json');

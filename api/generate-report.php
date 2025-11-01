@@ -1,4 +1,5 @@
 <?php
+require_once dirname(__DIR__) . '/_bot_debug_bridge.php';
 /**
  * Generate Reports - Period-based reporting
  * 
@@ -11,7 +12,7 @@
 require_once dirname(__DIR__) . '/bootstrap.php';
 
 // Check authentication
-requireAuth();
+supplier_require_auth_bridge(true);
 
 try {
     $db = db();

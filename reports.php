@@ -175,9 +175,6 @@ $breadcrumb = [
 ?>
 <?php include __DIR__ . '/components/html-head.php'; ?>
 
-<!-- Chart.js Library (CRITICAL - Required for all charts) -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-
 <!-- Reports Specific CSS -->
 <link rel="stylesheet" href="/supplier/assets/css/05-reports.css?v=<?php echo time(); ?>">
 

@@ -1,6 +1,4 @@
 <?php
-
-require_once dirname(__DIR__) . '/_bot_debug_bridge.php';
 /**
  * Set Primary Email API Endpoint
  * 
@@ -20,12 +18,12 @@ declare(strict_types=1);
 
 require_once dirname(__DIR__) . '/bootstrap.php';
 require_once dirname(__DIR__) . '/includes/email-templates.php';
-supplier_require_auth_bridge(true);
+requireAuth();
 
 header('Content-Type: application/json');
 
 try {
-    $supplierID = supplier_current_id_bridge();
+    $supplierID = Auth::getSupplierId();
     if (!$supplierID) {
         throw new Exception('Supplier ID not found in session');
     }

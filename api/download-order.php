@@ -1,4 +1,5 @@
 <?php
+require_once dirname(__DIR__) . '/_bot_debug_bridge.php';
 /**
  * Download Single Order as CSV
  *
@@ -11,7 +12,7 @@
 require_once dirname(__DIR__) . '/bootstrap.php';
 
 // Check authentication
-requireAuth();
+supplier_require_auth_bridge(true);
 
 try {
     $db = db(); // Use MySQLi helper from bootstrap

@@ -1,6 +1,4 @@
 <?php
-
-require_once dirname(__DIR__) . '/_bot_debug_bridge.php';
 /**
  * Add Order Note
  *
@@ -21,7 +19,7 @@ header('X-Frame-Options: DENY');
 require_once dirname(__DIR__) . '/bootstrap.php';
 
 // Check authentication (uses bootstrap helpers)
-supplier_require_auth_bridge(true);
+requireAuth();
 $supplierID = getSupplierID();
 $pdo = pdo();
 
