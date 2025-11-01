@@ -1,0 +1,29 @@
+# Test files
+test-forecasting.php
+test-*.php
+
+# Logs
+logs/*.log
+*.log
+
+# Temporary files
+/tmp/*
+*.tmp
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Dependencies (if added later)
+vendor/
+node_modules/
+
+# Environment files
+.env
+.env.local

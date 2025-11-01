@@ -1,0 +1,517 @@
+/**
+ * Reports Page - Compact, Information-Dense Styling
+ * 
+ * Design Goals:
+ * - Compact layout (10-15 rows visible)
+ * - Color indicators (green/amber/red)
+ * - Mini sparklines for trends
+ * - Week navigation controls
+ * - Mobile responsive
+ * 
+ * @package SupplierPortal
+ * @version 1.0.0
+ */
+
+/* ============================================================================
+   COMPACT TABLE STYLING
+   ============================================================================ */
+
+.reports-container {
+    padding: 0;
+}
+
+.reports-table-compact {
+    font-size: 0.875rem;
+    line-height: 1.2;
+}
+
+.reports-table-compact thead th {
+    padding: 0.5rem 0.75rem;
+    font-weight: 600;
+    font-size: 0.813rem;
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
+    white-space: nowrap;
+    background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+    color: #fff;
+    border: none;
+}
+
+.reports-table-compact tbody td {
+    padding: 0.4rem 0.75rem;
+    vertical-align: middle;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.reports-table-compact tbody tr:hover {
+    background-color: #f8f9fa;
+}
+
+.reports-table-compact tbody tr:last-child td {
+    border-bottom: 2px solid #dee2e6;
+}
+
+/* Zebra striping for better readability */
+.reports-table-compact tbody tr:nth-child(even) {
+    background-color: #fafbfc;
+}
+
+/* ============================================================================
+   COLOR INDICATORS
+   ============================================================================ */
+
+.indicator {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-right: 6px;
+}
+
+.indicator-green {
+    background-color: #10b981;
+    box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
+}
+
+.indicator-amber {
+    background-color: #f59e0b;
+    box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.2);
+}
+
+.indicator-red {
+    background-color: #ef4444;
+    box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.2);
+}
+
+.status-badge {
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
+}
+
+.status-growth {
+    background-color: #d1fae5;
+    color: #065f46;
+}
+
+.status-mature {
+    background-color: #dbeafe;
+    color: #1e40af;
+}
+
+.status-decline {
+    background-color: #fee2e2;
+    color: #991b1b;
+}
+
+.status-new {
+    background-color: #fef3c7;
+    color: #92400e;
+}
+
+/* ============================================================================
+   WEEK NAVIGATION
+   ============================================================================ */
+
+.week-navigation {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+}
+
+.week-nav-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 2px solid #dee2e6;
+    background: white;
+    color: #495057;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.week-nav-btn:hover {
+    background: #3b82f6;
+    border-color: #3b82f6;
+    color: white;
+    transform: scale(1.1);
+}
+
+.week-nav-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.week-nav-label {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #1f2937;
+    min-width: 200px;
+    text-align: center;
+}
+
+/* ============================================================================
+   MINI SPARKLINES
+   ============================================================================ */
+
+.sparkline-container {
+    display: inline-block;
+    width: 60px;
+    height: 24px;
+    vertical-align: middle;
+}
+
+.sparkline-mini {
+    width: 100%;
+    height: 100%;
+}
+
+.trend-arrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.trend-up {
+    color: #10b981;
+}
+
+.trend-down {
+    color: #ef4444;
+}
+
+.trend-flat {
+    color: #6b7280;
+}
+
+/* ============================================================================
+   METRIC CARDS (Compact KPIs)
+   ============================================================================ */
+
+.metric-card-compact {
+    padding: 1rem;
+    background: white;
+    border-radius: 8px;
+    border-left: 4px solid #3b82f6;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.metric-card-compact .metric-label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #6b7280;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+
+.metric-card-compact .metric-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1f2937;
+    line-height: 1;
+}
+
+.metric-card-compact .metric-change {
+    font-size: 0.813rem;
+    margin-top: 0.25rem;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+/* ============================================================================
+   FORECAST VISUALIZATION
+   ============================================================================ */
+
+.forecast-chart-container {
+    position: relative;
+    height: 300px;
+    margin: 1rem 0;
+}
+
+.confidence-band {
+    fill-opacity: 0.1;
+}
+
+.confidence-band-1sigma {
+    fill: #3b82f6;
+}
+
+.confidence-band-2sigma {
+    fill: #93c5fd;
+}
+
+.forecast-line {
+    stroke: #3b82f6;
+    stroke-width: 2;
+    fill: none;
+    stroke-dasharray: 5, 5;
+}
+
+.historical-line {
+    stroke: #10b981;
+    stroke-width: 2;
+    fill: none;
+}
+
+/* ============================================================================
+   EXPORT BUTTONS
+   ============================================================================ */
+
+.export-toolbar {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.export-btn {
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    border: 1px solid #dee2e6;
+    background: white;
+    color: #495057;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.export-btn:hover {
+    background: #f8f9fa;
+    border-color: #3b82f6;
+    color: #3b82f6;
+}
+
+.export-btn i {
+    font-size: 1rem;
+}
+
+/* ============================================================================
+   FILTER BAR
+   ============================================================================ */
+
+.filter-bar {
+    display: flex;
+    gap: 1rem;
+    padding: 1rem;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.filter-group label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: #6b7280;
+    letter-spacing: 0.025em;
+}
+
+.filter-group input,
+.filter-group select {
+    padding: 0.5rem 0.75rem;
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    font-size: 0.875rem;
+}
+
+.filter-group input:focus,
+.filter-group select:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* ============================================================================
+   RESPONSIVE DESIGN
+   ============================================================================ */
+
+@media (max-width: 768px) {
+    .reports-table-compact {
+        font-size: 0.75rem;
+    }
+    
+    .reports-table-compact thead th,
+    .reports-table-compact tbody td {
+        padding: 0.4rem 0.5rem;
+    }
+    
+    .week-navigation {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .week-nav-label {
+        font-size: 1rem;
+    }
+    
+    .metric-card-compact .metric-value {
+        font-size: 1.25rem;
+    }
+    
+    .filter-bar {
+        flex-direction: column;
+    }
+    
+    .export-toolbar {
+        justify-content: center;
+    }
+    
+    /* Hide sparklines on mobile for space */
+    .sparkline-container {
+        display: none;
+    }
+}
+
+/* ============================================================================
+   LOADING STATES
+   ============================================================================ */
+
+.loading-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+}
+
+.loading-spinner {
+    border: 3px solid #f3f4f6;
+    border-top: 3px solid #3b82f6;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* ============================================================================
+   PERFORMANCE SCORE BARS
+   ============================================================================ */
+
+.performance-bar {
+    height: 6px;
+    background: #e5e7eb;
+    border-radius: 3px;
+    overflow: hidden;
+    position: relative;
+}
+
+.performance-bar-fill {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 0.3s ease;
+}
+
+.performance-excellent {
+    background: linear-gradient(90deg, #10b981 0%, #059669 100%);
+}
+
+.performance-good {
+    background: linear-gradient(90deg, #3b82f6 0%, #2563eb 100%);
+}
+
+.performance-average {
+    background: linear-gradient(90deg, #f59e0b 0%, #d97706 100%);
+}
+
+.performance-poor {
+    background: linear-gradient(90deg, #ef4444 0%, #dc2626 100%);
+}
+
+/* ============================================================================
+   ANOMALY ALERTS
+   ============================================================================ */
+
+.anomaly-alert {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 0.25rem 0.5rem;
+    background: #fef3c7;
+    border: 1px solid #fbbf24;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    color: #92400e;
+    font-weight: 600;
+}
+
+.anomaly-alert-high {
+    background: #fee2e2;
+    border-color: #f87171;
+    color: #991b1b;
+}
+
+/* ============================================================================
+   COMPACT PAGINATION
+   ============================================================================ */
+
+.pagination-compact {
+    display: flex;
+    gap: 0.25rem;
+    justify-content: center;
+    margin-top: 1rem;
+}
+
+.pagination-compact .page-btn {
+    padding: 0.375rem 0.75rem;
+    border: 1px solid #dee2e6;
+    background: white;
+    color: #495057;
+    font-size: 0.875rem;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.pagination-compact .page-btn:hover {
+    background: #f8f9fa;
+    border-color: #3b82f6;
+}
+
+.pagination-compact .page-btn.active {
+    background: #3b82f6;
+    border-color: #3b82f6;
+    color: white;
+}
+
+.pagination-compact .page-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
