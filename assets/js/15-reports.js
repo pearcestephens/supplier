@@ -1,6 +1,6 @@
 /**
  * Advanced Reports & Analytics JavaScript
- * 
+ *
  * Features:
  * - Week-by-week navigation
  * - Real-time filtering
@@ -8,7 +8,7 @@
  * - Forecast visualization
  * - Export functionality
  * - Performance metrics
- * 
+ *
  * @package SupplierPortal
  * @version 2.0.0
  */
@@ -33,11 +33,11 @@
     // Initialize on page load
     document.addEventListener('DOMContentLoaded', function() {
         console.log('Advanced Reports initializing...');
-        
+
         initializeCharts();
         loadReportsData();
         setupEventListeners();
-        
+
         console.log('✅ Reports 2.0 loaded');
     });
 
@@ -98,7 +98,7 @@
                 state.weeklySalesData = result.data;
                 state.totalWeeks = result.data.length;
                 state.currentWeek = Math.max(0, state.totalWeeks - 1);
-                
+
                 updateWeekNavigation();
                 updateWeeklySalesDisplay();
             }
@@ -219,7 +219,7 @@
         if (!container || !state.weeklySalesData[state.currentWeek]) return;
 
         const week = state.weeklySalesData[state.currentWeek];
-        
+
         container.innerHTML = `
             <div class="row g-3">
                 <div class="col-md-3">
@@ -286,7 +286,7 @@
                 </td>
                 <td>
                     <div class="performance-bar">
-                        <div class="performance-bar-fill performance-${getPerformanceLevel(product.performance_score)}" 
+                        <div class="performance-bar-fill performance-${getPerformanceLevel(product.performance_score)}"
                              style="width: ${product.performance_score}%"></div>
                     </div>
                 </td>
@@ -300,6 +300,12 @@
     function renderForecastChart() {
         const canvas = document.getElementById('forecastChart');
         if (!canvas || !state.forecastData) return;
+
+        // Destroy existing chart if it exists
+        const existingChart = Chart.getChart(canvas);
+        if (existingChart) {
+            existingChart.destroy();
+        }
 
         const ctx = canvas.getContext('2d');
         const data = state.forecastData;
@@ -366,7 +372,7 @@
                     tooltip: {
                         callbacks: {
                             label: function(context) {
-                                return context.dataset.label + ': $' + 
+                                return context.dataset.label + ': $' +
                                        (context.parsed.y || 0).toLocaleString(undefined, {minimumFractionDigits: 2});
                             }
                         }
@@ -488,6 +494,12 @@
         const revenueTrendCtx = document.getElementById('revenueTrendChart');
         if (!revenueTrendCtx) return;
 
+        // Destroy existing chart if it exists
+        const existingChart = Chart.getChart(revenueTrendCtx);
+        if (existingChart) {
+            existingChart.destroy();
+        }
+
         new Chart(revenueTrendCtx, {
             type: 'line',
             data: {
@@ -534,6 +546,12 @@
     function initializeStatusBreakdownChart() {
         const statusBreakdownCtx = document.getElementById('statusBreakdownChart');
         if (!statusBreakdownCtx) return;
+
+        // Destroy existing chart if it exists
+        const existingChart = Chart.getChart(statusBreakdownCtx);
+        if (existingChart) {
+            existingChart.destroy();
+        }
 
         new Chart(statusBreakdownCtx, {
             type: 'doughnut',

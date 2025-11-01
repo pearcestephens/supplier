@@ -1,10 +1,10 @@
 <?php
 /**
  * Supplier Portal - Email-Based Authentication
- * 
+ *
  * Beautiful login page with magic link delivery via email
  * Only accessible via secure links sent to registered supplier emails
- * 
+ *
  * @package Supplier
  * @version 3.0.0
  */
@@ -35,7 +35,7 @@ $messageType = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['email'])) {
     $email = trim($_POST['email']);
-    
+
     // Validate email format
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $message = 'Please enter a valid email address.';
@@ -44,9 +44,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['email'])) {
         // Check if email exists in supplier database
         try {
             $stmt = $db->prepare("
-                SELECT id, name, email 
-                FROM vend_suppliers 
-                WHERE email = ? 
+                SELECT id, name, email
+                FROM vend_suppliers
+                WHERE email = ?
                 AND (deleted_at = '0000-00-00 00:00:00' OR deleted_at = '' OR deleted_at IS NULL)
                 LIMIT 1
             ");
@@ -54,14 +54,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['email'])) {
             $stmt->execute();
             $result = $stmt->get_result();
             $supplier = $result->fetch_assoc();
-            
+
             if ($supplier) {
                 // Generate magic login link
                 $loginUrl = 'https://' . $_SERVER['HTTP_HOST'] . '/supplier/index.php?supplier_id=' . urlencode($supplier['id']);
-                
+
                 // Send email
                 $emailSent = sendLoginEmail($supplier['email'], $supplier['name'], $loginUrl);
-                
+
                 if ($emailSent) {
                     $message = 'Access link sent! Please check your email (' . htmlspecialchars($email) . ') for your secure login link.';
                     $messageType = 'success';
@@ -96,7 +96,7 @@ if (isset($_GET['error'])) {
 function sendLoginEmail(string $email, string $name, string $loginUrl): bool
 {
     $subject = 'Your Vape Shed Supplier Portal Access Link';
-    
+
     $htmlMessage = '
     <!DOCTYPE html>
     <html>
@@ -129,11 +129,11 @@ function sendLoginEmail(string $email, string $name, string $loginUrl): bool
             <div class="content">
                 <h2 style="margin-top: 0; color: #333;">Hi ' . htmlspecialchars($name) . ',</h2>
                 <p style="font-size: 16px; color: #555;">You requested access to the Supplier Portal. Click the button below to log in securely:</p>
-                
+
                 <div style="text-align: center; margin: 30px 0;">
                     <a href="' . htmlspecialchars($loginUrl) . '" class="button">🚀 Access Supplier Portal</a>
                 </div>
-                
+
                 <div class="warning">
                     <strong>🔒 Security Notice</strong>
                     <ul>
@@ -143,7 +143,7 @@ function sendLoginEmail(string $email, string $name, string $loginUrl): bool
                         <li>If you didn\'t request this, please ignore this email</li>
                     </ul>
                 </div>
-                
+
                 <p style="margin-top: 30px; color: #666; font-size: 14px;">
                     <strong>Can\'t click the button?</strong> Copy and paste this URL into your browser:
                 </p>
@@ -158,7 +158,7 @@ function sendLoginEmail(string $email, string $name, string $loginUrl): bool
     </body>
     </html>
     ';
-    
+
     // Plain text version
     $textMessage = "Hi $name,\n\n";
     $textMessage .= "You requested access to the Supplier Portal.\n\n";
@@ -170,7 +170,7 @@ function sendLoginEmail(string $email, string $name, string $loginUrl): bool
     $textMessage .= "If you didn't request this, please ignore this email.\n\n";
     $textMessage .= "The Vape Shed Supplier Portal\n";
     $textMessage .= "Support: support@vapeshed.co.nz";
-    
+
     // Email headers
     $headers = "MIME-Version: 1.0\r\n";
     $headers .= "Content-Type: text/html; charset=UTF-8\r\n";
@@ -178,7 +178,7 @@ function sendLoginEmail(string $email, string $name, string $loginUrl): bool
     $headers .= "Reply-To: support@vapeshed.co.nz\r\n";
     $headers .= "X-Mailer: PHP/" . phpversion() . "\r\n";
     $headers .= "X-Priority: 1\r\n";
-    
+
     // Send email
     return mail($email, $subject, $htmlMessage, $headers);
 }
@@ -188,481 +188,289 @@ function sendLoginEmail(string $email, string $name, string $loginUrl): bool
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Supplier Portal Access - The Vape Shed</title>
-    
+    <title>Login - The Vape Shed Supplier Portal</title>
+
     <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+
     <!-- Font Awesome -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-        
+
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #000000;
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 20px;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
             position: relative;
             overflow: hidden;
         }
-        
-        /* Animated background particles */
+
+        /* Subtle background pattern */
         body::before {
-            content: '';
+            content: "";
             position: absolute;
-            width: 400px;
-            height: 400px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 50%;
-            top: -200px;
-            left: -200px;
-            animation: float 20s infinite;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background:
+                radial-gradient(circle at 20% 50%, rgba(255, 204, 0, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(255, 204, 0, 0.05) 0%, transparent 50%);
+            pointer-events: none;
         }
-        
-        body::after {
-            content: '';
-            position: absolute;
-            width: 300px;
-            height: 300px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 50%;
-            bottom: -150px;
-            right: -150px;
-            animation: float 15s infinite reverse;
-        }
-        
-        @keyframes float {
-            0%, 100% { transform: translate(0, 0) rotate(0deg); }
-            50% { transform: translate(50px, 50px) rotate(180deg); }
-        }
-        
+
         .login-container {
             width: 100%;
-            max-width: 500px;
+            max-width: 480px;
+            padding: 20px;
             position: relative;
             z-index: 1;
         }
-        
+
         .login-card {
-            background: white;
-            border-radius: 24px;
-            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.3);
+            background: #1a1a1a;
+            border-radius: 16px;
+            box-shadow:
+                0 20px 60px rgba(0, 0, 0, 0.6),
+                0 0 0 1px rgba(255, 204, 0, 0.1);
             overflow: hidden;
-            animation: slideUp 0.6s ease-out;
+            border-top: 4px solid #ffcc00;
         }
-        
-        @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(40px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        
+
         .login-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
             color: white;
-            padding: 50px 35px;
+            padding: 50px 40px 40px;
             text-align: center;
             position: relative;
         }
-        
+
+        /* Yellow accent line */
         .login-header::after {
-            content: '';
+            content: "";
             position: absolute;
-            bottom: -1px;
-            left: 0;
-            right: 0;
-            height: 40px;
-            background: white;
-            border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+            bottom: 0;
+            left: 40px;
+            right: 40px;
+            height: 3px;
+            background: linear-gradient(90deg, #ffcc00 0%, rgba(255, 204, 0, 0.3) 100%);
         }
-        
+
+        .logo-container {
+            margin-bottom: 20px;
+        }
+
+        .logo-text {
+            font-size: 38px;
+            font-weight: 900;
+            letter-spacing: -1.5px;
+            background: linear-gradient(135deg, #ffcc00 0%, #ffd700 50%, #ffcc00 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-transform: uppercase;
+            text-shadow: 0 4px 20px rgba(255, 204, 0, 0.4);
+            filter: drop-shadow(0 2px 10px rgba(255, 204, 0, 0.3));
+        }
+
+        .logo-subtext {
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 4px;
+            color: #666;
+            text-transform: uppercase;
+            margin-top: 8px;
+        }
+
         .login-header h1 {
-            font-size: 32px;
+            margin: 25px 0 12px 0;
+            font-size: 26px;
             font-weight: 700;
-            margin-bottom: 12px;
-            position: relative;
-            z-index: 1;
+            color: #ffffff;
+            letter-spacing: -0.5px;
         }
-        
+
         .login-header p {
-            font-size: 15px;
-            opacity: 0.95;
             margin: 0;
-            position: relative;
-            z-index: 1;
+            color: #888;
+            font-size: 14px;
+            line-height: 1.6;
         }
-        
-        .login-icon {
-            width: 90px;
-            height: 90px;
-            background: rgba(255, 255, 255, 0.15);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 24px;
-            backdrop-filter: blur(10px);
-            position: relative;
-            z-index: 1;
-            border: 3px solid rgba(255, 255, 255, 0.3);
-        }
-        
-        .login-icon i {
-            font-size: 40px;
-            color: white;
-        }
-        
+
         .login-body {
-            padding: 45px 35px;
+            padding: 40px;
+            background: #1a1a1a;
         }
-        
-        .info-box {
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-            border-left: 4px solid #667eea;
-            padding: 22px;
-            border-radius: 12px;
-            margin-bottom: 30px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-        }
-        
-        .info-box h5 {
-            font-size: 16px;
+
+        .form-label {
             font-weight: 600;
-            color: #333;
-            margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-        }
-        
-        .info-box h5 i {
-            margin-right: 10px;
-            color: #667eea;
-            font-size: 18px;
-        }
-        
-        .info-box p {
-            font-size: 14px;
-            color: #555;
-            margin: 0;
-            line-height: 1.7;
-        }
-        
-        .form-group label {
-            font-weight: 600;
-            color: #333;
-            font-size: 14px;
+            color: #ffcc00;
             margin-bottom: 10px;
-            display: flex;
-            align-items: center;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
-        
-        .form-group label i {
-            margin-right: 8px;
-            color: #667eea;
-        }
-        
+
         .form-control {
-            border: 2px solid #e0e0e0;
-            border-radius: 12px;
+            height: 54px;
+            border-radius: 8px;
+            border: 2px solid #333;
+            background: #0d0d0d;
+            color: #fff;
             padding: 14px 18px;
             font-size: 15px;
             transition: all 0.3s ease;
-            background: #f8f9fa;
         }
-        
+
         .form-control:focus {
-            border-color: #667eea;
-            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
-            background: white;
+            border-color: #ffcc00;
+            background: #1a1a1a;
+            color: #fff;
+            box-shadow: 0 0 0 3px rgba(255, 204, 0, 0.1);
         }
-        
+
+        .form-control::placeholder {
+            color: #666;
+        }
+
         .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            height: 54px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #ffcc00 0%, #e6b800 100%);
             border: none;
-            border-radius: 12px;
-            padding: 16px 32px;
+            color: #000;
             font-size: 16px;
-            font-weight: 600;
-            width: 100%;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
             transition: all 0.3s ease;
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
             position: relative;
-            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(255, 204, 0, 0.3);
         }
-        
-        .btn-primary::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-            transition: left 0.5s;
-        }
-        
-        .btn-primary:hover::before {
-            left: 100%;
-        }
-        
+
         .btn-primary:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.5);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255, 204, 0, 0.5);
+            background: linear-gradient(135deg, #ffd700 0%, #ffcc00 100%);
         }
-        
+
         .btn-primary:active {
-            transform: translateY(-1px);
+            transform: translateY(0);
         }
-        
-        .btn-primary:disabled {
-            opacity: 0.7;
-            cursor: not-allowed;
-            transform: none;
+
+        .btn-primary.loading::after {
+            content: "";
+            position: absolute;
+            right: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(0, 0, 0, 0.2);
+            border-top-color: #000;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
         }
-        
+
+        @keyframes spin {
+            to { transform: translateY(-50%) rotate(360deg); }
+        }
+
         .alert {
-            border-radius: 12px;
+            border-radius: 8px;
             border: none;
-            padding: 18px 22px;
-            margin-bottom: 28px;
-            font-size: 14px;
-            display: flex;
-            align-items: center;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            animation: slideDown 0.4s ease-out;
+            padding: 16px 18px;
+            margin-bottom: 24px;
+            background: #2d2d2d;
+            border-left: 4px solid #ffcc00;
         }
-        
-        @keyframes slideDown {
-            from {
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        
-        .alert i {
-            margin-right: 14px;
-            font-size: 20px;
-        }
-        
-        .alert-success {
-            background: #d4edda;
-            color: #155724;
-            border-left: 4px solid #28a745;
-        }
-        
+
         .alert-danger {
-            background: #f8d7da;
-            color: #721c24;
-            border-left: 4px solid #dc3545;
+            border-left-color: #ff4444;
+            background: #2d1a1a;
+            color: #ff9999;
         }
-        
-        .alert-info {
-            background: #d1ecf1;
-            color: #0c5460;
-            border-left: 4px solid #17a2b8;
+
+        .alert-success {
+            border-left-color: #00cc66;
+            background: #1a2d1a;
+            color: #99ffcc;
         }
-        
-        .security-notice {
-            background: linear-gradient(135deg, #fff3cd 0%, #ffe69c 100%);
-            border-left: 4px solid #ffc107;
-            padding: 20px;
-            border-radius: 12px;
-            margin-top: 25px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+
+        .info-box {
+            background: #0d0d0d;
+            border-left: 4px solid #ffcc00;
+            padding: 18px;
+            border-radius: 8px;
+            margin-top: 24px;
         }
-        
-        .security-notice h6 {
-            font-size: 15px;
-            font-weight: 600;
-            color: #856404;
-            margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-        }
-        
-        .security-notice h6 i {
+
+        .info-box i {
+            color: #ffcc00;
             margin-right: 10px;
-            font-size: 18px;
         }
-        
-        .security-notice ul {
+
+        .info-box p {
             margin: 0;
-            padding-left: 22px;
-        }
-        
-        .security-notice li {
             font-size: 13px;
-            color: #856404;
-            margin-bottom: 6px;
-            line-height: 1.5;
+            color: #999;
+            line-height: 1.6;
         }
-        
+
         .footer-text {
             text-align: center;
-            margin-top: 35px;
-            padding-top: 25px;
-            border-top: 2px solid #f0f0f0;
-            color: #666;
-            font-size: 13px;
+            padding-top: 24px;
+            border-top: 1px solid #333;
+            margin-top: 24px;
         }
-        
+
+        .footer-text p {
+            margin: 0 0 8px 0;
+            font-size: 13px;
+            color: #666;
+        }
+
         .footer-text a {
-            color: #667eea;
+            color: #ffcc00;
             text-decoration: none;
             font-weight: 600;
             transition: color 0.3s ease;
         }
-        
+
         .footer-text a:hover {
-            color: #764ba2;
-            text-decoration: underline;
+            color: #ffd700;
+            text-decoration: none;
         }
-        
-        .loading-spinner {
-            display: none;
-            margin-left: 10px;
+
+        .footer-text i {
+            margin-right: 5px;
         }
-        
-        .btn-primary.loading .loading-spinner {
-            display: inline-block;
-        }
-        
-        .btn-primary.loading .btn-text {
-            opacity: 0.7;
+
+        /* Responsive */
+        @media (max-width: 576px) {
+            .login-container {
+                padding: 10px;
+            }
+
+            .login-header {
+                padding: 40px 30px 30px;
+            }
+
+            .login-body {
+                padding: 30px 25px;
+            }
+
+            .logo-text {
+                font-size: 28px;
+            }
         }
     </style>
-</head>
-<body>
-    <div class="login-container">
-        <div class="login-card">
-            <!-- Header -->
-            <div class="login-header">
-                <div class="login-icon">
-                    <i class="fas fa-shield-halved"></i>
-                </div>
-                <h1>Supplier Portal</h1>
-                <p>Secure email-based authentication</p>
-            </div>
-            
-            <!-- Body -->
-            <div class="login-body">
-                <!-- Info Box -->
-                <div class="info-box">
-                    <h5><i class="fas fa-info-circle"></i> Access Instructions</h5>
-                    <p>Enter your registered supplier email address. We'll send you a secure access link that will automatically log you in to the portal.</p>
-                </div>
-                
-                <!-- Alert Messages -->
-                <?php if ($message): ?>
-                <div class="alert alert-<?= $messageType ?>">
-                    <i class="fas fa-<?= $messageType === 'success' ? 'check-circle' : ($messageType === 'danger' ? 'exclamation-circle' : 'info-circle') ?>"></i>
-                    <div><?= $message ?></div>
-                </div>
-                <?php endif; ?>
-                
-                <!-- Form -->
-                <form method="POST" id="loginForm">
-                    <div class="form-group">
-                        <label for="email">
-                            <i class="fas fa-envelope"></i> Your Supplier Email
-                        </label>
-                        <input 
-                            type="email" 
-                            class="form-control" 
-                            id="email" 
-                            name="email" 
-                            placeholder="your.email@company.com"
-                            required
-                            autocomplete="email"
-                        >
-                    </div>
-                    
-                    <button type="submit" class="btn btn-primary" id="submitBtn">
-                        <span class="btn-text">
-                            <i class="fas fa-paper-plane"></i> Send Access Link
-                        </span>
-                        <span class="loading-spinner">
-                            <i class="fas fa-spinner fa-spin"></i>
-                        </span>
-                    </button>
-                </form>
-                
-                <!-- Security Notice -->
-                <div class="security-notice">
-                    <h6><i class="fas fa-lock"></i> Security Features</h6>
-                    <ul>
-                        <li><strong>Passwordless:</strong> No passwords to remember or manage</li>
-                        <li><strong>Magic Links:</strong> Secure one-time links sent to your email</li>
-                        <li><strong>Auto-Expire:</strong> Links expire after use or 24 hours</li>
-                        <li><strong>Email Verification:</strong> Only registered suppliers can access</li>
-                    </ul>
-                </div>
-                
-                <!-- Footer -->
-                <div class="footer-text">
-                    <p style="margin-bottom: 8px;">Need help accessing your account?</p>
-                    <p>Contact <a href="mailto:support@vapeshed.co.nz"><i class="fas fa-envelope"></i> support@vapeshed.co.nz</a></p>
-                    <p style="margin-top: 15px; font-size: 12px; color: #999;">
-                        <i class="fas fa-copyright"></i> <?= date('Y') ?> The Vape Shed. All rights reserved.
-                    </p>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <!-- jQuery -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
-    
-    <script>
-        $(document).ready(function() {
-            // Handle form submission
-            $('#loginForm').on('submit', function() {
-                const $btn = $('#submitBtn');
-                $btn.addClass('loading');
-                $btn.prop('disabled', true);
-            });
-            
-            // Auto-focus email field
-            $('#email').focus();
-            
-            // Email validation feedback
-            $('#email').on('blur', function() {
-                const email = $(this).val();
-                if (email && !isValidEmail(email)) {
-                    $(this).addClass('is-invalid');
-                } else {
-                    $(this).removeClass('is-invalid');
-                }
-            });
-            
-            function isValidEmail(email) {
-                return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-            }
-        });
-    </script>
-</body>
-</html>

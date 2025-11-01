@@ -7148,3 +7148,283 @@ Stack trace:
 [01-Nov-2025 11:23:11 Pacific/Auckland] Dashboard Stock Alerts API Error: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'vi.count' in 'field list'
 [01-Nov-2025 11:23:11 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
 [01-Nov-2025 11:23:11 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 12:20:33 Pacific/Auckland] SupplierLogger Error: SQLSTATE[23000]: Integrity constraint violation: 1452 Cannot add or update a child row: a foreign key constraint fails (`jcepnzzkmj`.`logs`, CONSTRAINT `logs_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE)
+[01-Nov-2025 12:20:33 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 12:20:33 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 12:20:34 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 12:20:34 Pacific/Auckland] Dashboard Items Sold API Error: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'sli.deleted_at' in 'where clause'
+[01-Nov-2025 12:20:34 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 12:20:34 Pacific/Auckland] Dashboard Stock Alerts API Error: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'vi.count' in 'field list'
+[01-Nov-2025 12:20:34 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 12:20:34 Pacific/Auckland] Dashboard Warranty Claims API Error: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'jcepnzzkmj.warranty_claims' doesn't exist
+[01-Nov-2025 12:20:34 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 12:20:34 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 12:20:34 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 12:20:34 Pacific/Auckland] Dashboard Items Sold API Error: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'sli.deleted_at' in 'where clause'
+[01-Nov-2025 12:20:34 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 12:20:34 Pacific/Auckland] Dashboard Stock Alerts API Error: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'vi.count' in 'field list'
+[01-Nov-2025 12:20:34 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 12:20:34 Pacific/Auckland] Dashboard Warranty Claims API Error: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'jcepnzzkmj.warranty_claims' doesn't exist
+[01-Nov-2025 12:20:41 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 12:20:42 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 12:20:42 Pacific/Auckland] Dashboard Items Sold API Error: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'sli.deleted_at' in 'where clause'
+[01-Nov-2025 12:20:42 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 12:20:42 Pacific/Auckland] Dashboard Warranty Claims API Error: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'jcepnzzkmj.warranty_claims' doesn't exist
+[01-Nov-2025 12:20:42 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 12:20:42 Pacific/Auckland] Dashboard Items Sold API Error: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'sli.deleted_at' in 'where clause'
+[01-Nov-2025 12:20:42 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 12:20:42 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 12:20:42 Pacific/Auckland] Dashboard Stock Alerts API Error: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'vi.count' in 'field list'
+[01-Nov-2025 12:20:42 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 12:20:42 Pacific/Auckland] Dashboard Stock Alerts API Error: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'vi.count' in 'field list'
+[01-Nov-2025 12:20:42 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 12:20:42 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 12:20:42 Pacific/Auckland] Dashboard Warranty Claims API Error: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'jcepnzzkmj.warranty_claims' doesn't exist
+[01-Nov-2025 12:20:42 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 12:20:42 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 12:21:02 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 12:21:02 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 12:21:02 Pacific/Auckland] Dashboard Stock Alerts API Error: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'vi.count' in 'field list'
+[01-Nov-2025 12:21:02 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 12:21:02 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 12:21:05 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 12:21:05 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 12:21:05 Pacific/Auckland] Dashboard Warranty Claims API Error: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'jcepnzzkmj.warranty_claims' doesn't exist
+[01-Nov-2025 12:21:05 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 12:21:05 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 12:21:05 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 12:21:05 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 12:21:05 Pacific/Auckland] Dashboard Stock Alerts API Error: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'vi.count' in 'field list'
+[01-Nov-2025 12:21:05 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 12:21:05 Pacific/Auckland] Dashboard Items Sold API Error: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'sli.deleted_at' in 'where clause'
+[01-Nov-2025 12:21:05 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 12:21:05 Pacific/Auckland] Dashboard Warranty Claims API Error: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'jcepnzzkmj.warranty_claims' doesn't exist
+[01-Nov-2025 12:21:05 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 12:21:06 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 12:21:06 Pacific/Auckland] Dashboard Stock Alerts API Error: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'vi.count' in 'field list'
+[01-Nov-2025 12:21:06 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 12:21:06 Pacific/Auckland] Dashboard Items Sold API Error: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'sli.deleted_at' in 'where clause'
+[01-Nov-2025 12:21:09 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 12:21:09 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 12:21:09 Pacific/Auckland] Dashboard Stock Alerts API Error: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'vi.count' in 'field list'
+[01-Nov-2025 12:21:09 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 12:21:09 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 12:21:09 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 12:21:10 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 12:21:10 Pacific/Auckland] Dashboard Warranty Claims API Error: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'jcepnzzkmj.warranty_claims' doesn't exist
+[01-Nov-2025 12:21:10 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 12:21:10 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 12:21:10 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 12:21:10 Pacific/Auckland] Dashboard Items Sold API Error: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'sli.deleted_at' in 'where clause'
+[01-Nov-2025 12:21:10 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 12:21:10 Pacific/Auckland] Dashboard Stock Alerts API Error: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'vi.count' in 'field list'
+[01-Nov-2025 12:21:10 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 12:21:10 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 12:21:10 Pacific/Auckland] Dashboard Warranty Claims API Error: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'jcepnzzkmj.warranty_claims' doesn't exist
+[01-Nov-2025 12:21:10 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 12:21:10 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 12:21:10 Pacific/Auckland] Dashboard Items Sold API Error: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'sli.deleted_at' in 'where clause'
+[01-Nov-2025 12:21:10 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 12:21:10 Pacific/Auckland] Dashboard Stock Alerts API Error: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'vi.count' in 'field list'
+[01-Nov-2025 12:37:12 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 12:37:12 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 12:37:12 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 12:37:12 Pacific/Auckland] Dashboard Items Sold API Error: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'sli.deleted_at' in 'where clause'
+[01-Nov-2025 12:37:12 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 12:37:12 Pacific/Auckland] Dashboard Warranty Claims API Error: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'jcepnzzkmj.warranty_claims' doesn't exist
+[01-Nov-2025 12:37:12 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 12:37:12 Pacific/Auckland] Dashboard Stock Alerts API Error: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'vi.count' in 'field list'
+[01-Nov-2025 12:37:12 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 12:37:12 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 12:37:12 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 12:37:12 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 12:37:12 Pacific/Auckland] Dashboard Items Sold API Error: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'sli.deleted_at' in 'where clause'
+[01-Nov-2025 12:37:12 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 12:37:12 Pacific/Auckland] Dashboard Warranty Claims API Error: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'jcepnzzkmj.warranty_claims' doesn't exist
+[01-Nov-2025 12:37:12 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 12:37:12 Pacific/Auckland] Dashboard Stock Alerts API Error: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'vi.count' in 'field list'
+[01-Nov-2025 12:55:42 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 12:55:42 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 12:55:42 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 12:55:42 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 12:55:42 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 12:55:42 Pacific/Auckland] Dashboard Stock Alerts API Error: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'vi.count' in 'field list'
+[01-Nov-2025 12:55:42 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 12:55:42 Pacific/Auckland] Dashboard Items Sold API Error: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'sli.deleted_at' in 'where clause'
+[01-Nov-2025 12:55:42 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 12:55:42 Pacific/Auckland] Dashboard Warranty Claims API Error: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'jcepnzzkmj.warranty_claims' doesn't exist
+[01-Nov-2025 12:55:42 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 12:55:42 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 12:55:42 Pacific/Auckland] Dashboard Stock Alerts API Error: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'vi.count' in 'field list'
+[01-Nov-2025 12:55:42 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 12:55:42 Pacific/Auckland] Dashboard Warranty Claims API Error: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'jcepnzzkmj.warranty_claims' doesn't exist
+[01-Nov-2025 12:55:42 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 12:55:42 Pacific/Auckland] Dashboard Items Sold API Error: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'sli.deleted_at' in 'where clause'
+[01-Nov-2025 12:55:42 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 12:58:36 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 12:58:36 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 12:58:36 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 12:58:37 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 12:58:37 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 12:58:37 Pacific/Auckland] Dashboard Warranty Claims API Error: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'jcepnzzkmj.warranty_claims' doesn't exist
+[01-Nov-2025 12:58:37 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 12:58:37 Pacific/Auckland] Dashboard Items Sold API Error: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'sli.deleted_at' in 'where clause'
+[01-Nov-2025 12:58:37 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 12:58:37 Pacific/Auckland] Dashboard Stock Alerts API Error: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'vi.count' in 'field list'
+[01-Nov-2025 12:58:37 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 12:58:37 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 12:58:37 Pacific/Auckland] Dashboard Warranty Claims API Error: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'jcepnzzkmj.warranty_claims' doesn't exist
+[01-Nov-2025 12:58:37 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 12:58:37 Pacific/Auckland] Dashboard Stock Alerts API Error: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'vi.count' in 'field list'
+[01-Nov-2025 12:58:37 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 12:58:37 Pacific/Auckland] Dashboard Items Sold API Error: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'sli.deleted_at' in 'where clause'
+[01-Nov-2025 12:58:39 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 12:58:39 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 12:58:39 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 12:58:39 Pacific/Auckland] Dashboard Warranty Claims API Error: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'jcepnzzkmj.warranty_claims' doesn't exist
+[01-Nov-2025 12:58:39 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 12:58:39 Pacific/Auckland] Dashboard Items Sold API Error: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'sli.deleted_at' in 'where clause'
+[01-Nov-2025 12:58:39 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 12:58:39 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 12:58:39 Pacific/Auckland] Dashboard Stock Alerts API Error: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'vi.count' in 'field list'
+[01-Nov-2025 12:58:39 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 12:58:39 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 12:58:39 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 12:58:39 Pacific/Auckland] Dashboard Warranty Claims API Error: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'jcepnzzkmj.warranty_claims' doesn't exist
+[01-Nov-2025 12:58:39 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 12:58:39 Pacific/Auckland] Dashboard Items Sold API Error: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'sli.deleted_at' in 'where clause'
+[01-Nov-2025 12:58:39 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 12:58:39 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 12:58:39 Pacific/Auckland] Dashboard Stock Alerts API Error: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'vi.count' in 'field list'
+[01-Nov-2025 13:06:06 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 13:06:06 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 13:06:06 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 13:06:06 Pacific/Auckland] Dashboard Items Sold API Error: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'sli.deleted_at' in 'where clause'
+[01-Nov-2025 13:06:06 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 13:06:06 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 13:06:06 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 13:06:06 Pacific/Auckland] Dashboard Warranty Claims API Error: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'jcepnzzkmj.warranty_claims' doesn't exist
+[01-Nov-2025 13:06:06 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 13:06:06 Pacific/Auckland] Dashboard Stock Alerts API Error: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'vi.count' in 'field list'
+[01-Nov-2025 13:06:06 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 13:06:06 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 13:06:06 Pacific/Auckland] Dashboard Items Sold API Error: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'sli.deleted_at' in 'where clause'
+[01-Nov-2025 13:06:07 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 13:06:07 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 13:06:07 Pacific/Auckland] Dashboard Warranty Claims API Error: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'jcepnzzkmj.warranty_claims' doesn't exist
+[01-Nov-2025 13:06:07 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 13:06:07 Pacific/Auckland] Dashboard Stock Alerts API Error: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'vi.count' in 'field list'
+[01-Nov-2025 13:06:10 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 13:06:10 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 13:06:10 Pacific/Auckland] Dashboard Stock Alerts API Error: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'vi.count' in 'field list'
+[01-Nov-2025 13:06:10 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 13:06:10 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 13:06:13 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 13:06:13 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 13:06:13 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 13:06:13 Pacific/Auckland] Dashboard Stock Alerts API Error: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'vi.count' in 'field list'
+[01-Nov-2025 13:06:13 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 13:31:13 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 13:31:13 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 13:31:13 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 13:31:13 Pacific/Auckland] Dashboard Warranty Claims API Error: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'jcepnzzkmj.warranty_claims' doesn't exist
+[01-Nov-2025 13:31:13 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 13:31:13 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 13:31:13 Pacific/Auckland] Dashboard Items Sold API Error: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'sli.deleted_at' in 'where clause'
+[01-Nov-2025 13:31:13 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 13:31:13 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 13:31:13 Pacific/Auckland] Dashboard Stock Alerts API Error: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'vi.count' in 'field list'
+[01-Nov-2025 13:31:13 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 13:31:13 Pacific/Auckland] Dashboard Warranty Claims API Error: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'jcepnzzkmj.warranty_claims' doesn't exist
+[01-Nov-2025 13:31:13 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 13:31:14 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 13:31:14 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 13:31:14 Pacific/Auckland] Dashboard Items Sold API Error: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'sli.deleted_at' in 'where clause'
+[01-Nov-2025 13:31:14 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 13:31:14 Pacific/Auckland] Dashboard Stock Alerts API Error: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'vi.count' in 'field list'
+[01-Nov-2025 13:43:03 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 13:43:03 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 13:43:03 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 13:43:03 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 13:43:03 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 13:43:03 Pacific/Auckland] Dashboard Stock Alerts API Error: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'vi.count' in 'field list'
+[01-Nov-2025 13:43:03 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 13:43:03 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 13:43:44 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 13:43:45 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 13:43:45 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 13:43:45 Pacific/Auckland] Dashboard Stock Alerts API Error: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'vi.count' in 'field list'
+[01-Nov-2025 13:43:45 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 13:43:45 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 13:43:45 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 13:43:45 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 13:43:45 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 13:44:12 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 13:44:13 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 13:44:13 Pacific/Auckland] Dashboard Stock Alerts API Error: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'vi.count' in 'field list'
+[01-Nov-2025 13:44:13 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 13:44:13 Pacific/Auckland] Dashboard Items Sold API Error: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'sli.deleted_at' in 'where clause'
+[01-Nov-2025 13:44:13 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 13:44:13 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 13:44:13 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 13:44:13 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 13:44:13 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 13:44:13 Pacific/Auckland] Dashboard Warranty Claims API Error: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'jcepnzzkmj.warranty_claims' doesn't exist
+[01-Nov-2025 13:44:13 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 13:44:13 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 13:44:13 Pacific/Auckland] Dashboard Stock Alerts API Error: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'vi.count' in 'field list'
+[01-Nov-2025 13:44:13 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 13:44:13 Pacific/Auckland] Dashboard Items Sold API Error: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'sli.deleted_at' in 'where clause'
+[01-Nov-2025 13:44:13 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 13:44:13 Pacific/Auckland] Dashboard Warranty Claims API Error: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'jcepnzzkmj.warranty_claims' doesn't exist
+[01-Nov-2025 13:44:13 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 14:18:10 Pacific/Auckland] SupplierLogger Error: SQLSTATE[23000]: Integrity constraint violation: 1452 Cannot add or update a child row: a foreign key constraint fails (`jcepnzzkmj`.`logs`, CONSTRAINT `logs_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE)
+[01-Nov-2025 14:18:10 Pacific/Auckland] SupplierLogger Error: SQLSTATE[23000]: Integrity constraint violation: 1452 Cannot add or update a child row: a foreign key constraint fails (`jcepnzzkmj`.`logs`, CONSTRAINT `logs_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE)
+[01-Nov-2025 14:18:10 Pacific/Auckland] SupplierLogger Error: SQLSTATE[23000]: Integrity constraint violation: 1452 Cannot add or update a child row: a foreign key constraint fails (`jcepnzzkmj`.`logs`, CONSTRAINT `logs_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE)
+[01-Nov-2025 14:18:10 Pacific/Auckland] SupplierLogger Error: SQLSTATE[23000]: Integrity constraint violation: 1452 Cannot add or update a child row: a foreign key constraint fails (`jcepnzzkmj`.`logs`, CONSTRAINT `logs_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE)
+[01-Nov-2025 14:29:32 Pacific/Auckland] SupplierLogger Error: SQLSTATE[23000]: Integrity constraint violation: 1452 Cannot add or update a child row: a foreign key constraint fails (`jcepnzzkmj`.`logs`, CONSTRAINT `logs_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE)
+[01-Nov-2025 14:29:32 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 14:29:32 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 14:29:32 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 14:29:33 Pacific/Auckland] Dashboard Stock Alerts API Error: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'vi.count' in 'field list'
+[01-Nov-2025 14:29:33 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 14:29:33 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 14:29:33 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 14:29:33 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 14:29:34 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 14:29:34 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 14:29:34 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 14:29:34 Pacific/Auckland] Dashboard Stock Alerts API Error: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'vi.count' in 'field list'
+[01-Nov-2025 14:29:34 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 14:29:35 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 14:29:35 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 14:29:36 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 14:29:37 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 14:29:37 Pacific/Auckland] Dashboard Stock Alerts API Error: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'vi.count' in 'field list'
+[01-Nov-2025 14:29:37 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 14:29:37 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 14:29:37 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 14:29:37 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 14:29:37 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 14:47:11 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 14:47:12 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 14:47:12 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 14:47:12 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 14:47:12 Pacific/Auckland] Dashboard Stock Alerts API Error: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'vi.count' in 'field list'
+[01-Nov-2025 14:47:12 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 14:47:12 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 14:47:12 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 14:47:12 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 14:47:12 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 14:47:12 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 14:53:23 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 14:53:24 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 14:53:24 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 14:53:24 Pacific/Auckland] Dashboard Stock Alerts API Error: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'vi.count' in 'field list'
+[01-Nov-2025 14:53:24 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 14:53:24 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 14:53:24 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 14:53:24 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 14:53:24 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 14:53:24 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1
+[01-Nov-2025 14:53:24 Pacific/Auckland] SupplierLogger Error: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'user_id' at row 1

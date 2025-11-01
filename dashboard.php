@@ -77,9 +77,6 @@ $breadcrumb = []; // Dashboard is home, no additional breadcrumb needed
                                 <div class="card-header">
                                     <div>
                                         <div class="card-label">Total Orders</div>
-                                        <div class="card-stats">
-                                            <span class="stat-badge success" id="metric-total-orders-change">✓ +12%</span>
-                                        </div>
                                     </div>
                                     <div class="card-icon"><i class="fas fa-shopping-cart"></i></div>
                                 </div>
@@ -88,6 +85,9 @@ $breadcrumb = []; // Dashboard is home, no additional breadcrumb needed
                                         <div class="card-value" id="metric-total-orders">18</div>
                                     </div>
                                     <div class="card-subtitle">Last 30 days</div>
+                                    <div class="card-stats">
+                                        <span class="stat-badge success" id="metric-total-orders-change">✓ +12%</span>
+                                    </div>
                                     <div class="progress-bar-container">
                                         <div class="progress-bar" style="width: 65%"></div>
                                     </div>
@@ -118,9 +118,6 @@ $breadcrumb = []; // Dashboard is home, no additional breadcrumb needed
                                 <div class="card-header">
                                     <div>
                                         <div class="card-label">Active Products</div>
-                                        <div class="card-stats">
-                                            <span class="stat-badge info" id="metric-products-availability">ℹ 100% Ready</span>
-                                        </div>
                                     </div>
                                     <div class="card-icon"><i class="fas fa-box"></i></div>
                                 </div>
@@ -129,6 +126,9 @@ $breadcrumb = []; // Dashboard is home, no additional breadcrumb needed
                                         <div class="card-value" id="metric-active-products">50</div>
                                     </div>
                                     <div class="card-subtitle">In stock</div>
+                                    <div class="card-stats">
+                                        <span class="stat-badge info" id="metric-products-availability">ℹ 100% Ready</span>
+                                    </div>
                                     <div class="progress-bar-container">
                                         <div class="progress-bar" style="width: 100%"></div>
                                     </div>

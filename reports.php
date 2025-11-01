@@ -175,6 +175,9 @@ $breadcrumb = [
 ?>
 <?php include __DIR__ . '/components/html-head.php'; ?>
 
+<!-- Chart.js Library (CRITICAL - Required for all charts) -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
 <!-- Reports Specific CSS -->
 <link rel="stylesheet" href="/supplier/assets/css/05-reports.css?v=<?php echo time(); ?>">
 
@@ -305,6 +308,126 @@ $breadcrumb = [
 
     </div>
 
+    <!-- 30/60/90 Day Historic Metrics Section -->
+    <?php
+    // Calculate 30/60/90 day metrics
+    $metrics30Days = $db->query("
+        SELECT
+            COUNT(DISTINCT t.id) as orders,
+            SUM(ti.quantity_sent) as units,
+            SUM(ti.quantity_sent * ti.unit_cost) as revenue
+        FROM vend_consignments t
+        LEFT JOIN vend_consignment_line_items ti ON t.id = ti.transfer_id
+        WHERE t.supplier_id = '{$supplierID}'
+          AND t.transfer_category = 'PURCHASE_ORDER'
+          AND t.deleted_at IS NULL
+          AND t.created_at >= DATE_SUB(NOW(), INTERVAL 30 DAY)
+    ")->fetch_assoc();
+
+    $metrics60Days = $db->query("
+        SELECT
+            COUNT(DISTINCT t.id) as orders,
+            SUM(ti.quantity_sent) as units,
+            SUM(ti.quantity_sent * ti.unit_cost) as revenue
+        FROM vend_consignments t
+        LEFT JOIN vend_consignment_line_items ti ON t.id = ti.transfer_id
+        WHERE t.supplier_id = '{$supplierID}'
+          AND t.transfer_category = 'PURCHASE_ORDER'
+          AND t.deleted_at IS NULL
+          AND t.created_at >= DATE_SUB(NOW(), INTERVAL 60 DAY)
+    ")->fetch_assoc();
+
+    $metrics90Days = $db->query("
+        SELECT
+            COUNT(DISTINCT t.id) as orders,
+            SUM(ti.quantity_sent) as units,
+            SUM(ti.quantity_sent * ti.unit_cost) as revenue
+        FROM vend_consignments t
+        LEFT JOIN vend_consignment_line_items ti ON t.id = ti.transfer_id
+        WHERE t.supplier_id = '{$supplierID}'
+          AND t.transfer_category = 'PURCHASE_ORDER'
+          AND t.deleted_at IS NULL
+          AND t.created_at >= DATE_SUB(NOW(), INTERVAL 90 DAY)
+    ")->fetch_assoc();
+    ?>
+
+    <div class="card mb-4 shadow-sm">
+        <div class="card-header bg-gradient-primary text-white">
+            <h5 class="mb-0">
+                <i class="fas fa-history"></i> Historic Performance Summary
+            </h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th style="width: 25%;">Time Period</th>
+                            <th class="text-center" style="width: 25%;">
+                                <i class="fas fa-shopping-cart text-primary"></i> Orders
+                            </th>
+                            <th class="text-center" style="width: 25%;">
+                                <i class="fas fa-box text-success"></i> Units Sold
+                            </th>
+                            <th class="text-end" style="width: 25%;">
+                                <i class="fas fa-dollar-sign text-warning"></i> Revenue
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="table-info">
+                            <td class="fw-bold">
+                                <i class="fas fa-calendar-day"></i> Last 30 Days
+                            </td>
+                            <td class="text-center fs-5 fw-bold text-primary">
+                                <?php echo number_format((int)($metrics30Days['orders'] ?? 0)); ?>
+                            </td>
+                            <td class="text-center fs-5 fw-bold text-success">
+                                <?php echo number_format((int)($metrics30Days['units'] ?? 0)); ?>
+                            </td>
+                            <td class="text-end fs-5 fw-bold text-warning">
+                                $<?php echo number_format((float)($metrics30Days['revenue'] ?? 0), 2); ?>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="fw-bold">
+                                <i class="fas fa-calendar-week"></i> Last 60 Days
+                            </td>
+                            <td class="text-center fs-5">
+                                <?php echo number_format((int)($metrics60Days['orders'] ?? 0)); ?>
+                            </td>
+                            <td class="text-center fs-5">
+                                <?php echo number_format((int)($metrics60Days['units'] ?? 0)); ?>
+                            </td>
+                            <td class="text-end fs-5">
+                                $<?php echo number_format((float)($metrics60Days['revenue'] ?? 0), 2); ?>
+                            </td>
+                        </tr>
+                        <tr class="table-light">
+                            <td class="fw-bold">
+                                <i class="fas fa-calendar-alt"></i> Last 90 Days
+                            </td>
+                            <td class="text-center fs-5">
+                                <?php echo number_format((int)($metrics90Days['orders'] ?? 0)); ?>
+                            </td>
+                            <td class="text-center fs-5">
+                                <?php echo number_format((int)($metrics90Days['units'] ?? 0)); ?>
+                            </td>
+                            <td class="text-end fs-5">
+                                $<?php echo number_format((float)($metrics90Days['revenue'] ?? 0), 2); ?>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="card-footer bg-light text-muted small">
+            <i class="fas fa-info-circle"></i>
+            <strong>Note:</strong> These metrics show cumulative totals.
+            For example, "Last 60 Days" includes all orders from the past 60 days (not just days 31-60).
+        </div>
+    </div>
+
     <!-- ML Forecast Section -->
     <div class="card mb-4">
         <div class="card-header bg-light d-flex justify-content-between align-items-center">
@@ -319,7 +442,7 @@ $breadcrumb = [
                     <p class="mt-3">Loading forecast data...</p>
                 </div>
             </div>
-            
+
             <!-- Forecast Chart -->
             <div class="forecast-chart-container">
                 <canvas id="forecastChart"></canvas>
@@ -349,7 +472,7 @@ $breadcrumb = [
             <h6 class="mb-0"><i class="fas fa-chart-line"></i> Product Performance Analytics</h6>
             <div class="input-group" style="width: 250px;">
                 <span class="input-group-text"><i class="fas fa-search"></i></span>
-                <input type="text" class="form-control form-control-sm" id="productSearch" 
+                <input type="text" class="form-control form-control-sm" id="productSearch"
                        placeholder="Search products...">
             </div>
         </div>
@@ -517,6 +640,23 @@ $breadcrumb = [
 
 .border-left-warning {
     border-left: 4px solid #f59e0b !important;
+}
+
+.bg-gradient-primary {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+}
+
+.loading-spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid #f3f4f6;
+    border-top-color: #3b82f6;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
 }
 </style>
 
