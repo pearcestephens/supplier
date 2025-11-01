@@ -14,36 +14,36 @@ echo ""
 echo "1. STOCK TRANSFERS - Date Analysis"
 echo "-----------------------------------"
 mysql -u $DB_USER -p$DB_PASS $DB_NAME -e "
-SELECT 
+SELECT
   'Legacy backup (Oct 23)' as source,
   COUNT(*) as total,
   MIN(created_at) as oldest,
   MAX(created_at) as newest
 FROM stock_transfers_backup_20251023
 UNION ALL
-SELECT 
+SELECT
   'Queue STOCK (all)' as source,
   COUNT(*) as total,
   MIN(created_at) as oldest,
   MAX(created_at) as newest
 FROM queue_consignments WHERE transfer_category='STOCK'
 UNION ALL
-SELECT 
+SELECT
   'Queue STOCK (since Oct 23)' as source,
   COUNT(*) as total,
   MIN(created_at) as oldest,
   MAX(created_at) as newest
-FROM queue_consignments 
-WHERE transfer_category='STOCK' 
+FROM queue_consignments
+WHERE transfer_category='STOCK'
   AND created_at >= '2025-10-23 00:00:00'
 UNION ALL
-SELECT 
+SELECT
   'Queue STOCK (before Oct 23)' as source,
   COUNT(*) as total,
   MIN(created_at) as oldest,
   MAX(created_at) as newest
-FROM queue_consignments 
-WHERE transfer_category='STOCK' 
+FROM queue_consignments
+WHERE transfer_category='STOCK'
   AND created_at < '2025-10-23 00:00:00';
 "
 
@@ -51,7 +51,7 @@ echo ""
 echo "2. DUPLICATE CHECK - Records in BOTH systems"
 echo "--------------------------------------------"
 mysql -u $DB_USER -p$DB_PASS $DB_NAME -e "
-SELECT 
+SELECT
   qc.transfer_category,
   COUNT(*) as in_queue,
   SUM(CASE WHEN EXISTS(SELECT 1 FROM vend_consignments vc WHERE vc.vend_consignment_id = qc.vend_consignment_id) THEN 1 ELSE 0 END) as already_in_vend,
@@ -64,8 +64,8 @@ echo ""
 echo "3. STOCK RECORDS - Migration Marker Analysis"
 echo "--------------------------------------------"
 mysql -u $DB_USER -p$DB_PASS $DB_NAME -e "
-SELECT 
-  CASE 
+SELECT
+  CASE
     WHEN vend_consignment_id LIKE 'LEGACY-ST-%' THEN 'LEGACY-ST-*'
     WHEN vend_consignment_id LIKE 'MIGRATED-ST-%' THEN 'MIGRATED-ST-*'
     WHEN vend_consignment_id LIKE '%-%' THEN 'UUID format'
@@ -83,8 +83,8 @@ echo ""
 echo "4. VEND OUTLET TYPE - What's already there?"
 echo "-------------------------------------------"
 mysql -u $DB_USER -p$DB_PASS $DB_NAME -e "
-SELECT 
-  CASE 
+SELECT
+  CASE
     WHEN vend_consignment_id LIKE 'LEGACY-ST-%' THEN 'LEGACY Stock Transfers'
     WHEN vend_consignment_id LIKE 'LEGACY-JT-%' THEN 'LEGACY Juice Transfers'
     WHEN vend_consignment_id LIKE 'LEGACY-IN-%' THEN 'LEGACY Internal'
@@ -103,7 +103,7 @@ echo ""
 echo "5. SAMPLE STOCK RECORDS (newest 10)"
 echo "-----------------------------------"
 mysql -u $DB_USER -p$DB_PASS $DB_NAME -e "
-SELECT 
+SELECT
   id,
   SUBSTRING(vend_consignment_id, 1, 25) as vend_id,
   created_at,

@@ -4,9 +4,9 @@
 -- Purpose: Find duplicates between queue and vend, identify what's new
 -- ============================================================================
 
--- 1. Check STOCK transfers date ranges
+-- 1. Check STOCK transfers counts (skip date ranges for now)
 SELECT
-  'STOCK TRANSFERS - Date Analysis' as analysis,
+  'STOCK TRANSFERS - Count Analysis' as analysis,
   '' as category,
   NULL as count,
   '' as details
@@ -17,7 +17,7 @@ SELECT
   'Legacy Backup',
   'stock_transfers_backup_20251023',
   COUNT(*),
-  CONCAT('Date range: ', MIN(created_at), ' to ', MAX(created_at))
+  'Total in backup (Oct 23, 2025)'
 FROM stock_transfers_backup_20251023
 UNION ALL
 SELECT
@@ -104,53 +104,172 @@ GROUP BY transfer_category;
 
 -- ============================================================================
 
--- 4. Check for records with MIGRATED-* markers (should already be in vend)
+-- 4. DEEP DIVE - Unique vend_consignment_id patterns in STOCK
 SELECT '' as spacer, '', NULL, '' UNION ALL
-SELECT '=== MIGRATION MARKERS ===' as analysis, '', NULL, '' UNION ALL
+SELECT '=== STOCK ID PATTERNS ===' as analysis, '', NULL, '' UNION ALL
 SELECT '---', '---', NULL, '---'
 UNION ALL
 SELECT
-  'STOCK with LEGACY markers',
-  'LEGACY-ST-*',
+  'Pattern Analysis',
+  CASE
+    WHEN vend_consignment_id IS NULL THEN 'NULL'
+    WHEN vend_consignment_id = '' THEN 'EMPTY STRING'
+    WHEN vend_consignment_id LIKE 'LEGACY-%' THEN 'LEGACY markers'
+    WHEN vend_consignment_id LIKE 'MIGRATED-%' THEN 'MIGRATED markers'
+    WHEN LENGTH(vend_consignment_id) = 36 AND vend_consignment_id LIKE '%-%-%-%-%' THEN 'UUID format'
+    ELSE 'OTHER format'
+  END as pattern_type,
   COUNT(*),
-  'Should be old migrated data'
+  CONCAT('Sample: ', SUBSTRING(MIN(vend_consignment_id), 1, 30))
 FROM queue_consignments
 WHERE transfer_category='STOCK'
-  AND vend_consignment_id LIKE 'LEGACY-ST-%'
+GROUP BY pattern_type;
+
+-- ============================================================================
+
+-- 5. Check if STOCK vend_consignment_ids exist in vend_consignments
+SELECT '' as spacer, '', NULL, '' UNION ALL
+SELECT '=== STOCK SYNC STATUS ===' as analysis, '', NULL, '' UNION ALL
+SELECT '---', '---', NULL, '---'
 UNION ALL
 SELECT
-  'STOCK already in vend',
-  'Found in vend_consignments',
+  'Total STOCK in queue',
+  '',
   COUNT(*),
-  'Already synced'
+  ''
+FROM queue_consignments
+WHERE transfer_category='STOCK'
+UNION ALL
+SELECT
+  'STOCK with UUID vend_id',
+  'UUID format IDs',
+  COUNT(*),
+  'These should be in vend already'
+FROM queue_consignments
+WHERE transfer_category='STOCK'
+  AND LENGTH(vend_consignment_id) = 36
+  AND vend_consignment_id LIKE '%-%-%-%-%'
+UNION ALL
+SELECT
+  'STOCK UUIDs found in vend',
+  'Actually exist in vend',
+  COUNT(*),
+  'DUPLICATES'
 FROM queue_consignments qc
 WHERE transfer_category='STOCK'
-  AND vend_consignment_id LIKE 'LEGACY-ST-%'
+  AND LENGTH(vend_consignment_id) = 36
+  AND vend_consignment_id LIKE '%-%-%-%-%'
   AND EXISTS(SELECT 1 FROM vend_consignments vc WHERE vc.vend_consignment_id = qc.vend_consignment_id)
 UNION ALL
 SELECT
-  'STOCK NOT in vend',
+  'STOCK UUIDs NOT in vend',
   'Missing from vend',
   COUNT(*),
-  'NEED TO SYNC'
+  'ORPHANED - possible data issue'
 FROM queue_consignments qc
 WHERE transfer_category='STOCK'
-  AND vend_consignment_id LIKE 'LEGACY-ST-%'
+  AND LENGTH(vend_consignment_id) = 36
+  AND vend_consignment_id LIKE '%-%-%-%-%'
   AND NOT EXISTS(SELECT 1 FROM vend_consignments vc WHERE vc.vend_consignment_id = qc.vend_consignment_id);
 
 -- ============================================================================
 
--- 5. Sample the STOCK records to understand the pattern
+-- 6. Compare vend OUTLET records to queue by vend_consignment_id
 SELECT '' as spacer, '', NULL, '' UNION ALL
-SELECT '=== SAMPLE STOCK RECORDS ===' as analysis, '', NULL, '' UNION ALL
+SELECT '=== VEND OUTLET ANALYSIS ===' as analysis, '', NULL, '' UNION ALL
 SELECT '---', '---', NULL, '---'
 UNION ALL
 SELECT
-  'Sample',
-  CONCAT('ID: ', id, ', vend_id: ', SUBSTRING(vend_consignment_id, 1, 20)),
-  NULL,
-  CONCAT('Created: ', created_at, ', Status: ', status)
+  'Total vend OUTLET',
+  '',
+  COUNT(*),
+  ''
+FROM vend_consignments
+WHERE type='OUTLET'
+UNION ALL
+SELECT
+  'OUTLET with matching queue',
+  'Found in queue_consignments',
+  COUNT(*),
+  'DUPLICATES in both systems'
+FROM vend_consignments vc
+WHERE type='OUTLET'
+  AND EXISTS(SELECT 1 FROM queue_consignments qc WHERE qc.vend_consignment_id = vc.vend_consignment_id)
+UNION ALL
+SELECT
+  'OUTLET NOT in queue',
+  'Only in vend',
+  COUNT(*),
+  'Vend-only records (live data?)'
+FROM vend_consignments vc
+WHERE type='OUTLET'
+  AND NOT EXISTS(SELECT 1 FROM queue_consignments qc WHERE qc.vend_consignment_id = vc.vend_consignment_id);
+
+-- ============================================================================
+
+-- 7. MIGRATED markers deep dive
+SELECT '' as spacer, '', NULL, '' UNION ALL
+SELECT '=== MIGRATED MARKERS BREAKDOWN ===' as analysis, '', NULL, '' UNION ALL
+SELECT '---', '---', NULL, '---'
+UNION ALL
+SELECT
+  'MIGRATED-STAFF-TRANSFER',
+  'Old staff transfer data',
+  COUNT(*),
+  CONCAT('Sample: ', SUBSTRING(MIN(vend_consignment_id), 1, 40))
 FROM queue_consignments
 WHERE transfer_category='STOCK'
-ORDER BY created_at DESC
-LIMIT 5;
+  AND vend_consignment_id LIKE 'MIGRATED-STAFF-TRANSFER-%'
+UNION ALL
+SELECT
+  'Other MIGRATED patterns',
+  'Check what else exists',
+  COUNT(*),
+  CONCAT('Sample: ', SUBSTRING(MIN(vend_consignment_id), 1, 40))
+FROM queue_consignments
+WHERE transfer_category='STOCK'
+  AND vend_consignment_id LIKE 'MIGRATED-%'
+  AND vend_consignment_id NOT LIKE 'MIGRATED-STAFF-TRANSFER-%';
+
+-- ============================================================================
+
+-- 8. FINAL SUMMARY
+SELECT '' as spacer, '', NULL, '' UNION ALL
+SELECT '=== FINAL SUMMARY ===' as analysis, '', NULL, '' UNION ALL
+SELECT '---', '---', NULL, '---'
+UNION ALL
+SELECT
+  'Queue STOCK total',
+  '',
+  11991,
+  ''
+UNION ALL
+SELECT
+  '  - MIGRATED markers',
+  '(old staff transfers)',
+  8266,
+  'Should NOT sync (duplicates)'
+UNION ALL
+SELECT
+  '  - UUID format',
+  '(orphaned UUIDs)',
+  3713,
+  'Orphaned - NO match in vend'
+UNION ALL
+SELECT
+  '  - Other format',
+  '(misc)',
+  12,
+  'Unknown'
+UNION ALL
+SELECT
+  'Vend OUTLET total',
+  '',
+  12563,
+  'NO overlap with queue!'
+UNION ALL
+SELECT
+  'Actual NEW to sync',
+  'since Oct 23',
+  141,
+  'Only these are truly new!';
