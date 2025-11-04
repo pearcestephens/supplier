@@ -984,6 +984,206 @@ function bulkAddTracking() {
 }
 
 // =============================================================================
+// BULK DOWNLOAD PACKING SLIPS
+// =============================================================================
+
+function bulkDownloadPackingSlips() {
+    const selectedOrders = getSelectedOrders();
+
+    if (selectedOrders.length === 0) {
+        Swal.fire('No Orders Selected', 'Please select at least one order', 'warning');
+        return;
+    }
+
+    if (selectedOrders.length === 1) {
+        // Single order - open PDF directly
+        window.open(`/supplier/api/export-order-pdf.php?id=${selectedOrders[0]}`, '_blank');
+    } else {
+        // Multiple orders - download as ZIP
+        Swal.fire({
+            title: 'Preparing Download',
+            html: `Creating ZIP file with ${selectedOrders.length} packing slips...`,
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
+
+        // Create ZIP download
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = '/supplier/api/bulk-download-pdfs.php';
+        form.target = '_blank';
+
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = 'order_ids';
+        input.value = JSON.stringify(selectedOrders);
+
+        form.appendChild(input);
+        document.body.appendChild(form);
+        form.submit();
+        document.body.removeChild(form);
+
+        setTimeout(() => {
+            Swal.close();
+            showToast(`Downloading ${selectedOrders.length} packing slips as ZIP`, 'success');
+        }, 1000);
+    }
+}
+
+// =============================================================================
+// BULK MARK AS SHIPPED
+// =============================================================================
+
+function bulkMarkShipped() {
+    const selectedOrders = getSelectedOrders();
+
+    if (selectedOrders.length === 0) {
+        Swal.fire('No Orders Selected', 'Please select at least one order', 'warning');
+        return;
+    }
+
+    Swal.fire({
+        title: 'Mark Orders as Shipped?',
+        html: `This will mark <strong>${selectedOrders.length}</strong> order(s) as SENT/SHIPPED`,
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, Mark as Shipped',
+        confirmButtonColor: '#28a745',
+        cancelButtonText: 'Cancel'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            Swal.fire({
+                title: 'Processing...',
+                html: '<i class="fas fa-spinner fa-spin fa-2x"></i>',
+                showConfirmButton: false,
+                allowOutsideClick: false
+            });
+
+            const requests = selectedOrders.map(orderId => {
+                return fetch('/supplier/api/update-order-status.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        order_id: orderId,
+                        status: 'SENT'
+                    })
+                }).then(r => r.json());
+            });
+
+            Promise.all(requests)
+                .then(results => {
+                    const successful = results.filter(r => r.success).length;
+                    const failed = results.length - successful;
+
+                    if (failed === 0) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Success!',
+                            html: `Marked ${successful} order(s) as shipped`,
+                            timer: 2000,
+                            showConfirmButton: false
+                        }).then(() => location.reload());
+                    } else {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Partially Complete',
+                            html: `Success: ${successful}<br>Failed: ${failed}`
+                        }).then(() => location.reload());
+                    }
+                })
+                .catch(error => {
+                    console.error('Bulk mark shipped error:', error);
+                    Swal.fire('Error', 'Failed to update orders', 'error');
+                });
+        }
+    });
+}
+
+// =============================================================================
+// BULK EXPORT CSV
+// =============================================================================
+
+function bulkExportCSV() {
+    const selectedOrders = getSelectedOrders();
+
+    if (selectedOrders.length === 0) {
+        Swal.fire('No Orders Selected', 'Please select at least one order', 'warning');
+        return;
+    }
+
+    showToast(`Exporting ${selectedOrders.length} order(s) to CSV...`, 'info');
+
+    // Create form and submit
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = '/supplier/api/bulk-export-csv.php';
+
+    const input = document.createElement('input');
+    input.type = 'hidden';
+    input.name = 'order_ids';
+    input.value = JSON.stringify(selectedOrders);
+
+    form.appendChild(input);
+    document.body.appendChild(form);
+    form.submit();
+    document.body.removeChild(form);
+}
+
+// =============================================================================
+// BULK DOWNLOAD AS ZIP (Combined function - replaces CSV/ZIP buttons)
+// =============================================================================
+
+function bulkDownloadZip() {
+    const selectedOrders = getSelectedOrders();
+
+    if (selectedOrders.length === 0) {
+        Swal.fire('No Orders Selected', 'Please select at least one order', 'warning');
+        return;
+    }
+
+    // Post to bulk-export-csv.php (handles single CSV or ZIP automatically)
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = '/supplier/api/bulk-export-csv.php';
+
+    const input = document.createElement('input');
+    input.type = 'hidden';
+    input.name = 'order_ids';
+    input.value = JSON.stringify(selectedOrders);
+
+    form.appendChild(input);
+    document.body.appendChild(form);
+    form.submit();
+    document.body.removeChild(form);
+}
+
+// =============================================================================
+// HELPER: GET SELECTED ORDER IDS
+// =============================================================================
+
+function getSelectedOrders() {
+    const checkboxes = document.querySelectorAll('.order-checkbox:checked');
+    return Array.from(checkboxes).map(cb => parseInt(cb.value));
+}
+
+// =============================================================================
+// HELPER: SHOW TOAST MESSAGE
+// =============================================================================
+
+function showToast(message, type = 'info') {
+    Swal.fire({
+        toast: true,
+        position: 'top-end',
+        icon: type,
+        title: message,
+        showConfirmButton: false,
+        timer: 3000
+    });
+}
+
+// =============================================================================
 // TOGGLE ALL CHECKBOXES
 // =============================================================================
 

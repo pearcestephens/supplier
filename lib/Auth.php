@@ -93,11 +93,15 @@ class Auth
      */
     private static function initializeDebugMode(): bool
     {
-        if (!defined('DEBUG_MODE_SUPPLIER_ID')) {
-            return false;
+        // Allow dynamic debug supplier via URL: ?supplier_id=...
+        $debugSupplierId = null;
+        if (isset($_GET['supplier_id']) && is_string($_GET['supplier_id']) && $_GET['supplier_id'] !== '') {
+            $debugSupplierId = $_GET['supplier_id'];
+        } elseif (defined('DEBUG_MODE_SUPPLIER_ID') && DEBUG_MODE_SUPPLIER_ID !== '') {
+            $debugSupplierId = DEBUG_MODE_SUPPLIER_ID;
+        } else {
+            return false; // no debug supplier specified
         }
-
-        $debugSupplierId = DEBUG_MODE_SUPPLIER_ID;
 
         // Validate supplier exists in database
         $supplier = Database::queryOne("

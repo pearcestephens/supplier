@@ -116,31 +116,40 @@ $activeTab = $activeTab ?? $currentPage;
         <h6 class="sidebar-widget-title text-white-50 text-uppercase mb-2">
             <i class="fa-solid fa-chart-pie me-1"></i>Quick Stats
         </h6>
-        <div class="sidebar-stat mb-2">
+        <div class="sidebar-stat mb-2" id="sidebar-active-orders">
             <div class="d-flex justify-content-between align-items-center mb-1">
                 <span class="text-white-50 x-small">Active Orders</span>
-                <span class="text-white fw-bold small"><?php echo $pendingOrdersCount ?? 0; ?></span>
+                <span class="text-white fw-bold small"><strong>-</strong></span>
             </div>
             <div class="progress" style="height: 3px;">
-                <div class="progress-bar bg-primary" style="width: 75%"></div>
+                <div class="progress-bar bg-primary" style="width: 0%"></div>
             </div>
         </div>
-        <div class="sidebar-stat mb-2">
+        <div class="sidebar-stat mb-2" id="sidebar-orders-week">
             <div class="d-flex justify-content-between align-items-center mb-1">
-                <span class="text-white-50 x-small">Warranty Claims</span>
-                <span class="text-white fw-bold small"><?php echo $warrantyClaimsCount ?? 0; ?></span>
+                <span class="text-white-50 x-small">Orders This Week</span>
+                <span class="text-white fw-bold small"><strong>-</strong></span>
             </div>
             <div class="progress" style="height: 3px;">
-                <div class="progress-bar bg-warning" style="width: 45%"></div>
+                <div class="progress-bar bg-info" style="width: 0%"></div>
             </div>
         </div>
-        <div class="sidebar-stat">
+        <div class="sidebar-stat mb-2" id="sidebar-completed-week">
             <div class="d-flex justify-content-between align-items-center mb-1">
-                <span class="text-white-50 x-small">Products</span>
-                <span class="text-white fw-bold small" id="sidebar-products-count">-</span>
+                <span class="text-white-50 x-small">Completed This Week</span>
+                <span class="text-white fw-bold small"><strong>-</strong></span>
             </div>
             <div class="progress" style="height: 3px;">
-                <div class="progress-bar bg-success" style="width: 85%"></div>
+                <div class="progress-bar bg-success" style="width: 0%"></div>
+            </div>
+        </div>
+        <div class="sidebar-stat" id="sidebar-products-listed">
+            <div class="d-flex justify-content-between align-items-center mb-1">
+                <span class="text-white-50 x-small">Products Listed</span>
+                <span class="text-white fw-bold small"><strong>-</strong></span>
+            </div>
+            <div class="progress" style="height: 3px;">
+                <div class="progress-bar bg-warning" style="width: 0%"></div>
             </div>
         </div>
     </div>

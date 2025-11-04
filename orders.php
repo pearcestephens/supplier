@@ -25,7 +25,7 @@ $perPage = isset($_GET['per_page']) ? min(50, max(10, intval($_GET['per_page']))
 $offset = ($page - 1) * $perPage;
 
 // Filters
-$filterStatus = $_GET['status'] ?? 'all';
+$filterStatus = $_GET['status'] ?? 'active';
 $filterOutlet = $_GET['outlet'] ?? 'all';
 $searchTerm = $_GET['search'] ?? '';
 
@@ -43,14 +43,32 @@ $paramTypes = 's';
 // Status filter
 if ($filterStatus !== 'all') {
     switch ($filterStatus) {
-        case 'active':
-            $whereConditions[] = "t.state IN ('OPEN', 'SENT', 'RECEIVING')";
+        case 'open':
+            $whereConditions[] = "t.state = 'OPEN'";
             break;
-        case 'completed':
-            $whereConditions[] = "t.state IN ('RECEIVED', 'CLOSED')";
+        case 'packing':
+            $whereConditions[] = "t.state = 'PACKING'";
+            break;
+        case 'packed':
+            $whereConditions[] = "t.state = 'PACKED'";
+            break;
+        case 'sent':
+            $whereConditions[] = "t.state = 'SENT'";
+            break;
+        case 'receiving':
+            $whereConditions[] = "t.state = 'RECEIVING'";
+            break;
+        case 'received':
+            $whereConditions[] = "t.state = 'RECEIVED'";
             break;
         case 'cancelled':
             $whereConditions[] = "t.state = 'CANCELLED'";
+            break;
+        case 'active':
+            $whereConditions[] = "t.state IN ('OPEN', 'PACKING', 'PACKED', 'SENT', 'RECEIVING')";
+            break;
+        case 'completed':
+            $whereConditions[] = "t.state = 'RECEIVED'";
             break;
     }
 }
@@ -332,8 +350,13 @@ $actionButtons = '
                     <label class="form-label small fw-bold">Status</label>
                     <select name="status" class="form-select">
                         <option value="all" <?php echo $filterStatus === 'all' ? 'selected' : ''; ?>>All Status</option>
-                        <option value="active" <?php echo $filterStatus === 'active' ? 'selected' : ''; ?>>Active</option>
-                        <option value="completed" <?php echo $filterStatus === 'completed' ? 'selected' : ''; ?>>Completed</option>
+                        <option value="active" <?php echo $filterStatus === 'active' ? 'selected' : ''; ?>>Active Orders</option>
+                        <option value="open" <?php echo $filterStatus === 'open' ? 'selected' : ''; ?>>Open</option>
+                        <option value="packing" <?php echo $filterStatus === 'packing' ? 'selected' : ''; ?>>Packing</option>
+                        <option value="packed" <?php echo $filterStatus === 'packed' ? 'selected' : ''; ?>>Packed</option>
+                        <option value="sent" <?php echo $filterStatus === 'sent' ? 'selected' : ''; ?>>Sent</option>
+                        <option value="receiving" <?php echo $filterStatus === 'receiving' ? 'selected' : ''; ?>>Receiving</option>
+                        <option value="received" <?php echo $filterStatus === 'received' ? 'selected' : ''; ?>>Received</option>
                         <option value="cancelled" <?php echo $filterStatus === 'cancelled' ? 'selected' : ''; ?>>Cancelled</option>
                     </select>
                 </div>
@@ -379,20 +402,14 @@ $actionButtons = '
                 <div>
                     <!-- Bulk Actions Toolbar -->
                     <div class="btn-group me-2" role="group">
-                        <button class="btn btn-sm btn-outline-primary bulk-action-btn" id="bulkPackingSlipsBtn" onclick="bulkDownloadPackingSlips()" title="Download Packing Slips" disabled>
-                            <i class="fas fa-file-invoice"></i> Packing Slips
+                        <button class="btn btn-sm btn-outline-primary bulk-action-btn" id="bulkDownloadBtn" onclick="bulkDownloadZip()" title="Download CSV (single) or ZIP of CSVs (multiple)" disabled>
+                            <i class="fas fa-download"></i> Download
                         </button>
                         <button class="btn btn-sm btn-outline-success bulk-action-btn" id="bulkAddTrackingBtn" onclick="bulkAddTracking()" title="Add Tracking Numbers" disabled>
                             <i class="fas fa-shipping-fast"></i> Add Tracking
                         </button>
                         <button class="btn btn-sm btn-outline-warning bulk-action-btn" id="bulkMarkShippedBtn" onclick="bulkMarkShipped()" title="Mark as Shipped" disabled>
                             <i class="fas fa-truck"></i> Mark Shipped
-                        </button>
-                        <button class="btn btn-sm btn-outline-info bulk-action-btn" id="bulkExportCSVBtn" onclick="bulkExportCSV()" title="Export to CSV" disabled>
-                            <i class="fas fa-file-csv"></i> Export CSV
-                        </button>
-                        <button class="btn btn-sm btn-outline-secondary bulk-action-btn" id="bulkDownloadZipBtn" onclick="bulkDownloadZip()" title="Download as ZIP" disabled>
-                            <i class="fas fa-file-archive"></i> Download ZIP
                         </button>
                     </div>
                     <small class="text-muted">
@@ -604,18 +621,17 @@ $actionButtons = '
 }
 
 .orders-table tbody tr {
-    transition: all 0.2s ease;
+    transition: background-color 0.2s ease;
 }
 
 .orders-table tbody tr:hover {
     background-color: rgba(59, 130, 246, 0.05);
-    transform: scale(1.01);
 }
 
 /* Clickable row styling */
 .clickable-row {
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: background-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .clickable-row:hover {

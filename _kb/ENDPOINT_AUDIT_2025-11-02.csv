@@ -1,0 +1,58 @@
+path,referenced_in_code,referenced_in_docs,classification,notes
+/supplier/api/account-update.php,yes,yes,Live,Used by account forms and guides
+/supplier/api/add-order-note.php,yes,yes,Live,Orders JS uses it
+/supplier/api/add-order-note.php.bak,no,no,Remove-Backup,Legacy backup file
+/supplier/api/add-tracking-simple.php,yes,yes,Live,Tracking modal + orders use it
+/supplier/api/add-warranty-note.php,no,yes,Unused-Candidate,No in-repo callers found
+/supplier/api/dashboard-charts.php,no,yes,Legacy-Compat,Docs mention; replaced by split endpoints
+/supplier/api/dashboard-insights.php,yes,yes,Live,Performance insights API
+/supplier/api/dashboard-items-sold.php,yes,yes,Live,Dashboard chart fetch
+/supplier/api/dashboard-orders-table.php,yes,yes,Live,Dashboard table fetch
+/supplier/api/dashboard-stats.php,yes,yes,Live,Dashboard metrics
+/supplier/api/dashboard-stats.php.bak,no,no,Remove-Backup,Legacy backup file
+/supplier/api/dashboard-stock-alerts.php,yes,yes,Live,Dashboard chart fetch
+/supplier/api/dashboard-warranty-claims.php,yes,yes,Live,Dashboard chart fetch
+/supplier/api/download-media.php,yes,yes,Live,Warranty media viewer/downloader
+/supplier/api/download-order.php,unknown,yes,Unknown,Docs mention; no direct code refs detected
+/supplier/api/email-add.php,yes,yes,Live,Email management UI
+/supplier/api/email-list.php,yes,yes,Live,Email management UI
+/supplier/api/email-remove.php,yes,yes,Live,Email management UI
+/supplier/api/email-resend-verification.php,yes,yes,Live,Email management UI
+/supplier/api/email-set-primary.php,yes,yes,Live,Email management UI
+/supplier/api/export-order-items.php,yes,yes,Live,Order detail export CSV
+/supplier/api/export-order-pdf.php,yes,yes,Live,Order detail export PDF
+/supplier/api/export-orders.php,yes,yes,Live,Downloads + dashboard
+/supplier/api/export-warranty-claims.php,yes,yes,Live,Downloads button
+/supplier/api/generate-packing-slips.php,yes,yes,Live,Dashboard bulk action
+/supplier/api/generate-report.php,yes,yes,Live,Downloads UI
+/supplier/api/get-activity-logs.php,yes,yes,Live,Logs viewer and docs
+/supplier/api/get-ai-insights.php,yes,yes,Live,Insights panel
+/supplier/api/get-order-detail.php,yes,yes,Live,Orders UI + modals
+/supplier/api/get-order-history.php,yes,yes,Live,Orders UI
+/supplier/api/get-warranty-detail.php,yes,yes,Live,Warranty modal + test pages
+/supplier/api/index.php,yes,yes,Live,Unified router for action= endpoints
+/supplier/api/modules/dashboard-stats.php,yes,yes,Live,Action handler via router
+/supplier/api/notifications-count.php,no,yes,Unused-Candidate,No references found
+/supplier/api/orders-quick-view.php,yes,yes,Live,Dashboard quick view
+/supplier/api/po-detail.php,no,yes,Unused-Candidate,No references found
+/supplier/api/po-list.php,no,yes,Unused-Candidate,No references found
+/supplier/api/po-update.php,no,yes,Unused-Candidate,No references found
+/supplier/api/reports-export.php,yes,yes,Live,Reports UI uses it
+/supplier/api/reports-forecast.php,yes,yes,Live,Reports UI uses it
+/supplier/api/reports-product-performance.php,yes,yes,Live,Reports UI uses it
+/supplier/api/reports-sales-summary.php,yes,yes,Live,Reports UI uses it
+/supplier/api/request-info.php,yes,yes,Live,Orders UI
+/supplier/api/search-orders.php,yes,yes,Live,Autocomplete + test pages
+/supplier/api/search-products.php,yes,yes,Live,Search UI + test pages
+/supplier/api/sidebar-stats.php,yes,yes,Live,Sidebar widgets
+/supplier/api/update-account.php,yes,yes,Live,Forms + tests
+/supplier/api/update-order-status.php,yes,yes,Live,Orders UI
+/supplier/api/update-order.php,yes,yes,Live,Orders UI
+/supplier/api/update-po-status.php,docs-only,yes,Docs-Only,Present in docs; no code fetches detected
+/supplier/api/update-profile.php,yes,yes,Live,Account page
+/supplier/api/update-tracking.php,yes,yes,Live,Orders UI
+/supplier/api/update-warranty-claim.php,no,yes,Unused-Candidate,No references found (warranty-action.php used instead)
+/supplier/api/verify-email.php,yes,yes,Live,Email verification link
+/supplier/api/warranty-action.php,yes,yes,Live,Warranty UI actions
+/supplier/api/warranty-action.php.bak,no,no,Remove-Backup,Legacy backup file
+/supplier/api/warranty-update.php,yes,yes,Live,Secure warranty updates

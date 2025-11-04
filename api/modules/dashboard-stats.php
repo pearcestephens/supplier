@@ -13,16 +13,23 @@ requireAuth();
 $pdo = pdo();
 $supplierID = getSupplierID();
 
-// Metric 1: Total Orders (30 days)
+// DEBUG: Log each API call to see if we're being called twice
+error_log("📊 dashboard-stats.php called - Supplier ID: {$supplierID} - Time: " . date('Y-m-d H:i:s.u'));
+
+// Metric 1: Total ACTIVE Orders (30 days) - EXCLUDE CANCELLED
 $stmt = $pdo->prepare("
     SELECT COUNT(*) as total_orders
     FROM vend_consignments
     WHERE supplier_id = ?
     AND created_at >= DATE_SUB(NOW(), INTERVAL 30 DAY)
+    AND state != 'CANCELLED'
     AND deleted_at IS NULL
 ");
 $stmt->execute([$supplierID]);
 $totalOrders = (int)$stmt->fetchColumn();
+
+// DEBUG: Log the result
+error_log("📊 Total Orders Query Result: {$totalOrders}");
 
 // Metric 2: Pending/Processing Orders
 $stmt = $pdo->prepare("
@@ -113,6 +120,34 @@ $revenue30d = round((float)$stmt->fetchColumn(), 2);
 $inStock = $activeProducts;
 $lowStock = (int)ceil($activeProducts * 0.05);
 
+// Additional insights for flip-side cards
+// High-value orders (>$300)
+$stmt = $pdo->prepare("
+    SELECT COUNT(DISTINCT c.id) as high_value_orders
+    FROM vend_consignments c
+    INNER JOIN purchase_order_line_items li ON c.id = li.purchase_order_id
+    WHERE c.supplier_id = ?
+    AND c.state != 'CANCELLED'
+    AND c.deleted_at IS NULL
+    AND c.created_at >= DATE_SUB(NOW(), INTERVAL 30 DAY)
+    GROUP BY c.id
+    HAVING SUM(li.qty_arrived * li.order_purchase_price) > 300
+");
+$stmt->execute([$supplierID]);
+$highValueOrders = (int)$stmt->rowCount();
+
+// Processed claims (resolved)
+$stmt = $pdo->prepare("
+    SELECT COUNT(*) as claims_processed
+    FROM faulty_products fp
+    INNER JOIN vend_products p ON fp.product_id = p.id
+    WHERE p.supplier_id = ?
+    AND fp.supplier_status = 1
+    AND fp.time_created >= DATE_SUB(NOW(), INTERVAL 30 DAY)
+");
+$stmt->execute([$supplierID]);
+$claimsProcessed = (int)$stmt->fetchColumn();
+
 // Send response using standard envelope
 sendApiResponse(true, [
     'total_orders' => $totalOrders,
@@ -123,8 +158,11 @@ sendApiResponse(true, [
     'products_in_stock' => $inStock,
     'products_low_stock' => $lowStock,
     'products_availability' => $activeProducts > 0 ? round(($inStock / $activeProducts) * 100, 1) : 0,
+    'products_target' => 100,
     'pending_claims' => $pendingClaims,
+    'claims_processed' => $claimsProcessed,
     'avg_order_value' => $avgOrderValue,
+    'high_value_orders' => $highValueOrders,
     'units_sold' => $unitsSold,
     'revenue_30d' => $revenue30d,
     'pending_orders' => $pendingOrders

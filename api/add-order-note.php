@@ -34,8 +34,8 @@ if (!$input) {
 }
 
 // Validate required fields
-$orderId = $input['order_id'] ?? null;
-$noteText = $input['note_text'] ?? $input['note'] ?? null;
+$orderId = (int)($input['order_id'] ?? 0);
+$noteText = trim($input['note'] ?? '');
 
 if (!$orderId || !$noteText) {
     sendJsonResponse(false, null, 'Missing required fields: order_id, note', 400);
@@ -44,11 +44,11 @@ if (!$orderId || !$noteText) {
 
 // Verify order belongs to this supplier and get username
 $verifyQuery = "
-    SELECT st.id, st.vend_number, s.name as supplier_name
-    FROM staff_transfers st
-    LEFT JOIN suppliers s ON s.id = st.supplier_id
-    WHERE st.id = ?
-      AND st.supplier_id = ?
+    SELECT c.id, c.name as consignment_name, s.name as supplier_name
+    FROM vend_consignments c
+    LEFT JOIN suppliers s ON s.id = c.supplier_id
+    WHERE c.id = ?
+      AND c.supplier_id = ?
 ";
 $stmt = $pdo->prepare($verifyQuery);
 $stmt->execute([$orderId, $supplierID]);
@@ -74,6 +74,7 @@ if ($stmt->execute([$orderId, $noteText, $order['supplier_name'] ?? 'Supplier'])
         'note' => $noteText,
         'created_at' => date('Y-m-d H:i:s')
     ], 'Note added successfully');
+} else {
     sendJsonResponse(false, [
         'error_type' => 'database_error'
     ], 'Failed to add note', 500);

@@ -1,0 +1,656 @@
+<?php
+/**
+ * Supplier Portal - Enhanced Product Catalog
+ * 
+ * Modern card-based product catalog with advanced filtering,
+ * real-time stock tracking, and bulk operations
+ *
+ * @package Supplier
+ * @version 3.0.0
+ */
+
+declare(strict_types=1);
+require_once __DIR__ . '/bootstrap.php';
+
+// Auth check
+if (isset($_GET['supplier_id']) && !empty($_GET['supplier_id'])) {
+    Auth::loginById($_GET['supplier_id']);
+}
+
+if (!Auth::check()) {
+    header('Location: /supplier/login.php');
+    exit;
+}
+
+$supplierID = Auth::getSupplierId();
+$supplierName = Auth::getSupplierName();
+$db = db();
+
+// View mode: grid or list
+$viewMode = $_GET['view'] ?? 'grid';
+
+// Pagination
+$page = max(1, (int)($_GET['page'] ?? 1));
+$perPage = $viewMode === 'grid' ? 24 : 50;
+$offset = ($page - 1) * $perPage;
+
+// Filters
+$search = $_GET['search'] ?? '';
+$searchTerm = "%{$search}%";
+$stockFilter = $_GET['stock'] ?? 'all'; // all, low, out, good
+$sortBy = $_GET['sort'] ?? 'name';
+$sortDir = in_array($_GET['dir'] ?? 'ASC', ['ASC', 'DESC']) ? $_GET['dir'] : 'ASC';
+
+// Build query
+$whereConditions = ["p.supplier_id = ? AND p.deleted_at = '0000-00-00 00:00:00'"];
+$params = [$supplierID];
+$paramTypes = 's';
+
+// Search filter
+if (!empty($search)) {
+    $whereConditions[] = "(p.name LIKE ? OR p.sku LIKE ?)";
+    $params[] = $searchTerm;
+    $params[] = $searchTerm;
+    $paramTypes .= 'ss';
+}
+
+// Stock filter
+switch ($stockFilter) {
+    case 'out':
+        $whereConditions[] = "COALESCE(stock.total_stock, 0) = 0";
+        break;
+    case 'low':
+        $whereConditions[] = "COALESCE(stock.total_stock, 0) > 0 AND COALESCE(stock.total_stock, 0) < 10";
+        break;
+    case 'good':
+        $whereConditions[] = "COALESCE(stock.total_stock, 0) >= 10";
+        break;
+}
+
+$whereClause = 'WHERE ' . implode(' AND ', $whereConditions);
+
+// Sorting
+$orderColumn = match($sortBy) {
+    'sku' => 'p.sku',
+    'price' => 'p.supply_price',
+    'stock' => 'stock.total_stock',
+    default => 'p.name'
+};
+
+// Main query with stock aggregation
+$query = "
+    SELECT 
+        p.id,
+        p.sku,
+        p.name,
+        p.description,
+        p.supply_price,
+        p.variant_name,
+        COALESCE(stock.total_stock, 0) as total_stock,
+        COALESCE(stock.store_count, 0) as store_count,
+        COALESCE(stock.total_value, 0) as total_value
+    FROM vend_products p
+    LEFT JOIN (
+        SELECT 
+            product_id,
+            SUM(inventory_count) as total_stock,
+            COUNT(DISTINCT outlet_id) as store_count,
+            SUM(inventory_count * (SELECT supply_price FROM vend_products WHERE id = product_id)) as total_value
+        FROM vend_inventory
+        GROUP BY product_id
+    ) stock ON p.id = stock.product_id
+    {$whereClause}
+    ORDER BY {$orderColumn} {$sortDir}
+    LIMIT ? OFFSET ?
+";
+
+$stmt = $db->prepare($query);
+if (!$stmt) {
+    die("Query error: " . $db->error);
+}
+
+// Bind params
+$params[] = $perPage;
+$params[] = $offset;
+$paramTypes .= 'ii';
+
+$stmt->bind_param($paramTypes, ...$params);
+$stmt->execute();
+$result = $stmt->get_result();
+$products = $result->fetch_all(MYSQLI_ASSOC);
+$stmt->close();
+
+// Count total
+$countQuery = "
+    SELECT COUNT(DISTINCT p.id) as total
+    FROM vend_products p
+    LEFT JOIN (
+        SELECT product_id, SUM(inventory_count) as total_stock
+        FROM vend_inventory
+        GROUP BY product_id
+    ) stock ON p.id = stock.product_id
+    {$whereClause}
+";
+
+$countStmt = $db->prepare($countQuery);
+$countParamTypes = substr($paramTypes, 0, -2); // Remove last two (limit/offset)
+$countParams = array_slice($params, 0, -2);
+$countStmt->bind_param($countParamTypes, ...$countParams);
+$countStmt->execute();
+$countResult = $countStmt->get_result()->fetch_assoc();
+$total = (int)$countResult['total'];
+$totalPages = ceil($total / $perPage);
+$countStmt->close();
+
+// Summary stats
+$statsQuery = "
+    SELECT 
+        COUNT(DISTINCT p.id) as total_products,
+        COALESCE(SUM(stock.total_stock), 0) as total_units,
+        COALESCE(SUM(stock.total_value), 0) as total_value,
+        COUNT(CASE WHEN COALESCE(stock.total_stock, 0) = 0 THEN 1 END) as out_of_stock,
+        COUNT(CASE WHEN COALESCE(stock.total_stock, 0) > 0 AND COALESCE(stock.total_stock, 0) < 10 THEN 1 END) as low_stock
+    FROM vend_products p
+    LEFT JOIN (
+        SELECT 
+            product_id,
+            SUM(inventory_count) as total_stock,
+            SUM(inventory_count * (SELECT supply_price FROM vend_products WHERE id = product_id)) as total_value
+        FROM vend_inventory
+        GROUP BY product_id
+    ) stock ON p.id = stock.product_id
+    WHERE p.supplier_id = ? AND p.deleted_at = '0000-00-00 00:00:00'
+";
+
+$statsStmt = $db->prepare($statsQuery);
+$statsStmt->bind_param('s', $supplierID);
+$statsStmt->execute();
+$stats = $statsStmt->get_result()->fetch_assoc();
+$statsStmt->close();
+
+// Page setup
+$activeTab = 'products';
+$pageTitle = 'Product Catalog';
+$pageIcon = 'fa-solid fa-cube';
+$pageDescription = 'Browse and manage your product inventory';
+
+?>
+<?php include __DIR__ . '/components/html-head.php'; ?>
+
+<style>
+.product-card {
+    transition: all 0.3s ease;
+    border: 1px solid #e0e0e0;
+    height: 100%;
+}
+
+.product-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    border-color: #ffcc00;
+}
+
+.product-image-container {
+    height: 200px;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.product-image-placeholder {
+    font-size: 48px;
+    color: #ccc;
+}
+
+.stock-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-weight: 700;
+    font-size: 11px;
+    text-transform: uppercase;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+
+.stock-out { background: #dc3545; color: white; }
+.stock-low { background: #ffc107; color: #000; }
+.stock-good { background: #28a745; color: white; }
+
+.product-card-body {
+    padding: 16px;
+}
+
+.product-name {
+    font-size: 14px;
+    font-weight: 700;
+    color: #333;
+    height: 40px;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    margin-bottom: 8px;
+}
+
+.product-sku {
+    font-family: 'Courier New', monospace;
+    font-size: 11px;
+    color: #666;
+    background: #f5f5f5;
+    padding: 2px 6px;
+    border-radius: 3px;
+    display: inline-block;
+    margin-bottom: 8px;
+}
+
+.product-price {
+    font-size: 18px;
+    font-weight: 900;
+    color: #ffcc00;
+    margin: 8px 0;
+}
+
+.product-stock-info {
+    font-size: 12px;
+    color: #666;
+    margin: 4px 0;
+}
+
+.view-toggle {
+    display: inline-flex;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.view-toggle a {
+    padding: 8px 16px;
+    text-decoration: none;
+    color: #666;
+    background: white;
+    transition: all 0.2s;
+}
+
+.view-toggle a:hover {
+    background: #f5f5f5;
+}
+
+.view-toggle a.active {
+    background: #ffcc00;
+    color: #000;
+    font-weight: 700;
+}
+
+.stats-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    transition: transform 0.2s;
+}
+
+.stats-card:hover {
+    transform: translateY(-2px);
+}
+
+.filter-chip {
+    display: inline-block;
+    padding: 6px 12px;
+    margin: 4px;
+    background: #f5f5f5;
+    border-radius: 20px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: 2px solid transparent;
+}
+
+.filter-chip:hover {
+    background: #e0e0e0;
+}
+
+.filter-chip.active {
+    background: #ffcc00;
+    border-color: #e6b800;
+    font-weight: 700;
+}
+
+.list-view-row {
+    transition: all 0.2s;
+}
+
+.list-view-row:hover {
+    background: #f8f9fa;
+    border-left: 4px solid #ffcc00;
+}
+</style>
+
+<?php include __DIR__ . '/components/sidebar-new.php'; ?>
+<?php include __DIR__ . '/components/page-header.php'; ?>
+
+<div class="main-content">
+    <div class="content-wrapper p-4">
+        
+        <!-- Page Title -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h1 class="h3 mb-1">
+                    <i class="<?= $pageIcon ?>"></i> <?= $pageTitle ?>
+                </h1>
+                <p class="text-muted mb-0"><?= $pageDescription ?></p>
+            </div>
+            <div class="view-toggle">
+                <a href="?view=grid<?= $search ? '&search=' . urlencode($search) : '' ?><?= $stockFilter !== 'all' ? '&stock=' . $stockFilter : '' ?>" 
+                   class="<?= $viewMode === 'grid' ? 'active' : '' ?>">
+                    <i class="fa-solid fa-grid"></i> Grid
+                </a>
+                <a href="?view=list<?= $search ? '&search=' . urlencode($search) : '' ?><?= $stockFilter !== 'all' ? '&stock=' . $stockFilter : '' ?>" 
+                   class="<?= $viewMode === 'list' ? 'active' : '' ?>">
+                    <i class="fa-solid fa-list"></i> List
+                </a>
+            </div>
+        </div>
+
+        <!-- Stats Summary -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-3">
+                <div class="card stats-card">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div>
+                                <div class="small opacity-75 mb-1">Total Products</div>
+                                <h3 class="mb-0"><?= number_format($stats['total_products']) ?></h3>
+                            </div>
+                            <i class="fa-solid fa-cube fa-2x opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card stats-card">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div>
+                                <div class="small opacity-75 mb-1">Total Units</div>
+                                <h3 class="mb-0"><?= number_format($stats['total_units']) ?></h3>
+                            </div>
+                            <i class="fa-solid fa-boxes-stacked fa-2x opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card stats-card">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div>
+                                <div class="small opacity-75 mb-1">Inventory Value</div>
+                                <h3 class="mb-0">$<?= number_format($stats['total_value'], 0) ?></h3>
+                            </div>
+                            <i class="fa-solid fa-dollar-sign fa-2x opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card stats-card">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div>
+                                <div class="small opacity-75 mb-1">Alerts</div>
+                                <h3 class="mb-0"><?= $stats['out_of_stock'] + $stats['low_stock'] ?></h3>
+                                <div class="small opacity-75"><?= $stats['out_of_stock'] ?> out, <?= $stats['low_stock'] ?> low</div>
+                            </div>
+                            <i class="fa-solid fa-triangle-exclamation fa-2x opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <form method="GET" class="row g-3 align-items-end">
+                    <input type="hidden" name="view" value="<?= htmlspecialchars($viewMode) ?>">
+                    
+                    <div class="col-md-4">
+                        <label class="form-label small fw-bold">
+                            <i class="fa-solid fa-search"></i> Search Products
+                        </label>
+                        <input type="text" name="search" class="form-control" 
+                               value="<?= htmlspecialchars($search) ?>" 
+                               placeholder="Product name or SKU...">
+                    </div>
+
+                    <div class="col-md-2">
+                        <label class="form-label small fw-bold">
+                            <i class="fa-solid fa-filter"></i> Stock Level
+                        </label>
+                        <select name="stock" class="form-select">
+                            <option value="all" <?= $stockFilter === 'all' ? 'selected' : '' ?>>All Products</option>
+                            <option value="good" <?= $stockFilter === 'good' ? 'selected' : '' ?>>✓ In Stock</option>
+                            <option value="low" <?= $stockFilter === 'low' ? 'selected' : '' ?>>⚠️ Low Stock</option>
+                            <option value="out" <?= $stockFilter === 'out' ? 'selected' : '' ?>>❌ Out of Stock</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-2">
+                        <label class="form-label small fw-bold">
+                            <i class="fa-solid fa-sort"></i> Sort By
+                        </label>
+                        <select name="sort" class="form-select">
+                            <option value="name" <?= $sortBy === 'name' ? 'selected' : '' ?>>Product Name</option>
+                            <option value="sku" <?= $sortBy === 'sku' ? 'selected' : '' ?>>SKU</option>
+                            <option value="price" <?= $sortBy === 'price' ? 'selected' : '' ?>>Price</option>
+                            <option value="stock" <?= $sortBy === 'stock' ? 'selected' : '' ?>>Stock Level</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-2">
+                        <label class="form-label small fw-bold">Direction</label>
+                        <select name="dir" class="form-select">
+                            <option value="ASC" <?= $sortDir === 'ASC' ? 'selected' : '' ?>>↑ Ascending</option>
+                            <option value="DESC" <?= $sortDir === 'DESC' ? 'selected' : '' ?>>↓ Descending</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="fa-solid fa-filter"></i> Apply
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Results Info -->
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <div>
+                <strong><?= number_format($total) ?></strong> products found
+                <?php if (!empty($search)): ?>
+                    <span class="text-muted">for "<?= htmlspecialchars($search) ?>"</span>
+                <?php endif; ?>
+            </div>
+            <div class="text-muted">
+                Page <?= $page ?> of <?= $totalPages ?>
+            </div>
+        </div>
+
+        <?php if (empty($products)): ?>
+            <!-- Empty State -->
+            <div class="card">
+                <div class="card-body text-center py-5">
+                    <i class="fa-solid fa-box-open fa-4x text-muted mb-3"></i>
+                    <h5>No Products Found</h5>
+                    <p class="text-muted">Try adjusting your filters or search terms.</p>
+                    <a href="?" class="btn btn-primary">Clear Filters</a>
+                </div>
+            </div>
+        <?php elseif ($viewMode === 'grid'): ?>
+            <!-- Grid View -->
+            <div class="row g-3 mb-4">
+                <?php foreach ($products as $product): ?>
+                    <?php
+                        $stock = (int)$product['total_stock'];
+                        $stockClass = $stock === 0 ? 'stock-out' : ($stock < 10 ? 'stock-low' : 'stock-good');
+                        $stockText = $stock === 0 ? 'OUT' : ($stock < 10 ? 'LOW' : 'IN STOCK');
+                    ?>
+                    <div class="col-md-3 col-sm-6">
+                        <div class="card product-card">
+                            <div class="product-image-container">
+                                <i class="fa-solid fa-cube product-image-placeholder"></i>
+                                <span class="stock-badge <?= $stockClass ?>"><?= $stockText ?></span>
+                            </div>
+                            <div class="product-card-body">
+                                <div class="product-sku"><?= htmlspecialchars($product['sku']) ?></div>
+                                <div class="product-name" title="<?= htmlspecialchars($product['name']) ?>">
+                                    <?= htmlspecialchars($product['name']) ?>
+                                </div>
+                                <?php if (!empty($product['variant_name'])): ?>
+                                    <div class="text-muted small mb-2">
+                                        <i class="fa-solid fa-tag"></i> <?= htmlspecialchars($product['variant_name']) ?>
+                                    </div>
+                                <?php endif; ?>
+                                <div class="product-price">
+                                    $<?= number_format((float)$product['supply_price'], 2) ?>
+                                </div>
+                                <div class="product-stock-info">
+                                    <i class="fa-solid fa-warehouse"></i> <?= number_format($stock) ?> units
+                                    <?php if ($product['store_count'] > 0): ?>
+                                        across <?= $product['store_count'] ?> stores
+                                    <?php endif; ?>
+                                </div>
+                                <div class="product-stock-info text-muted">
+                                    <i class="fa-solid fa-dollar-sign"></i> Value: $<?= number_format((float)$product['total_value'], 2) ?>
+                                </div>
+                                <div class="mt-3 d-grid gap-2">
+                                    <a href="#" class="btn btn-sm btn-outline-primary">
+                                        <i class="fa-solid fa-eye"></i> View Details
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+        <?php else: ?>
+            <!-- List View -->
+            <div class="card mb-4">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>SKU</th>
+                                <th>Product</th>
+                                <th>Variant</th>
+                                <th>Price</th>
+                                <th>Stock</th>
+                                <th>Stores</th>
+                                <th>Value</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($products as $product): ?>
+                                <?php
+                                    $stock = (int)$product['total_stock'];
+                                    $stockClass = $stock === 0 ? 'danger' : ($stock < 10 ? 'warning' : 'success');
+                                    $stockIcon = $stock === 0 ? 'circle-xmark' : ($stock < 10 ? 'triangle-exclamation' : 'circle-check');
+                                ?>
+                                <tr class="list-view-row">
+                                    <td>
+                                        <code class="bg-light p-1 rounded"><?= htmlspecialchars($product['sku']) ?></code>
+                                    </td>
+                                    <td>
+                                        <strong><?= htmlspecialchars($product['name']) ?></strong>
+                                    </td>
+                                    <td>
+                                        <?= !empty($product['variant_name']) ? htmlspecialchars($product['variant_name']) : '—' ?>
+                                    </td>
+                                    <td>
+                                        <strong class="text-warning">$<?= number_format((float)$product['supply_price'], 2) ?></strong>
+                                    </td>
+                                    <td>
+                                        <strong><?= number_format($stock) ?></strong>
+                                    </td>
+                                    <td>
+                                        <?= $product['store_count'] ?> stores
+                                    </td>
+                                    <td>
+                                        $<?= number_format((float)$product['total_value'], 2) ?>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-<?= $stockClass ?>">
+                                            <i class="fa-solid fa-<?= $stockIcon ?>"></i>
+                                            <?= $stock === 0 ? 'Out of Stock' : ($stock < 10 ? 'Low Stock' : 'In Stock') ?>
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            <a href="#" class="btn btn-sm btn-outline-primary" title="View">
+                                                <i class="fa-solid fa-eye"></i>
+                                            </a>
+                                            <a href="#" class="btn btn-sm btn-outline-info" title="Stock History">
+                                                <i class="fa-solid fa-chart-line"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        <?php endif; ?>
+
+        <!-- Pagination -->
+        <?php if ($totalPages > 1): ?>
+            <nav>
+                <ul class="pagination justify-content-center">
+                    <?php if ($page > 1): ?>
+                        <li class="page-item">
+                            <a class="page-link" href="?page=1&view=<?= $viewMode ?>&search=<?= urlencode($search) ?>&stock=<?= $stockFilter ?>&sort=<?= $sortBy ?>&dir=<?= $sortDir ?>">
+                                <i class="fa-solid fa-angles-left"></i> First
+                            </a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page=<?= $page - 1 ?>&view=<?= $viewMode ?>&search=<?= urlencode($search) ?>&stock=<?= $stockFilter ?>&sort=<?= $sortBy ?>&dir=<?= $sortDir ?>">
+                                <i class="fa-solid fa-angle-left"></i> Previous
+                            </a>
+                        </li>
+                    <?php endif; ?>
+
+                    <?php for ($i = max(1, $page - 2); $i <= min($totalPages, $page + 2); $i++): ?>
+                        <li class="page-item <?= $i === $page ? 'active' : '' ?>">
+                            <a class="page-link" href="?page=<?= $i ?>&view=<?= $viewMode ?>&search=<?= urlencode($search) ?>&stock=<?= $stockFilter ?>&sort=<?= $sortBy ?>&dir=<?= $sortDir ?>">
+                                <?= $i ?>
+                            </a>
+                        </li>
+                    <?php endfor; ?>
+
+                    <?php if ($page < $totalPages): ?>
+                        <li class="page-item">
+                            <a class="page-link" href="?page=<?= $page + 1 ?>&view=<?= $viewMode ?>&search=<?= urlencode($search) ?>&stock=<?= $stockFilter ?>&sort=<?= $sortBy ?>&dir=<?= $sortDir ?>">
+                                Next <i class="fa-solid fa-angle-right"></i>
+                            </a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page=<?= $totalPages ?>&view=<?= $viewMode ?>&search=<?= urlencode($search) ?>&stock=<?= $stockFilter ?>&sort=<?= $sortBy ?>&dir=<?= $sortDir ?>">
+                                Last <i class="fa-solid fa-angles-right"></i>
+                            </a>
+                        </li>
+                    <?php endif; ?>
+                </ul>
+            </nav>
+        <?php endif; ?>
+
+    </div>
+</div>
+
+<?php include __DIR__ . '/components/footer.php'; ?>

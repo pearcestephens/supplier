@@ -22,7 +22,7 @@ try {
 
     // Verify order belongs to supplier
     $stmt = $pdo->prepare("
-        SELECT id FROM stock_transfers
+        SELECT id FROM vend_consignments
         WHERE id = ? AND supplier_id = ?
     ");
     $stmt->execute([$orderId, $supplierID]);
@@ -36,8 +36,8 @@ try {
         SELECT
             action,
             note,
-            created_at,
-            created_by as user
+            created_by as user_name,
+            DATE_FORMAT(created_at, '%Y-%m-%d %H:%i:%s') as created_at
         FROM order_history
         WHERE order_id = ?
         ORDER BY created_at DESC
@@ -48,7 +48,7 @@ try {
 
     echo json_encode([
         'success' => true,
-        'history' => $history
+        'data' => $history
     ]);
 
 } catch (Exception $e) {

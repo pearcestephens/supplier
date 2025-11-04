@@ -42,7 +42,7 @@ try {
         LEFT JOIN vend_consignment_line_items li ON c.id = li.transfer_id AND li.deleted_at IS NULL
         WHERE c.supplier_id = ?
         AND c.deleted_at IS NULL
-        AND c.state IN ('OPEN', 'PACKING', 'PACKAGED', 'SENT', 'RECEIVING')
+        AND c.state IN ('OPEN', 'PACKING')
         GROUP BY c.id, c.public_id, c.state, c.total_cost, c.created_at, c.expected_delivery_date, o.name
         ORDER BY
             CASE
@@ -101,7 +101,7 @@ try {
         FROM vend_consignments
         WHERE supplier_id = ?
         AND deleted_at IS NULL
-        AND state IN ('OPEN', 'PACKING', 'PACKAGED', 'SENT', 'RECEIVING')
+        AND state IN ('OPEN', 'PACKING')
     ");
     $stmt->execute([$supplierID]);
     $totalCount = (int)$stmt->fetchColumn();

@@ -32,23 +32,28 @@ try {
     // Using: vend_consignments, vend_products, faulty_products
     // =======================================================================
 
-    // Metric 1: Total Orders (30 days) - vend_consignments
+    // Metric 1: Total ACTIVE Orders (30 days) - EXCLUDE CANCELLED
+    // Updated: 2025-11-02 - Fixed to exclude CANCELLED state
     $stmt = $pdo->prepare("
         SELECT COUNT(*) as total_orders
         FROM vend_consignments
         WHERE supplier_id = ?
         AND created_at >= DATE_SUB(NOW(), INTERVAL 30 DAY)
+        AND state != 'CANCELLED'
         AND deleted_at IS NULL
     ");
     $stmt->execute([$supplierID]);
     $totalOrders = (int)$stmt->fetchColumn();
 
-    // Metric 2: Pending/Processing Orders
+    // DEBUG: Log the actual value
+    error_log("DEBUG dashboard-stats.php: totalOrders = " . $totalOrders . " for supplier " . $supplierID);
+
+    // Metric 2: Pending/Processing Orders (OPEN or PACKING states)
     $stmt = $pdo->prepare("
         SELECT COUNT(*) as pending_orders
         FROM vend_consignments
         WHERE supplier_id = ?
-        AND state IN ('OPEN', 'SENT', 'RECEIVING')
+        AND state IN ('OPEN', 'PACKING')
         AND deleted_at IS NULL
     ");
     $stmt->execute([$supplierID]);

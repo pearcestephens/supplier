@@ -10,10 +10,22 @@
 declare(strict_types=1);
 require_once __DIR__ . '/bootstrap.php';
 
-// Allow magic link login via supplier_id
-if (isset($_GET['supplier_id']) && !empty($_GET['supplier_id'])) {
-    $supplierID = $_GET['supplier_id'];
-    Auth::loginById($supplierID);
+// Prevent caching to ensure fresh data
+header('Cache-Control: no-cache, no-store, must-revalidate');
+header('Pragma: no-cache');
+header('Expires: 0');
+
+// Allow login via supplier_id directly
+if (isset($_GET['supplier_id'])) {
+    $sid = trim((string)$_GET['supplier_id']);
+    if ($sid === '' || !preg_match('/^[a-f0-9\-]{8,}$/i', $sid)) {
+        header('Location: /supplier/login.php?error=invalid_id');
+        exit;
+    }
+    if (!Auth::loginById($sid)) {
+        header('Location: /supplier/login.php?error=invalid_id');
+        exit;
+    }
 }
 
 if (!Auth::check()) {
@@ -82,18 +94,12 @@ $breadcrumb = []; // Dashboard is home, no additional breadcrumb needed
                                 </div>
                                 <div class="card-content">
                                     <div class="card-value-row">
-                                        <div class="card-value" id="metric-total-orders">18</div>
+                                        <div class="card-value skeleton" id="metric-total-orders">--</div>
                                     </div>
                                     <div class="card-subtitle">Last 30 days</div>
                                     <div class="card-stats">
-                                        <span class="stat-badge success" id="metric-total-orders-change">✓ +12%</span>
+                                        <span class="stat-badge success" id="metric-total-orders-change">✓ Active</span>
                                     </div>
-                                    <div class="progress-bar-container">
-                                        <div class="progress-bar" style="width: 65%"></div>
-                                    </div>
-                                </div>
-                                <div class="card-chart">
-                                    <canvas id="chart-1"></canvas>
                                 </div>
                             </div>
                             <!-- BACK -->
@@ -123,18 +129,12 @@ $breadcrumb = []; // Dashboard is home, no additional breadcrumb needed
                                 </div>
                                 <div class="card-content">
                                     <div class="card-value-row">
-                                        <div class="card-value" id="metric-active-products">50</div>
+                                        <div class="card-value skeleton" id="metric-active-products">--</div>
                                     </div>
                                     <div class="card-subtitle">In stock</div>
                                     <div class="card-stats">
-                                        <span class="stat-badge info" id="metric-products-availability">ℹ 100% Ready</span>
+                                        <span class="stat-badge info" id="metric-products-availability">ℹ Ready</span>
                                     </div>
-                                    <div class="progress-bar-container">
-                                        <div class="progress-bar" style="width: 100%"></div>
-                                    </div>
-                                </div>
-                                <div class="card-chart">
-                                    <canvas id="chart-2"></canvas>
                                 </div>
                             </div>
                             <!-- BACK -->
@@ -166,14 +166,8 @@ $breadcrumb = []; // Dashboard is home, no additional breadcrumb needed
                                     <div class="card-icon"><i class="fas fa-wrench"></i></div>
                                 </div>
                                 <div class="card-content">
-                                    <div class="card-value" id="metric-pending-claims">0</div>
+                                    <div class="card-value skeleton" id="metric-pending-claims">--</div>
                                     <div class="card-subtitle">Open claims</div>
-                                    <div class="progress-bar-container">
-                                        <div class="progress-bar" style="width: 2%"></div>
-                                    </div>
-                                </div>
-                                <div class="card-chart">
-                                    <canvas id="chart-3"></canvas>
                                 </div>
                             </div>
                             <!-- BACK -->
@@ -205,14 +199,8 @@ $breadcrumb = []; // Dashboard is home, no additional breadcrumb needed
                                     <div class="card-icon"><i class="fas fa-dollar-sign"></i></div>
                                 </div>
                                 <div class="card-content">
-                                    <div class="card-value" id="metric-avg-value">$0</div>
+                                    <div class="card-value skeleton" id="metric-avg-value">--</div>
                                     <div class="card-subtitle">Per order</div>
-                                    <div class="progress-bar-container">
-                                        <div class="progress-bar" style="width: 45%"></div>
-                                    </div>
-                                </div>
-                                <div class="card-chart">
-                                    <canvas id="chart-4"></canvas>
                                 </div>
                             </div>
                             <!-- BACK -->
@@ -238,20 +226,14 @@ $breadcrumb = []; // Dashboard is home, no additional breadcrumb needed
                                     <div>
                                         <div class="card-label">Units Sold</div>
                                         <div class="card-stats">
-                                            <span class="stat-badge warning" id="metric-units-sold-change">⚠ -5%</span>
+                                            <span class="stat-badge warning" id="metric-units-sold-change">⚡ Tracking</span>
                                         </div>
                                     </div>
                                     <div class="card-icon"><i class="fas fa-cubes"></i></div>
                                 </div>
                                 <div class="card-content">
-                                    <div class="card-value" id="metric-units-sold">0</div>
+                                    <div class="card-value skeleton" id="metric-units-sold">--</div>
                                     <div class="card-subtitle">Last 30 days</div>
-                                    <div class="progress-bar-container">
-                                        <div class="progress-bar" style="width: 38%"></div>
-                                    </div>
-                                </div>
-                                <div class="card-chart">
-                                    <canvas id="chart-5"></canvas>
                                 </div>
                             </div>
                             <!-- BACK -->
@@ -277,20 +259,14 @@ $breadcrumb = []; // Dashboard is home, no additional breadcrumb needed
                                     <div>
                                         <div class="card-label">Inventory Value</div>
                                         <div class="card-stats">
-                                            <span class="stat-badge success" id="metric-revenue-change">✓ Supply Price</span>
+                                            <span class="stat-badge success" id="metric-revenue-change">✓ Stocked</span>
                                         </div>
                                     </div>
                                     <div class="card-icon"><i class="fas fa-chart-line"></i></div>
                                 </div>
                                 <div class="card-content">
-                                    <div class="card-value" id="metric-revenue">$0</div>
+                                    <div class="card-value skeleton" id="metric-revenue">--</div>
                                     <div class="card-subtitle">Total In Stock</div>
-                                    <div class="progress-bar-container">
-                                        <div class="progress-bar" style="width: 0%"></div>
-                                    </div>
-                                </div>
-                                <div class="card-chart">
-                                    <canvas id="chart-6"></canvas>
                                 </div>
                             </div>
                             <!-- BACK -->
@@ -416,14 +392,10 @@ $breadcrumb = []; // Dashboard is home, no additional breadcrumb needed
                                 <p class="text-muted small mb-0 mt-1">Click any store to see which products need restocking</p>
                             </div>
                             <div class="d-flex gap-2">
-                                <button class="btn btn-sm btn-light">
-                                    <i class="fas fa-filter me-1"></i>
-                                    Filter
-                                </button>
-                                <button class="btn btn-sm btn-warning">
+                                <span class="badge bg-warning text-dark fs-6">
                                     <i class="fas fa-bell me-1"></i>
-                                    Set Alerts (<span id="alerts-count">...</span>)
-                                </button>
+                                    <span id="alerts-count">...</span> Alerts
+                                </span>
                             </div>
                         </div>
                         <div class="card-body p-0">
@@ -436,14 +408,13 @@ $breadcrumb = []; // Dashboard is home, no additional breadcrumb needed
                         </div>
                         <div class="card-footer bg-light">
                             <div class="d-flex justify-content-between align-items-center">
-                                <span class="text-muted small">
+                                <span class="text-muted small" id="alerts-footer-text">
                                     <i class="fas fa-info-circle me-1"></i>
-                                    Showing stores with 1,000+ low stock items • Last updated <span id="alerts-last-updated">...</span>
+                                    Based on 14-day sales velocity • Last updated <span id="alerts-last-updated">...</span>
                                 </span>
-                                <a href="#" class="btn btn-sm btn-primary">
-                                    View All <span id="alerts-total-stores">27</span> Stores
-                                    <i class="fas fa-arrow-right ms-1"></i>
-                                </a>
+                                <span class="badge bg-secondary" id="alerts-total-badge">
+                                    <span id="alerts-total-stores">0</span> stores need attention
+                                </span>
                             </div>
                         </div>
                     </div>

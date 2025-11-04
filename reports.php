@@ -198,392 +198,182 @@ $breadcrumb = [
     <div class="filter-bar">
         <form method="GET" action="" class="d-flex gap-3 flex-wrap align-items-end w-100">
             <input type="hidden" name="tab" value="reports">
+$activeTab = 'reports';
+$pageTitle = 'Analytics & Reports';
+$pageIcon = 'fa-solid fa-chart-line';
+$pageDescription = 'Comprehensive sales analytics and performance insights';
+$breadcrumb = [
+    ['text' => 'Analytics & Reports', 'href' => '/supplier/reports.php']
+];
+?>
+<?php include __DIR__ . '/components/html-head.php'; ?>
 
-            <div class="filter-group">
-                <label>Start Date</label>
-                <input type="date" name="start_date" class="form-control" value="<?php echo htmlspecialchars($startDate); ?>">
-            </div>
+<!-- Chart.js CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 
-            <div class="filter-group">
-                <label>End Date</label>
-                <input type="date" name="end_date" class="form-control" value="<?php echo htmlspecialchars($endDate); ?>">
-            </div>
+<style>
+:root { --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+.reports-header { background: var(--gradient-primary); color: white; padding: 2.5rem; margin: -1.5rem -1.5rem 2rem; border-radius: 12px 12px 0 0; text-align: center; }
+.reports-header h1 { font-size: 2rem; font-weight: 700; margin-bottom: 0.5rem; }
+.filter-toolbar { background: white; border-radius: 12px; padding: 1.5rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 2rem; }
+.quick-date-btn { padding: 0.4rem 0.8rem; font-size: 0.875rem; border: 1px solid #e5e7eb; background: white; border-radius: 6px; cursor: pointer; transition: all 0.2s; margin: 2px; }
+.quick-date-btn:hover { background: #667eea; color: white; }
+.kpi-card { background: white; border-radius: 12px; padding: 1.5rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border-left: 4px solid; transition: transform 0.2s; }
+.kpi-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+.kpi-card.primary { border-left-color: #667eea; }
+.kpi-card.success { border-left-color: #10b981; }
+.kpi-card.warning { border-left-color: #f59e0b; }
+.kpi-card.info { border-left-color: #3b82f6; }
+.kpi-value { font-size: 2rem; font-weight: 700; margin: 0.5rem 0 0.25rem; }
+.kpi-label { font-size: 0.875rem; font-weight: 600; color: #6b7280; text-transform: uppercase; }
+.kpi-meta { font-size: 0.875rem; color: #9ca3af; }
+.chart-card { background: white; border-radius: 12px; padding: 1.5rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1); height: 100%; }
+.chart-title { font-size: 1.125rem; font-weight: 700; margin-bottom: 1rem; }
+.data-table { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+.rank-badge { display: inline-flex; width: 32px; height: 32px; border-radius: 8px; align-items: center; justify-content: center; font-weight: 700; }
+.rank-badge.gold { background: linear-gradient(135deg, #fbbf24, #f59e0b); color: white; }
+.rank-badge.silver { background: linear-gradient(135deg, #d1d5db, #9ca3af); color: white; }
+.rank-badge.bronze { background: linear-gradient(135deg, #f97316, #ea580c); color: white; }
+.rank-badge.default { background: #f3f4f6; color: #6b7280; }
+</style>
 
-            <div class="filter-group">
-                <label>Report Type</label>
-                <select name="report_type" class="form-select">
-                    <option value="overview" <?php echo $reportType === 'overview' ? 'selected' : ''; ?>>Overview</option>
-                    <option value="products" <?php echo $reportType === 'products' ? 'selected' : ''; ?>>Product Analysis</option>
-                    <option value="stores" <?php echo $reportType === 'stores' ? 'selected' : ''; ?>>Store Performance</option>
-                    <option value="fulfillment" <?php echo $reportType === 'fulfillment' ? 'selected' : ''; ?>>Fulfillment Metrics</option>
-                </select>
-            </div>
+<?php include __DIR__ . '/components/sidebar-new.php'; ?>
+<?php include __DIR__ . '/components/page-header.php'; ?>
 
-            <button type="submit" class="btn btn-primary">
-                <i class="fas fa-sync"></i> Update
-            </button>
+<div class="main-content">
+    <div class="content-wrapper p-4">
+        
+        <div class="reports-header">
+            <h1><i class="fas fa-chart-line"></i> Analytics & Reports</h1>
+            <p>Comprehensive insights into your sales performance and trends</p>
+        </div>
 
-            <div class="ms-auto export-toolbar">
-                <button type="button" class="export-btn" id="exportCSV" title="Export to CSV">
-                    <i class="fas fa-file-csv"></i> CSV
-                </button>
-                <button type="button" class="export-btn" id="exportExcel" title="Export to Excel">
-                    <i class="fas fa-file-excel"></i> Excel
-                </button>
-                <button type="button" class="export-btn" id="exportPDF" title="Export to PDF">
-                    <i class="fas fa-file-pdf"></i> PDF
-                </button>
-                <button type="button" class="export-btn" id="refreshData" title="Refresh Data">
-                    <i class="fas fa-sync-alt"></i>
-                </button>
-            </div>
-        </form>
-    </div>
-
-    <!-- Key Performance Indicators -->
-    <div class="row g-4 mb-4">
-
-        <div class="col-lg-3 col-md-6">
-            <div class="card h-100 border-left-primary">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <div class="text-muted small fw-bold mb-1">Total Revenue</div>
-                            <h3 class="mb-0 text-primary">$<?php echo number_format((float)($performance['total_revenue'] ?? 0), 2); ?></h3>
-                            <small class="text-muted"><?php echo number_format((int)($performance['total_orders'] ?? 0)); ?> orders</small>
-                        </div>
-                        <i class="fas fa-dollar-sign fa-2x text-primary opacity-25"></i>
+        <div class="filter-toolbar">
+            <form method="GET" class="d-flex gap-3 flex-wrap align-items-end">
+                <div style="flex: 1; min-width: 150px;">
+                    <label class="small fw-bold text-muted">Start Date</label>
+                    <input type="date" name="start_date" class="form-control" value="<?php echo htmlspecialchars($startDate); ?>">
+                </div>
+                <div style="flex: 1; min-width: 150px;">
+                    <label class="small fw-bold text-muted">End Date</label>
+                    <input type="date" name="end_date" class="form-control" value="<?php echo htmlspecialchars($endDate); ?>">
+                </div>
+                <div style="flex: 2;">
+                    <label class="small fw-bold text-muted">Quick Select</label>
+                    <div>
+                        <button type="button" class="quick-date-btn" data-range="today">Today</button>
+                        <button type="button" class="quick-date-btn" data-range="week">Week</button>
+                        <button type="button" class="quick-date-btn" data-range="month">Month</button>
+                        <button type="button" class="quick-date-btn" data-range="quarter">Quarter</button>
+                        <button type="button" class="quick-date-btn" data-range="year">Year</button>
                     </div>
+                </div>
+                <button type="submit" class="btn btn-primary"><i class="fas fa-sync"></i> Update</button>
+                <button type="button" class="btn btn-outline-secondary" onclick="window.print()"><i class="fas fa-print"></i> Print</button>
+            </form>
+        </div>
+
+        <div class="row g-4 mb-4">
+            <div class="col-xl-3 col-md-6">
+                <div class="kpi-card primary">
+                    <div class="kpi-label">Total Revenue</div>
+                    <div class="kpi-value">$<?php echo number_format((float)($performance['total_revenue'] ?? 0), 2); ?></div>
+                    <div class="kpi-meta"><?php echo number_format((int)($performance['total_orders'] ?? 0)); ?> orders</div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-md-6">
+                <div class="kpi-card success">
+                    <div class="kpi-label">Units Sold</div>
+                    <div class="kpi-value"><?php echo number_format((int)($performance['total_units'] ?? 0)); ?></div>
+                    <div class="kpi-meta"><?php echo number_format((int)($performance['unique_products'] ?? 0)); ?> products</div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-md-6">
+                <div class="kpi-card warning">
+                    <div class="kpi-label">Avg Order Value</div>
+                    <div class="kpi-value">$<?php echo number_format((float)($performance['avg_order_value'] ?? 0), 2); ?></div>
+                    <div class="kpi-meta"><?php echo number_format((int)($performance['unique_stores'] ?? 0)); ?> stores</div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-md-6">
+                <div class="kpi-card info">
+                    <div class="kpi-label">Fulfillment Rate</div>
+                    <div class="kpi-value"><?php echo number_format((float)$fulfillmentRate, 1); ?>%</div>
+                    <div class="kpi-meta"><?php echo number_format((int)($performance['completed_orders'] ?? 0)); ?> completed</div>
                 </div>
             </div>
         </div>
 
-        <div class="col-lg-3 col-md-6">
-            <div class="card h-100 border-left-success">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <div class="text-muted small fw-bold mb-1">Units Sold</div>
-                            <h3 class="mb-0 text-success"><?php echo number_format((int)($performance['total_units'] ?? 0)); ?></h3>
-                            <small class="text-muted"><?php echo number_format((int)($performance['unique_products'] ?? 0)); ?> products</small>
-                        </div>
-                        <i class="fas fa-box fa-2x text-success opacity-25"></i>
-                    </div>
+        <div class="row g-4 mb-4">
+            <div class="col-lg-8">
+                <div class="chart-card">
+                    <h2 class="chart-title"><i class="fas fa-chart-line"></i> Revenue Trend (Last 12 Months)</h2>
+                    <canvas id="revenueTrendChart" height="100"></canvas>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="chart-card">
+                    <h2 class="chart-title"><i class="fas fa-pie-chart"></i> Order Status</h2>
+                    <canvas id="orderStatusChart"></canvas>
                 </div>
             </div>
         </div>
 
-        <div class="col-lg-3 col-md-6">
-            <div class="card h-100 border-left-info">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <div class="text-muted small fw-bold mb-1">Avg Order Value</div>
-                            <h3 class="mb-0 text-info">$<?php echo number_format((float)($performance['avg_order_value'] ?? 0), 2); ?></h3>
-                            <small class="text-muted"><?php echo number_format((int)($performance['unique_stores'] ?? 0)); ?> stores served</small>
-                        </div>
-                        <i class="fas fa-chart-line fa-2x text-info opacity-25"></i>
-                    </div>
+        <div class="row g-4 mb-4">
+            <div class="col-12">
+                <div class="chart-card">
+                    <h2 class="chart-title"><i class="fas fa-store"></i> Store Performance</h2>
+                    <canvas id="storePerformanceChart" height="80"></canvas>
                 </div>
             </div>
         </div>
 
-        <div class="col-lg-3 col-md-6">
-            <div class="card h-100 border-left-warning">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <div class="text-muted small fw-bold mb-1">Fulfillment Rate</div>
-                            <h3 class="mb-0 text-warning"><?php echo number_format((float)$fulfillmentRate, 1); ?>%</h3>
-                            <small class="text-muted"><?php echo number_format((int)($performance['completed_orders'] ?? 0)); ?> completed</small>
-                        </div>
-                        <i class="fas fa-check-circle fa-2x text-warning opacity-25"></i>
-                    </div>
-                </div>
+        <?php if (!empty($topProducts)): ?>
+        <div class="data-table mb-4">
+            <div class="p-3 bg-light border-bottom">
+                <h3 class="h5 mb-0"><i class="fas fa-star text-warning"></i> Top 10 Best Selling Products</h3>
             </div>
-        </div>
-
-    </div>
-
-    <!-- 30/60/90 Day Historic Metrics Section -->
-    <?php
-    // Calculate 30/60/90 day metrics
-    $metrics30Days = $db->query("
-        SELECT
-            COUNT(DISTINCT t.id) as orders,
-            SUM(ti.quantity_sent) as units,
-            SUM(ti.quantity_sent * ti.unit_cost) as revenue
-        FROM vend_consignments t
-        LEFT JOIN vend_consignment_line_items ti ON t.id = ti.transfer_id
-        WHERE t.supplier_id = '{$supplierID}'
-          AND t.transfer_category = 'PURCHASE_ORDER'
-          AND t.deleted_at IS NULL
-          AND t.created_at >= DATE_SUB(NOW(), INTERVAL 30 DAY)
-    ")->fetch_assoc();
-
-    $metrics60Days = $db->query("
-        SELECT
-            COUNT(DISTINCT t.id) as orders,
-            SUM(ti.quantity_sent) as units,
-            SUM(ti.quantity_sent * ti.unit_cost) as revenue
-        FROM vend_consignments t
-        LEFT JOIN vend_consignment_line_items ti ON t.id = ti.transfer_id
-        WHERE t.supplier_id = '{$supplierID}'
-          AND t.transfer_category = 'PURCHASE_ORDER'
-          AND t.deleted_at IS NULL
-          AND t.created_at >= DATE_SUB(NOW(), INTERVAL 60 DAY)
-    ")->fetch_assoc();
-
-    $metrics90Days = $db->query("
-        SELECT
-            COUNT(DISTINCT t.id) as orders,
-            SUM(ti.quantity_sent) as units,
-            SUM(ti.quantity_sent * ti.unit_cost) as revenue
-        FROM vend_consignments t
-        LEFT JOIN vend_consignment_line_items ti ON t.id = ti.transfer_id
-        WHERE t.supplier_id = '{$supplierID}'
-          AND t.transfer_category = 'PURCHASE_ORDER'
-          AND t.deleted_at IS NULL
-          AND t.created_at >= DATE_SUB(NOW(), INTERVAL 90 DAY)
-    ")->fetch_assoc();
-    ?>
-
-    <div class="card mb-4 shadow-sm">
-        <div class="card-header bg-gradient-primary text-white">
-            <h5 class="mb-0">
-                <i class="fas fa-history"></i> Historic Performance Summary
-            </h5>
-        </div>
-        <div class="card-body p-0">
             <div class="table-responsive">
                 <table class="table table-hover mb-0">
                     <thead class="table-light">
                         <tr>
-                            <th style="width: 25%;">Time Period</th>
-                            <th class="text-center" style="width: 25%;">
-                                <i class="fas fa-shopping-cart text-primary"></i> Orders
-                            </th>
-                            <th class="text-center" style="width: 25%;">
-                                <i class="fas fa-box text-success"></i> Units Sold
-                            </th>
-                            <th class="text-end" style="width: 25%;">
-                                <i class="fas fa-dollar-sign text-warning"></i> Revenue
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr class="table-info">
-                            <td class="fw-bold">
-                                <i class="fas fa-calendar-day"></i> Last 30 Days
-                            </td>
-                            <td class="text-center fs-5 fw-bold text-primary">
-                                <?php echo number_format((int)($metrics30Days['orders'] ?? 0)); ?>
-                            </td>
-                            <td class="text-center fs-5 fw-bold text-success">
-                                <?php echo number_format((int)($metrics30Days['units'] ?? 0)); ?>
-                            </td>
-                            <td class="text-end fs-5 fw-bold text-warning">
-                                $<?php echo number_format((float)($metrics30Days['revenue'] ?? 0), 2); ?>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="fw-bold">
-                                <i class="fas fa-calendar-week"></i> Last 60 Days
-                            </td>
-                            <td class="text-center fs-5">
-                                <?php echo number_format((int)($metrics60Days['orders'] ?? 0)); ?>
-                            </td>
-                            <td class="text-center fs-5">
-                                <?php echo number_format((int)($metrics60Days['units'] ?? 0)); ?>
-                            </td>
-                            <td class="text-end fs-5">
-                                $<?php echo number_format((float)($metrics60Days['revenue'] ?? 0), 2); ?>
-                            </td>
-                        </tr>
-                        <tr class="table-light">
-                            <td class="fw-bold">
-                                <i class="fas fa-calendar-alt"></i> Last 90 Days
-                            </td>
-                            <td class="text-center fs-5">
-                                <?php echo number_format((int)($metrics90Days['orders'] ?? 0)); ?>
-                            </td>
-                            <td class="text-center fs-5">
-                                <?php echo number_format((int)($metrics90Days['units'] ?? 0)); ?>
-                            </td>
-                            <td class="text-end fs-5">
-                                $<?php echo number_format((float)($metrics90Days['revenue'] ?? 0), 2); ?>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-        <div class="card-footer bg-light text-muted small">
-            <i class="fas fa-info-circle"></i>
-            <strong>Note:</strong> These metrics show cumulative totals.
-            For example, "Last 60 Days" includes all orders from the past 60 days (not just days 31-60).
-        </div>
-    </div>
-
-    <!-- ML Forecast Section -->
-    <div class="card mb-4">
-        <div class="card-header bg-light d-flex justify-content-between align-items-center">
-            <h6 class="mb-0"><i class="fas fa-brain"></i> ML Sales Forecast (Next 8 Weeks)</h6>
-            <span class="badge bg-primary">AI-Powered</span>
-        </div>
-        <div class="card-body">
-            <!-- Forecast Summary Metrics -->
-            <div id="forecastSummary" class="mb-4">
-                <div class="text-center text-muted py-4">
-                    <div class="loading-spinner mx-auto"></div>
-                    <p class="mt-3">Loading forecast data...</p>
-                </div>
-            </div>
-
-            <!-- Forecast Chart -->
-            <div class="forecast-chart-container">
-                <canvas id="forecastChart"></canvas>
-            </div>
-        </div>
-    </div>
-
-    <!-- Week Navigation for Detailed View -->
-    <div class="week-navigation">
-        <button class="week-nav-btn" id="prevWeek" title="Previous Week">
-            <i class="fas fa-chevron-left"></i>
-        </button>
-        <div class="week-nav-label" id="currentWeekLabel">
-            Select date range above
-        </div>
-        <button class="week-nav-btn" id="nextWeek" title="Next Week">
-            <i class="fas fa-chevron-right"></i>
-        </button>
-    </div>
-
-    <!-- Weekly Stats Container (Dynamic) -->
-    <div id="weeklyStatsContainer" class="mb-4"></div>
-
-    <!-- Product Performance Table (Compact) -->
-    <div class="card mb-4">
-        <div class="card-header bg-light d-flex justify-content-between align-items-center">
-            <h6 class="mb-0"><i class="fas fa-chart-line"></i> Product Performance Analytics</h6>
-            <div class="input-group" style="width: 250px;">
-                <span class="input-group-text"><i class="fas fa-search"></i></span>
-                <input type="text" class="form-control form-control-sm" id="productSearch"
-                       placeholder="Search products...">
-            </div>
-        </div>
-        <div class="card-body p-0">
-            <div class="table-responsive">
-                <table class="table table-hover mb-0 reports-table-compact">
-                    <thead>
-                        <tr>
+                            <th style="width:60px;">Rank</th>
                             <th>Product</th>
                             <th>SKU</th>
                             <th class="text-center">Orders</th>
-                            <th class="text-end">Units</th>
-                            <th class="text-end">Revenue</th>
-                            <th class="text-end">Velocity</th>
-                            <th class="text-end">Growth</th>
-                            <th>Lifecycle</th>
-                            <th style="width: 100px;">Performance</th>
-                        </tr>
-                    </thead>
-                    <tbody id="productPerformanceBody">
-                        <tr>
-                            <td colspan="9" class="text-center text-muted py-4">
-                                <div class="loading-spinner mx-auto"></div>
-                                <p class="mt-3">Loading product performance data...</p>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-
-    <!-- Charts Row -->
-    <div class="row g-4 mb-4">
-
-        <!-- Monthly Revenue Trend -->
-        <div class="col-lg-8">
-            <div class="card h-100">
-                <div class="card-header bg-light">
-                    <h6 class="mb-0"><i class="fas fa-chart-line"></i> Revenue Trend (Last 12 Months)</h6>
-                </div>
-                <div class="card-body">
-                    <canvas id="revenueTrendChart" height="100"></canvas>
-                </div>
-            </div>
-        </div>
-
-        <!-- Fulfillment Status Breakdown -->
-        <div class="col-lg-4">
-            <div class="card h-100">
-                <div class="card-header bg-light">
-                    <h6 class="mb-0"><i class="fas fa-pie-chart"></i> Order Status</h6>
-                </div>
-                <div class="card-body">
-                    <canvas id="statusBreakdownChart"></canvas>
-                </div>
-            </div>
-        </div>
-
-    </div>
-
-    <!-- Top Products Table -->
-    <?php if (!empty($topProducts)): ?>
-    <div class="card mb-4">
-        <div class="card-header bg-light">
-            <h6 class="mb-0"><i class="fas fa-star"></i> Top 10 Best Selling Products</h6>
-        </div>
-        <div class="card-body p-0">
-            <div class="table-responsive">
-                <table class="table table-hover mb-0">
-                    <thead class="table-dark">
-                        <tr>
-                            <th>Rank</th>
-                            <th>Product Name</th>
-                            <th>SKU</th>
-                            <th class="text-center">Orders</th>
-                            <th class="text-end">Qty Sold</th>
+                            <th class="text-end">Qty</th>
                             <th class="text-end">Avg Price</th>
-                            <th class="text-end">Total Revenue</th>
+                            <th class="text-end">Revenue</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <?php foreach ($topProducts as $index => $product): ?>
-                            <tr>
-                                <td>
-                                    <span class="badge bg-<?php echo $index < 3 ? 'warning' : 'secondary'; ?>">
-                                        #<?php echo $index + 1; ?>
-                                    </span>
-                                </td>
-                                <td class="fw-bold"><?php echo htmlspecialchars($product['product_name']); ?></td>
-                                <td><code><?php echo htmlspecialchars($product['sku']); ?></code></td>
-                                <td class="text-center"><?php echo number_format((int)$product['times_ordered']); ?></td>
-                                <td class="text-end"><?php echo number_format((int)$product['total_quantity']); ?></td>
-                                <td class="text-end">$<?php echo number_format((float)$product['avg_unit_price'], 2); ?></td>
-                                <td class="text-end fw-bold text-success">$<?php echo number_format((float)$product['total_revenue'], 2); ?></td>
-                            </tr>
+                        <?php foreach ($topProducts as $i => $p): 
+                            $rank = $i === 0 ? 'gold' : ($i === 1 ? 'silver' : ($i === 2 ? 'bronze' : 'default'));
+                        ?>
+                        <tr>
+                            <td><div class="rank-badge <?php echo $rank; ?>"><?php echo $i+1; ?></div></td>
+                            <td class="fw-bold"><?php echo htmlspecialchars($p['product_name']); ?></td>
+                            <td><code><?php echo htmlspecialchars($p['sku']); ?></code></td>
+                            <td class="text-center"><span class="badge bg-primary"><?php echo number_format((int)$p['times_ordered']); ?></span></td>
+                            <td class="text-end"><?php echo number_format((int)$p['total_quantity']); ?></td>
+                            <td class="text-end text-muted">$<?php echo number_format((float)$p['avg_unit_price'], 2); ?></td>
+                            <td class="text-end fw-bold text-success">$<?php echo number_format((float)$p['total_revenue'], 2); ?></td>
+                        </tr>
                         <?php endforeach; ?>
                     </tbody>
                 </table>
             </div>
         </div>
-    </div>
-    <?php endif; ?>
+        <?php endif; ?>
 
-    <!-- Store Performance Table -->
-    <?php if (!empty($storePerformance)): ?>
-    <div class="card mb-4">
-        <div class="card-header bg-light">
-            <h6 class="mb-0"><i class="fas fa-store"></i> Store Performance Analysis</h6>
-        </div>
-        <div class="card-body p-0">
+        <?php if (!empty($storePerformance)): ?>
+        <div class="data-table mb-4">
+            <div class="p-3 bg-light border-bottom">
+                <h3 class="h5 mb-0"><i class="fas fa-store-alt text-info"></i> Store Performance Analysis</h3>
+            </div>
             <div class="table-responsive">
                 <table class="table table-hover mb-0">
-                    <thead class="table-dark">
+                    <thead class="table-light">
                         <tr>
                             <th>Store Name</th>
                             <th>Code</th>
@@ -595,80 +385,83 @@ $breadcrumb = [
                         </tr>
                     </thead>
                     <tbody>
-                        <?php foreach ($storePerformance as $store): ?>
-                            <tr>
-                                <td class="fw-bold"><?php echo htmlspecialchars($store['store_name']); ?></td>
-                                <td><?php echo htmlspecialchars($store['outlet_code']); ?></td>
-                                <td class="text-center">
-                                    <span class="badge bg-primary"><?php echo number_format((int)$store['order_count']); ?></span>
-                                </td>
-                                <td class="text-end"><?php echo number_format((int)$store['total_units']); ?></td>
-                                <td class="text-end fw-bold text-success">$<?php echo number_format((float)$store['total_revenue'], 2); ?></td>
-                                <td class="text-end">$<?php echo number_format((float)$store['avg_order_value'], 2); ?></td>
-                                <td>
-                                    <small class="text-muted"><?php echo date('M d, Y', strtotime($store['last_order_date'])); ?></small>
-                                </td>
-                            </tr>
+                        <?php foreach ($storePerformance as $s): ?>
+                        <tr>
+                            <td class="fw-bold"><?php echo htmlspecialchars($s['store_name']); ?></td>
+                            <td><code><?php echo htmlspecialchars($s['outlet_code']); ?></code></td>
+                            <td class="text-center"><span class="badge bg-info"><?php echo number_format((int)$s['order_count']); ?></span></td>
+                            <td class="text-end"><?php echo number_format((int)$s['total_units']); ?></td>
+                            <td class="text-end fw-bold text-success">$<?php echo number_format((float)$s['total_revenue'], 2); ?></td>
+                            <td class="text-end text-muted">$<?php echo number_format((float)$s['avg_order_value'], 2); ?></td>
+                            <td><small class="text-muted"><?php echo date('M d, Y', strtotime($s['last_order_date'])); ?></small></td>
+                        </tr>
                         <?php endforeach; ?>
                     </tbody>
                 </table>
             </div>
         </div>
-    </div>
-    <?php endif; ?>
-
-</div>
+        <?php endif; ?>
 
     </div>
 </div>
-
-<style>
-.border-left-primary {
-    border-left: 4px solid #3b82f6 !important;
-}
-
-.border-left-success {
-    border-left: 4px solid #10b981 !important;
-}
-
-.border-left-info {
-    border-left: 4px solid #06b6d4 !important;
-}
-
-.border-left-warning {
-    border-left: 4px solid #f59e0b !important;
-}
-
-.bg-gradient-primary {
-    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-}
-
-.loading-spinner {
-    width: 40px;
-    height: 40px;
-    border: 4px solid #f3f4f6;
-    border-top-color: #3b82f6;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-    to { transform: rotate(360deg); }
-}
-</style>
-
-    </div><!-- /.content-wrapper -->
-</div><!-- /.main-content -->
 
 <?php include __DIR__ . '/components/html-footer.php'; ?>
 
-<!-- Reports JavaScript -->
 <script>
-// Pass PHP data to JavaScript
-const monthlyTrend = <?php echo json_encode($monthlyTrend); ?>;
-const fulfillmentMetrics = <?php echo json_encode($fulfillmentMetrics); ?>;
-</script>
-<script src="/supplier/assets/js/15-reports.js?v=<?php echo time(); ?>"></script>
+const reportData = { monthlyTrend: <?php echo json_encode($monthlyTrend); ?>, fulfillmentMetrics: <?php echo json_encode($fulfillmentMetrics); ?>, storePerformance: <?php echo json_encode($storePerformance); ?> };
 
+document.addEventListener('DOMContentLoaded', function() {
+    // Revenue Trend
+    if (document.getElementById('revenueTrendChart')) {
+        const months = reportData.monthlyTrend.map(d => { const [y,m] = d.month.split('-'); return new Date(y, m-1).toLocaleDateString('en', {month:'short',year:'numeric'}); });
+        const revenue = reportData.monthlyTrend.map(d => parseFloat(d.revenue || 0));
+        new Chart(document.getElementById('revenueTrendChart'), {
+            type: 'line',
+            data: { labels: months, datasets: [{ label: 'Revenue', data: revenue, borderColor: '#667eea', backgroundColor: 'rgba(102,126,234,0.1)', borderWidth: 3, fill: true, tension: 0.4 }] },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: {display:false} }, scales: { y: { beginAtZero: true, ticks: { callback: v => '$'+v.toLocaleString() } } } }
+        });
+    }
+
+    // Order Status
+    if (document.getElementById('orderStatusChart')) {
+        const labels = reportData.fulfillmentMetrics.map(m => m.state);
+        const counts = reportData.fulfillmentMetrics.map(m => parseInt(m.count));
+        new Chart(document.getElementById('orderStatusChart'), {
+            type: 'doughnut',
+            data: { labels: labels, datasets: [{ data: counts, backgroundColor: ['#10b981','#3b82f6','#f59e0b','#ef4444','#6b7280'] }] },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: {position:'bottom'} } }
+        });
+    }
+
+    // Store Performance
+    if (document.getElementById('storePerformanceChart') && reportData.storePerformance.length) {
+        const stores = reportData.storePerformance.map(s => s.store_name);
+        const revenue = reportData.storePerformance.map(s => parseFloat(s.total_revenue || 0));
+        new Chart(document.getElementById('storePerformanceChart'), {
+            type: 'bar',
+            data: { labels: stores, datasets: [{ label: 'Revenue', data: revenue, backgroundColor: 'rgba(102,126,234,0.8)', borderColor: '#667eea', borderWidth: 2, borderRadius: 6 }] },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: {display:false} }, scales: { y: { beginAtZero: true, ticks: { callback: v => '$'+v.toLocaleString() } } } }
+        });
+    }
+
+    // Quick date buttons
+    document.querySelectorAll('.quick-date-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const range = this.dataset.range;
+            const today = new Date();
+            let start = today;
+            switch(range) {
+                case 'today': start = today; break;
+                case 'week': start = new Date(today.setDate(today.getDate() - 7)); break;
+                case 'month': start = new Date(today.getFullYear(), today.getMonth(), 1); break;
+                case 'quarter': start = new Date(today.getFullYear(), Math.floor(today.getMonth()/3)*3, 1); break;
+                case 'year': start = new Date(today.getFullYear(), 0, 1); break;
+            }
+            document.querySelector('input[name="start_date"]').value = start.toISOString().split('T')[0];
+            document.querySelector('input[name="end_date"]').value = new Date().toISOString().split('T')[0];
+        });
+    });
+});
+</script>
 </body>
 </html>

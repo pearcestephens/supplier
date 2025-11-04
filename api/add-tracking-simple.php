@@ -80,6 +80,9 @@ try {
                 continue; // Skip empty tracking numbers
             }
 
+            // NOTE: Some environments define consignment_parcels.parcel_number as INT.
+            // Use a numeric value for parcel_number to avoid "Incorrect integer value" errors.
+            // A human-readable label (e.g., BOX-001) is returned in the API response only.
             $stmt = $db->prepare("
                 INSERT INTO consignment_parcels (
                     shipment_id,
@@ -92,8 +95,8 @@ try {
                 ) VALUES (?, ?, ?, ?, ?, 'in_transit', NOW())
             ");
 
-            $parcel_number = sprintf('BOX-%03d', $box_number);
-            $stmt->bind_param('iisss',
+            $parcel_number = (int)$box_number; // keep DB value strictly integer-compatible
+            $stmt->bind_param('iiiss',
                 $shipment_id,
                 $box_number,
                 $parcel_number,
@@ -105,6 +108,7 @@ try {
             $parcel_ids[] = [
                 'id' => $db->insert_id,
                 'box_number' => $box_number,
+                'box_label' => sprintf('BOX-%03d', $box_number),
                 'tracking' => $tracking
             ];
 

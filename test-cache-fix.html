@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cache Fix Test</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-result {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 10px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .success { border-left: 4px solid #28a745; }
+        .error { border-left: 4px solid #dc3545; }
+        .info { border-left: 4px solid #17a2b8; }
+        pre {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 Dashboard Cache Fix Test</h1>
+
+    <div class="test-result info">
+        <h3>Test Instructions</h3>
+        <ol>
+            <li>Click the "Test API Calls" button below</li>
+            <li>Check that each request has a unique <code>_t</code> parameter (timestamp)</li>
+            <li>Verify "Total Orders" shows <strong>0</strong> (after cleanup)</li>
+            <li>If still showing old data, do a hard refresh: <code>Ctrl+Shift+R</code></li>
+        </ol>
+    </div>
+
+    <button onclick="runTests()">🚀 Test API Calls</button>
+
+    <div id="results"></div>
+
+    <script>
+        async function runTests() {
+            const results = document.getElementById('results');
+            results.innerHTML = '<div class="test-result info"><h3>⏳ Running tests...</h3></div>';
+
+            const tests = [];
+
+            // Test 1: Dashboard Stats (uses API.call with cache-buster)
+            try {
+                const url1 = '/supplier/api/dashboard-stats.php?_t=' + Date.now();
+                console.log('Testing:', url1);
+                const resp1 = await fetch(url1);
+                const data1 = await resp1.json();
+
+                tests.push({
+                    name: 'Dashboard Stats API',
+                    url: url1,
+                    success: data1.success,
+                    totalOrders: data1.data?.total_orders || 0,
+                    hasCacheBuster: url1.includes('_t=')
+                });
+            } catch (e) {
+                tests.push({
+                    name: 'Dashboard Stats API',
+                    error: e.message
+                });
+            }
+
+            // Test 2: Orders Table
+            try {
+                const url2 = '/supplier/api/dashboard-orders-table.php?_t=' + Date.now();
+                console.log('Testing:', url2);
+                const resp2 = await fetch(url2);
+                const data2 = await resp2.json();
+
+                tests.push({
+                    name: 'Orders Table API',
+                    url: url2,
+                    success: data2.success,
+                    orderCount: data2.data?.orders?.length || 0,
+                    hasCacheBuster: url2.includes('_t=')
+                });
+            } catch (e) {
+                tests.push({
+                    name: 'Orders Table API',
+                    error: e.message
+                });
+            }
+
+            // Test 3: Stock Alerts
+            try {
+                const url3 = '/supplier/api/dashboard-stock-alerts.php?_t=' + Date.now();
+                console.log('Testing:', url3);
+                const resp3 = await fetch(url3);
+                const data3 = await resp3.json();
+
+                tests.push({
+                    name: 'Stock Alerts API',
+                    url: url3,
+                    success: data3.success,
+                    alertCount: data3.alerts?.length || 0,
+                    hasCacheBuster: url3.includes('_t=')
+                });
+            } catch (e) {
+                tests.push({
+                    name: 'Stock Alerts API',
+                    error: e.message
+                });
+            }
+
+            // Display results
+            let html = '';
+            tests.forEach(test => {
+                const cssClass = test.error ? 'error' : (test.success ? 'success' : 'error');
+                html += `
+                    <div class="test-result ${cssClass}">
+                        <h3>${test.error ? '❌' : '✅'} ${test.name}</h3>
+                        <pre>${JSON.stringify(test, null, 2)}</pre>
+                    </div>
+                `;
+            });
+
+            results.innerHTML = html;
+        }
+    </script>
+</body>
+</html>

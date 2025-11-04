@@ -30,27 +30,22 @@ try {
     $pdo = pdo();
 
     // Get monthly warranty claims for last 6 months
-    $stmt = $pdo->prepare("
-        SELECT
-            DATE_FORMAT(wc.created_at, '%Y-%m') as month,
-            DATE_FORMAT(wc.created_at, '%b %Y') as month_label,
-            COUNT(*) as total_claims,
-            COUNT(CASE WHEN wc.status = 'APPROVED' THEN 1 END) as approved,
-            COUNT(CASE WHEN wc.status = 'REJECTED' THEN 1 END) as rejected,
-            COUNT(CASE WHEN wc.status = 'PENDING' THEN 1 END) as pending,
-            ROUND(
-                (COUNT(CASE WHEN wc.status = 'APPROVED' THEN 1 END) / COUNT(*)) * 100,
-                1
-            ) as approval_rate
-        FROM warranty_claims wc
-        INNER JOIN vend_products p ON wc.product_id = p.id
-        WHERE p.supplier_id = ?
-        AND wc.created_at >= DATE_SUB(NOW(), INTERVAL 6 MONTH)
-        AND wc.deleted_at IS NULL
-        AND p.deleted_at IS NULL
-        GROUP BY DATE_FORMAT(wc.created_at, '%Y-%m')
-        ORDER BY month ASC
-    ");
+        $stmt = $pdo->prepare("
+            SELECT
+                DATE_FORMAT(fp.time_created, '%Y-%m') as month,
+                DATE_FORMAT(fp.time_created, '%b %Y') as month_label,
+                COUNT(*) as total_claims,
+                SUM(CASE WHEN fp.supplier_status = 1 THEN 1 ELSE 0 END) as approved,
+                SUM(CASE WHEN fp.supplier_status = 2 THEN 1 ELSE 0 END) as rejected,
+                SUM(CASE WHEN fp.supplier_status = 0 THEN 1 ELSE 0 END) as pending,
+                ROUND((SUM(CASE WHEN fp.supplier_status = 1 THEN 1 ELSE 0 END) / COUNT(*)) * 100, 1) as approval_rate
+            FROM faulty_products fp
+            LEFT JOIN vend_products p ON fp.product_id = p.id
+            WHERE p.supplier_id = ?
+            AND fp.time_created >= DATE_SUB(NOW(), INTERVAL 6 MONTH)
+            GROUP BY DATE_FORMAT(fp.time_created, '%Y-%m')
+            ORDER BY month ASC
+        ");
 
     $stmt->execute([$supplierID]);
     $monthlyData = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -84,44 +79,41 @@ try {
 
     // Get most common claim reasons
     $stmt = $pdo->prepare("
-        SELECT
-            wc.reason,
-            COUNT(*) as count,
-            ROUND((COUNT(*) / (
-                SELECT COUNT(*)
-                FROM warranty_claims wc2
-                INNER JOIN vend_products p2 ON wc2.product_id = p2.id
-                WHERE p2.supplier_id = ?
-                AND wc2.created_at >= DATE_SUB(NOW(), INTERVAL 6 MONTH)
-                AND wc2.deleted_at IS NULL
-            )) * 100, 1) as percentage
-        FROM warranty_claims wc
-        INNER JOIN vend_products p ON wc.product_id = p.id
-        WHERE p.supplier_id = ?
-        AND wc.created_at >= DATE_SUB(NOW(), INTERVAL 6 MONTH)
-        AND wc.deleted_at IS NULL
-        AND wc.reason IS NOT NULL
-        AND wc.reason != ''
-        GROUP BY wc.reason
-        ORDER BY count DESC
-        LIMIT 5
-    ");
+            SELECT
+                fp.fault_desc as reason,
+                COUNT(*) as count,
+                ROUND((COUNT(*) / (
+                    SELECT COUNT(*)
+                    FROM faulty_products fp2
+                    LEFT JOIN vend_products p2 ON fp2.product_id = p2.id
+                    WHERE p2.supplier_id = ?
+                    AND fp2.time_created >= DATE_SUB(NOW(), INTERVAL 6 MONTH)
+                )) * 100, 1) as percentage
+            FROM faulty_products fp
+            LEFT JOIN vend_products p ON fp.product_id = p.id
+            WHERE p.supplier_id = ?
+            AND fp.time_created >= DATE_SUB(NOW(), INTERVAL 6 MONTH)
+            AND fp.fault_desc IS NOT NULL
+            AND fp.fault_desc != ''
+            GROUP BY fp.fault_desc
+            ORDER BY count DESC
+            LIMIT 5
+        ");
 
     $stmt->execute([$supplierID, $supplierID]);
     $topReasons = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     // Get comparison to previous 6 months
     $stmt = $pdo->prepare("
-        SELECT
-            COUNT(*) as previous_total,
-            COUNT(CASE WHEN wc.status = 'APPROVED' THEN 1 END) as previous_approved
-        FROM warranty_claims wc
-        INNER JOIN vend_products p ON wc.product_id = p.id
-        WHERE p.supplier_id = ?
-        AND wc.created_at >= DATE_SUB(NOW(), INTERVAL 12 MONTH)
-        AND wc.created_at < DATE_SUB(NOW(), INTERVAL 6 MONTH)
-        AND wc.deleted_at IS NULL
-    ");
+            SELECT
+                COUNT(*) as previous_total,
+                SUM(CASE WHEN fp.supplier_status = 1 THEN 1 ELSE 0 END) as previous_approved
+            FROM faulty_products fp
+            LEFT JOIN vend_products p ON fp.product_id = p.id
+            WHERE p.supplier_id = ?
+            AND fp.time_created >= DATE_SUB(NOW(), INTERVAL 12 MONTH)
+            AND fp.time_created < DATE_SUB(NOW(), INTERVAL 6 MONTH)
+        ");
 
     $stmt->execute([$supplierID]);
     $previous = $stmt->fetch(PDO::FETCH_ASSOC);

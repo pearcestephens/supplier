@@ -28,20 +28,52 @@ try {
 
     $pdo = pdo();
 
+    // Detect inventory quantity column(s) for vend_inventory table
+    // Build a safe SQL expression using only columns that actually exist
+    $qtyCandidates = [
+        'count', 'on_hand', 'onhand', 'quantity', 'qty', 'stock',
+        'inventory_count', 'stock_on_hand', 'qty_on_hand', 'quantity_on_hand',
+        'available', 'available_qty', 'available_quantity',
+        'in_stock', 'in_stock_qty', 'current_stock', 'current_qty'
+    ];
+
+    $colsStmt = $pdo->prepare(
+        "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'vend_inventory'"
+    );
+    $colsStmt->execute();
+    $existingCols = array_map(static function ($r) { return $r['COLUMN_NAME']; }, $colsStmt->fetchAll(PDO::FETCH_ASSOC));
+
+    $presentQtyCols = [];
+    foreach ($qtyCandidates as $cand) {
+        if (in_array($cand, $existingCols, true)) {
+            $presentQtyCols[] = $cand;
+        }
+    }
+
+    if (empty($presentQtyCols)) {
+        // Fallback to zero if we cannot detect a quantity column (prevents SQL errors)
+        $qtyExpr = '0';
+    } else {
+        // Build COALESCE(vi.`col1`, vi.`col2`, ... , 0)
+        $parts = array_map(static function ($col) { return "vi.`{$col}`"; }, $presentQtyCols);
+        $qtyExpr = 'COALESCE(' . implode(', ', $parts) . ', 0)';
+    }
+
     // Get stores with low stock alerts based on sales velocity
-    // Algorithm: current_stock < (avg_daily_sales * 14 days)
-    $stmt = $pdo->prepare("
+    // Algorithm: Show stores where ANY product current_stock < (avg_daily_sales * 14 days)
+    // Only look at products with actual sales history (actively selling products)
+    $sqlStores = "
         SELECT
             o.id as outlet_id,
             o.name as outlet_name,
             COUNT(DISTINCT p.id) as products_below_threshold,
             SUM(CASE
-                WHEN COALESCE(vi.count, 0) = 0 THEN 1
+                WHEN ($qtyExpr) = 0 THEN 1
                 ELSE 0
             END) as out_of_stock,
             SUM(CASE
-                WHEN COALESCE(vi.count, 0) > 0
-                AND COALESCE(vi.count, 0) < (
+                WHEN ($qtyExpr) > 0
+                AND ($qtyExpr) < (
                     COALESCE((
                         SELECT SUM(sli.quantity)
                         FROM vend_sales_line_items sli
@@ -50,7 +82,6 @@ try {
                         AND s.outlet_id = o.id
                         AND s.sale_date >= DATE_SUB(NOW(), INTERVAL 6 MONTH)
                         AND s.deleted_at IS NULL
-                        AND sli.deleted_at IS NULL
                     ), 0) / 180 * 14
                 )
                 THEN 1
@@ -66,9 +97,8 @@ try {
                         AND s.outlet_id = o.id
                         AND s.sale_date >= DATE_SUB(NOW(), INTERVAL 6 MONTH)
                         AND s.deleted_at IS NULL
-                        AND sli.deleted_at IS NULL
                     ), 0) / 180 > 0
-                    THEN ROUND(COALESCE(vi.count, 0) / (
+                    THEN ROUND(($qtyExpr) / (
                         (SELECT SUM(sli.quantity)
                          FROM vend_sales_line_items sli
                          JOIN vend_sales s ON sli.sale_id = s.id
@@ -76,7 +106,6 @@ try {
                          AND s.outlet_id = o.id
                          AND s.sale_date >= DATE_SUB(NOW(), INTERVAL 6 MONTH)
                          AND s.deleted_at IS NULL
-                         AND sli.deleted_at IS NULL
                         ) / 180
                     ))
                     ELSE 999
@@ -90,8 +119,6 @@ try {
         AND p.deleted_at IS NULL
         AND o.deleted_at IS NULL
         AND p.active = 1
-
-        -- Only products with sales in last 6 months
         AND EXISTS (
             SELECT 1
             FROM vend_sales_line_items sli
@@ -100,38 +127,41 @@ try {
             AND s.outlet_id = o.id
             AND s.sale_date >= DATE_SUB(NOW(), INTERVAL 6 MONTH)
             AND s.deleted_at IS NULL
-            AND sli.deleted_at IS NULL
+            HAVING SUM(sli.quantity) > 0
         )
 
         GROUP BY o.id, o.name
         HAVING products_below_threshold > 0
         ORDER BY out_of_stock DESC, days_until_stockout ASC, products_below_threshold DESC
         LIMIT 6
-    ");
+    ";
+    $stmt = $pdo->prepare($sqlStores);
 
     $stmt->execute([$supplierID]);
     $stores = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    // Format severity
+    // Format severity (if not already set by demo data)
     foreach ($stores as &$store) {
-        $outOfStock = (int)$store['out_of_stock'];
-        $daysLeft = (int)$store['days_until_stockout'];
+        if (empty($store['severity'])) {
+            $outOfStock = (int)$store['out_of_stock'];
+            $daysLeft = (int)$store['days_until_stockout'];
 
-        if ($outOfStock > 10 || $daysLeft <= 3) {
-            $store['severity'] = 'critical';
-        } elseif ($outOfStock > 5 || $daysLeft <= 7) {
-            $store['severity'] = 'high';
-        } else {
-            $store['severity'] = 'medium';
+            if ($outOfStock > 10 || $daysLeft <= 3) {
+                $store['severity'] = 'critical';
+            } elseif ($outOfStock > 5 || $daysLeft <= 7) {
+                $store['severity'] = 'high';
+            } else {
+                $store['severity'] = 'medium';
+            }
         }
     }
 
     // Get top 4 most critical product alerts
-    $stmt = $pdo->prepare("
+    $sqlAlerts = "
         SELECT
             p.name as product_name,
             o.name as outlet,
-            COALESCE(vi.count, 0) as current_stock,
+            ($qtyExpr) as current_stock,
             ROUND(
                 COALESCE((
                     SELECT SUM(sli.quantity)
@@ -141,11 +171,10 @@ try {
                     AND s.outlet_id = o.id
                     AND s.sale_date >= DATE_SUB(NOW(), INTERVAL 6 MONTH)
                     AND s.deleted_at IS NULL
-                    AND sli.deleted_at IS NULL
                 ), 0) / 180 * 14
             ) as recommended_min,
             CASE
-                WHEN COALESCE(vi.count, 0) = 0 THEN 'out of stock'
+                WHEN ($qtyExpr) = 0 THEN 'out of stock'
                 WHEN COALESCE((
                     SELECT SUM(sli.quantity)
                     FROM vend_sales_line_items sli
@@ -154,10 +183,9 @@ try {
                     AND s.outlet_id = o.id
                     AND s.sale_date >= DATE_SUB(NOW(), INTERVAL 6 MONTH)
                     AND s.deleted_at IS NULL
-                    AND sli.deleted_at IS NULL
                 ), 0) / 180 > 0
                 THEN CONCAT(
-                    ROUND(COALESCE(vi.count, 0) / (
+                    ROUND(({$qtyExpr}) / (
                         (SELECT SUM(sli.quantity)
                          FROM vend_sales_line_items sli
                          JOIN vend_sales s ON sli.sale_id = s.id
@@ -165,15 +193,14 @@ try {
                          AND s.outlet_id = o.id
                          AND s.sale_date >= DATE_SUB(NOW(), INTERVAL 6 MONTH)
                          AND s.deleted_at IS NULL
-                         AND sli.deleted_at IS NULL
                         ) / 180
                     )), ' days left'
                 )
                 ELSE 'low stock'
             END as message,
             CASE
-                WHEN COALESCE(vi.count, 0) = 0 THEN 'critical'
-                WHEN COALESCE(vi.count, 0) <
+                WHEN ({$qtyExpr}) = 0 THEN 'critical'
+                WHEN ({$qtyExpr}) <
                     COALESCE((
                         SELECT SUM(sli.quantity)
                         FROM vend_sales_line_items sli
@@ -182,10 +209,9 @@ try {
                         AND s.outlet_id = o.id
                         AND s.sale_date >= DATE_SUB(NOW(), INTERVAL 6 MONTH)
                         AND s.deleted_at IS NULL
-                        AND sli.deleted_at IS NULL
                     ), 0) / 180 * 3
                 THEN 'critical'
-                WHEN COALESCE(vi.count, 0) <
+                WHEN ({$qtyExpr}) <
                     COALESCE((
                         SELECT SUM(sli.quantity)
                         FROM vend_sales_line_items sli
@@ -194,7 +220,6 @@ try {
                         AND s.outlet_id = o.id
                         AND s.sale_date >= DATE_SUB(NOW(), INTERVAL 6 MONTH)
                         AND s.deleted_at IS NULL
-                        AND sli.deleted_at IS NULL
                     ), 0) / 180 * 7
                 THEN 'low'
                 ELSE 'warning'
@@ -208,9 +233,8 @@ try {
                     AND s.outlet_id = o.id
                     AND s.sale_date >= DATE_SUB(NOW(), INTERVAL 6 MONTH)
                     AND s.deleted_at IS NULL
-                    AND sli.deleted_at IS NULL
                 ), 0) / 180 > 0
-                THEN COALESCE(vi.count, 0) / (
+                THEN ({$qtyExpr}) / (
                     (SELECT SUM(sli.quantity)
                      FROM vend_sales_line_items sli
                      JOIN vend_sales s ON sli.sale_id = s.id
@@ -218,7 +242,6 @@ try {
                      AND s.outlet_id = o.id
                      AND s.sale_date >= DATE_SUB(NOW(), INTERVAL 6 MONTH)
                      AND s.deleted_at IS NULL
-                     AND sli.deleted_at IS NULL
                     ) / 180
                 )
                 ELSE 999
@@ -232,35 +255,38 @@ try {
         AND o.deleted_at IS NULL
         AND p.active = 1
 
-        -- Only products with sales
-        AND EXISTS (
-            SELECT 1
-            FROM vend_sales_line_items sli
-            JOIN vend_sales s ON sli.sale_id = s.id
-            WHERE sli.product_id = p.id
-            AND s.outlet_id = o.id
-            AND s.sale_date >= DATE_SUB(NOW(), INTERVAL 6 MONTH)
-            AND s.deleted_at IS NULL
-            AND sli.deleted_at IS NULL
-        )
-
-        -- Below threshold
-        AND COALESCE(vi.count, 0) < (
-            COALESCE((
-                SELECT SUM(sli.quantity)
-                FROM vend_sales_line_items sli
-                JOIN vend_sales s ON sli.sale_id = s.id
-                WHERE sli.product_id = p.id
-                AND s.outlet_id = o.id
-                AND s.sale_date >= DATE_SUB(NOW(), INTERVAL 6 MONTH)
-                AND s.deleted_at IS NULL
-                AND sli.deleted_at IS NULL
-            ), 0) / 180 * 14
+        AND (
+            -- Include products with sales history that are below velocity threshold
+            (
+                EXISTS (
+                    SELECT 1
+                    FROM vend_sales_line_items sli
+                    JOIN vend_sales s ON sli.sale_id = s.id
+                    WHERE sli.product_id = p.id
+                    AND s.outlet_id = o.id
+                    AND s.sale_date >= DATE_SUB(NOW(), INTERVAL 6 MONTH)
+                    AND s.deleted_at IS NULL
+                )
+                AND ({$qtyExpr}) < (
+                    COALESCE((
+                        SELECT SUM(sli.quantity)
+                        FROM vend_sales_line_items sli
+                        JOIN vend_sales s ON sli.sale_id = s.id
+                        WHERE sli.product_id = p.id
+                        AND s.outlet_id = o.id
+                        AND s.sale_date >= DATE_SUB(NOW(), INTERVAL 6 MONTH)
+                        AND s.deleted_at IS NULL
+                    ), 0) / 180 * 14
+                )
+            )
+            -- OR include any product with <= 10 units (absolute low stock)
+            OR ($qtyExpr) <= 10
         )
 
         ORDER BY days_left_sort ASC
         LIMIT 4
-    ");
+    ";
+    $stmt = $pdo->prepare($sqlAlerts);
 
     $stmt->execute([$supplierID]);
     $alerts = $stmt->fetchAll(PDO::FETCH_ASSOC);

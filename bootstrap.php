@@ -31,6 +31,7 @@ require_once __DIR__ . '/lib/DatabasePDO.php';
 require_once __DIR__ . '/lib/Session.php';
 require_once __DIR__ . '/lib/Auth.php';
 require_once __DIR__ . '/lib/Utils.php';
+require_once __DIR__ . '/lib/RateLimiter.php';
 require_once __DIR__ . '/lib/status-badge-helper.php';
 require_once __DIR__ . '/includes/asset-loader.php'; // Asset auto-loader
 
@@ -146,55 +147,63 @@ try {
  * @param int $errline Line number
  */
 function displayInlineError(int $errno, string $errstr, string $errfile, int $errline): void {
-    // Map error types to colors and labels
+    // Map error types to Bootstrap alert classes
     $errorTypes = [
-        E_WARNING => ['color' => '#ff9800', 'label' => 'Warning', 'icon' => '⚠️'],
-        E_NOTICE => ['color' => '#2196F3', 'label' => 'Notice', 'icon' => 'ℹ️'],
-        E_USER_WARNING => ['color' => '#ff9800', 'label' => 'Warning', 'icon' => '⚠️'],
-        E_USER_NOTICE => ['color' => '#2196F3', 'label' => 'Notice', 'icon' => 'ℹ️'],
-        E_STRICT => ['color' => '#9e9e9e', 'label' => 'Strict', 'icon' => '📋'],
-        E_DEPRECATED => ['color' => '#795548', 'label' => 'Deprecated', 'icon' => '🔧']
+        E_WARNING => ['class' => 'warning', 'label' => 'Warning', 'icon' => 'fa-exclamation-triangle'],
+        E_NOTICE => ['class' => 'info', 'label' => 'Notice', 'icon' => 'fa-info-circle'],
+        E_USER_WARNING => ['class' => 'warning', 'label' => 'Warning', 'icon' => 'fa-exclamation-triangle'],
+        E_USER_NOTICE => ['class' => 'info', 'label' => 'Notice', 'icon' => 'fa-info-circle'],
+        E_STRICT => ['class' => 'secondary', 'label' => 'Strict', 'icon' => 'fa-code'],
+        E_DEPRECATED => ['class' => 'secondary', 'label' => 'Deprecated', 'icon' => 'fa-tools']
     ];
 
-    $info = $errorTypes[$errno] ?? ['color' => '#f44336', 'label' => 'Error', 'icon' => '❌'];
+    $info = $errorTypes[$errno] ?? ['class' => 'danger', 'label' => 'Error', 'icon' => 'fa-times-circle'];
     $shortFile = basename($errfile);
+    $errorId = 'error-' . uniqid();
+    $fullError = "{$info['label']}: {$errstr}\nFile: {$errfile}\nLine: {$errline}";
+    $escapedError = htmlspecialchars($fullError, ENT_QUOTES);
 
     echo <<<HTML
-<div style="
-    margin: 15px 0;
-    padding: 12px 15px;
-    background: #fff;
-    border-left: 4px solid {$info['color']};
-    border-radius: 4px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    font-size: 14px;
-    line-height: 1.5;
-">
-    <div style="display: flex; align-items: flex-start; gap: 10px;">
-        <span style="font-size: 20px; flex-shrink: 0;">{$info['icon']}</span>
-        <div style="flex: 1;">
-            <div style="font-weight: 600; color: {$info['color']}; margin-bottom: 4px;">
-                {$info['label']}
-            </div>
-            <div style="color: #333; margin-bottom: 6px;">
-                {$errstr}
-            </div>
-            <div style="font-size: 12px; color: #666; font-family: 'Courier New', monospace;">
-                {$shortFile} : line {$errline}
-            </div>
+<div class="alert alert-{$info['class']} alert-dismissible fade show mx-3 my-2 shadow-sm" role="alert" style="font-size: 0.9rem;">
+    <div class="d-flex align-items-start">
+        <div class="flex-grow-1">
+            <i class="fas {$info['icon']} me-2"></i>
+            <strong>{$info['label']}:</strong> {$errstr}
+            <br>
+            <small class="text-muted mt-1 d-inline-block">
+                <code>{$shortFile}</code> on line <strong>{$errline}</strong>
+            </small>
+        </div>
+        <div class="d-flex gap-1 ms-2">
+            <button type="button" class="btn btn-sm btn-outline-{$info['class']}" onclick="copyErrorToClipboard_{$errorId}()" title="Copy error details">
+                <i class="fas fa-copy"></i>
+            </button>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     </div>
 </div>
+<script>
+function copyErrorToClipboard_{$errorId}() {
+    const errorText = `{$escapedError}`;
+    navigator.clipboard.writeText(errorText).then(() => {
+        // Show success feedback
+        const btn = event.target.closest('button');
+        const icon = btn.querySelector('i');
+        icon.className = 'fas fa-check';
+        setTimeout(() => {
+            icon.className = 'fas fa-copy';
+        }, 2000);
+    });
+}
+</script>
 HTML;
 }
 
 /**
  * Enhanced Exception Handler
- * - Shows full debug info in DEBUG_MODE
+ * - Logs all errors
  * - Returns JSON for AJAX/API requests
- * - Shows copy-paste friendly HTML error page
- * - Includes JavaScript popup for errors
+ * - Shows simple error page (not the massive ugly one)
  */
 set_exception_handler(function(Throwable $e) {
     // Log to error log
@@ -710,6 +719,39 @@ function requireAuth(): void {
         $currentUrl = $_SERVER['REQUEST_URI'] ?? '/supplier/';
         header('Location: /supplier/login.php?redirect=' . urlencode($currentUrl));
         exit;
+    }
+}
+
+/**
+ * Apply per-IP API rate limit for API endpoints
+ * Should be called at the start of API scripts
+ */
+function enforceApiRateLimit(): void {
+    $ip = $_SERVER['HTTP_CF_CONNECTING_IP'] ?? ($_SERVER['REMOTE_ADDR'] ?? '0.0.0.0');
+    $key = 'api:' . $ip;
+    $limit = defined('RATE_LIMIT_API_PER_MIN') ? (int)RATE_LIMIT_API_PER_MIN : 100;
+    $rl = new RateLimiter();
+    [$allowed, $remaining, $reset] = $rl->check($key, $limit);
+    if (!$allowed) {
+        http_response_code(429);
+        header('Content-Type: application/json');
+        header('Retry-After: ' . max(1, $reset - time()));
+        header('X-RateLimit-Limit: ' . $limit);
+        header('X-RateLimit-Remaining: 0');
+        header('X-RateLimit-Reset: ' . $reset);
+        echo json_encode([
+            'success' => false,
+            'error' => [
+                'code' => 'RATE_LIMIT_EXCEEDED',
+                'message' => 'Too many requests. Please slow down.',
+                'reset_at' => date('c', $reset)
+            ]
+        ], JSON_PRETTY_PRINT);
+        exit;
+    } else {
+        header('X-RateLimit-Limit: ' . $limit);
+        header('X-RateLimit-Remaining: ' . $remaining);
+        header('X-RateLimit-Reset: ' . $reset);
     }
 }
 

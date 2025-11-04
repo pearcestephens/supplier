@@ -44,9 +44,8 @@ try {
         INNER JOIN vend_products p ON sli.product_id = p.id
         WHERE p.supplier_id = ?
         AND s.sale_date >= DATE_SUB(NOW(), INTERVAL 3 MONTH)
-        AND s.deleted_at IS NULL
-        AND sli.deleted_at IS NULL
-        AND p.deleted_at IS NULL
+            AND (s.deleted_at IS NULL OR s.deleted_at = '0000-00-00 00:00:00')
+            AND (p.deleted_at IS NULL OR p.deleted_at = '0000-00-00 00:00:00')
         GROUP BY DATE_FORMAT(s.sale_date, '%Y-%m')
         ORDER BY month ASC
     ");
@@ -83,9 +82,8 @@ try {
         WHERE p.supplier_id = ?
         AND s.sale_date >= DATE_SUB(NOW(), INTERVAL 6 MONTH)
         AND s.sale_date < DATE_SUB(NOW(), INTERVAL 3 MONTH)
-        AND s.deleted_at IS NULL
-        AND sli.deleted_at IS NULL
-        AND p.deleted_at IS NULL
+            AND (s.deleted_at IS NULL OR s.deleted_at = '0000-00-00 00:00:00')
+            AND (p.deleted_at IS NULL OR p.deleted_at = '0000-00-00 00:00:00')
     ");
 
     $stmt->execute([$supplierID]);

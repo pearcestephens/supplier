@@ -23,8 +23,10 @@ define('ENVIRONMENT', 'production'); // development, staging, production
 // Set to true to bypass session/cookie requirements and use hardcoded supplier_id
 // WARNING: ONLY FOR DEVELOPMENT/TESTING - NEVER in production!
 
-define('DEBUG_MODE_ENABLED', true);   // Toggle this to enable/disable
-define('DEBUG_MODE_SUPPLIER_ID', '0a91b764-1c71-11eb-e0eb-d7bf46fa95c8');  // Change this to any supplier ID you want to test with
+define('DEBUG_MODE_ENABLED', false);   // Toggle this to enable/disable (must be false in production)
+// When DEBUG_MODE_ENABLED is true, you can pass ?supplier_id=... in the URL to set the debug supplier dynamically.
+// This constant is a fallback only; keep it empty in repo to avoid hardcoding any real IDs.
+define('DEBUG_MODE_SUPPLIER_ID', '');  // Optional fallback for local testing
 
 // Debug mode automatically:
 // ✅ Skips session requirements
@@ -60,6 +62,13 @@ define('SESSION_HTTPONLY', true); // No JavaScript access
 define('API_VERSION', '3.0.0');
 define('API_RATE_LIMIT', 100); // requests per minute per IP
 define('API_TIMEOUT', 30); // seconds
+
+// Additional rate-limit controls (per IP)
+define('RATE_LIMIT_API_PER_MIN', API_RATE_LIMIT); // alias, per-minute API limit
+define('RATE_LIMIT_LOGIN_PER_MIN', 10); // POSTs to login per minute per IP
+
+// Magic link TTL (one-time access window)
+define('MAGIC_LINK_TTL_SECONDS', 86400); // 24 hours
 
 // ============================================================================
 // FILE UPLOAD CONFIGURATION
@@ -261,7 +270,9 @@ date_default_timezone_set(TIMEZONE);
 
 if (DEBUG_MODE) {
     error_reporting(E_ALL);
-    ini_set('display_errors', '1');
+    ini_set('display_errors', '0'); // Don't show ugly errors on screen
+    ini_set('log_errors', '1');
+    ini_set('error_log', ERROR_LOG_PATH . 'php_errors.log');
 } else {
     error_reporting(E_ALL);
     ini_set('display_errors', '0');

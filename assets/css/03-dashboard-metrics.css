@@ -27,12 +27,25 @@
     display: flex;
     flex-direction: column;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+
+    /* ULTRA SHARP RENDERING - GPU acceleration */
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    perspective: 1000px;
+    -webkit-perspective: 1000px;
+
+    /* Crisp text on all child elements */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
 }
 
 .metric-card-premium:hover {
     border-color: #d1d5db;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-    transform: translateY(-2px);
+    transform: translateY(-2px) translateZ(0);
 }
 
 /* Dark mode support */
@@ -614,4 +627,166 @@
     .metric-status-badge {
         border: 1px solid;
     }
+}
+
+/* ============================================================================
+   CARD FLIP - CRISP & SHARP RENDERING
+   ============================================================================ */
+
+/* Force sharp text rendering on flip side */
+.card-back,
+.card-back *,
+.metric-card-premium.flipped,
+.metric-card-premium.flipped * {
+    /* Crisp text rendering */
+    -webkit-font-smoothing: antialiased !important;
+    -moz-osx-font-smoothing: grayscale !important;
+    text-rendering: optimizeLegibility !important;
+
+    /* Sharp edges */
+    image-rendering: crisp-edges;
+    image-rendering: -webkit-optimize-contrast;
+
+    /* High quality transforms */
+    transform-style: preserve-3d;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+
+    /* Prevent blur during transitions */
+    will-change: transform;
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+}
+
+/* Card back specific styling */
+.card-back {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    padding: 24px;
+    background: linear-gradient(135deg, #ffffff 0%, #fafbfc 100%);
+    border-radius: 12px;
+    transform: rotateY(180deg) translateZ(0);
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+
+    /* ULTRA SHARP rendering - ALWAYS (not just on move) */
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    color: #000000;
+    text-shadow: none;
+
+    /* Force GPU layer for crisp text EVEN WHEN STILL */
+    will-change: transform;
+    transform: rotateY(180deg) translateZ(1px) scale(1.0001);
+    -webkit-transform: rotateY(180deg) translateZ(1px) scale(1.0001);
+}
+
+@media (prefers-color-scheme: dark) {
+    .card-back {
+        background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+        color: #ffffff;
+    }
+}
+
+/* Insight sections on flip side */
+.insight-section {
+    margin-bottom: 16px;
+
+    /* Sharp rendering */
+    -webkit-font-smoothing: antialiased !important;
+    -moz-osx-font-smoothing: grayscale !important;
+}
+
+.insight-label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #6b7280;
+    margin-bottom: 6px;
+
+    /* Extra sharp for small text */
+    -webkit-font-smoothing: antialiased !important;
+    text-rendering: optimizeLegibility !important;
+}
+
+@media (prefers-color-scheme: dark) {
+    .insight-label {
+        color: #9ca3af;
+    }
+}
+
+.insight-value {
+    font-size: 20px;
+    font-weight: 700;
+    color: #111827;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+
+    /* Maximum sharpness */
+    -webkit-font-smoothing: antialiased !important;
+    -moz-osx-font-smoothing: grayscale !important;
+    text-rendering: optimizeLegibility !important;
+}
+
+@media (prefers-color-scheme: dark) {
+    .insight-value {
+        color: #ffffff;
+    }
+}
+
+.insight-description {
+    font-size: 13px;
+    color: #6b7280;
+    line-height: 1.5;
+    margin-top: 4px;
+
+    /* Sharp readable text */
+    -webkit-font-smoothing: antialiased !important;
+    font-weight: 400;
+}
+
+@media (prefers-color-scheme: dark) {
+    .insight-description {
+        color: #9ca3af;
+    }
+}
+
+/* Emoji rendering - prevent blur */
+.insight-value::before,
+.insight-description::before {
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+}
+
+/* Fix blur on hover transitions */
+.metric-card-premium:hover .card-back {
+    transform: rotateY(180deg) translateZ(0);
+    -webkit-transform: rotateY(180deg) translateZ(0);
+}
+
+/* Prevent blur during flip animation */
+@keyframes flipCard {
+    0%, 100% {
+        transform: translateZ(0);
+    }
+}
+
+/* Sharp progress bars on flip side */
+.card-back .progress-bar,
+.card-back .stat-badge {
+    -webkit-font-smoothing: antialiased !important;
+    transform: translateZ(0);
+}
+
+/* Override any fuzzy Bootstrap defaults */
+.card-back .badge,
+.card-back .btn,
+.card-back span,
+.card-back div {
+    -webkit-font-smoothing: antialiased !important;
+    -moz-osx-font-smoothing: grayscale !important;
 }

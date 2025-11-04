@@ -37,7 +37,8 @@ const API = {
 
             // Prepare request
             const method = options.method || 'POST';
-            const url = `${this.baseUrl}?action=${encodeURIComponent(action)}`;
+            const cacheBuster = `_t=${Date.now()}`;
+            const url = `${this.baseUrl}?action=${encodeURIComponent(action)}&${cacheBuster}`;
 
             const fetchOptions = {
                 method: method,

@@ -1,13 +1,13 @@
 <?php
 /**
  * Sidebar Stats API - Real-time Quick Stats for Sidebar Widget
- * 
+ *
  * Returns:
  * - Active orders count and percentage
  * - Stock health percentage
  * - This month's orders count
  * - Recent activity (last 4 actions)
- * 
+ *
  * @package SupplierPortal\API
  */
 
@@ -21,15 +21,15 @@ requireAuth();
 try {
     $db = db();
     $supplierID = getSupplierID();
-    
+
     // ========================================================================
-    // STAT 1: Active Orders (not completed/cancelled)
+    // STAT 1: Pending Orders (OPEN or PACKING states only)
     // ========================================================================
     $activeOrdersQuery = "
         SELECT COUNT(*) as count
         FROM vend_consignments
         WHERE supplier_id = ?
-        AND state IN ('OPEN', 'SENT', 'RECEIVING', 'PARTIAL')
+        AND state IN ('OPEN', 'PACKING')
         AND deleted_at IS NULL
     ";
     $stmt = $db->prepare($activeOrdersQuery);
@@ -37,7 +37,7 @@ try {
     $stmt->execute();
     $activeOrders = $stmt->get_result()->fetch_assoc()['count'];
     $stmt->close();
-    
+
     // Total orders for percentage calculation
     $totalOrdersQuery = "
         SELECT COUNT(*) as count
@@ -50,83 +50,69 @@ try {
     $stmt->execute();
     $totalOrders = $stmt->get_result()->fetch_assoc()['count'];
     $stmt->close();
-    
+
     $activeOrdersPercent = $totalOrders > 0 ? round(($activeOrders / $totalOrders) * 100) : 0;
-    
+
     // ========================================================================
-    // STAT 2: Stock Health (products with adequate stock vs low stock)
+    // STAT 2: Orders This Week (created in last 7 days)
     // ========================================================================
-    // Products with inventory across all outlets
-    $stockHealthQuery = "
-        SELECT 
-            COUNT(DISTINCT p.id) as total_products,
-            COUNT(DISTINCT CASE 
-                WHEN i.current_amount > 5 THEN p.id 
-            END) as healthy_products
-        FROM vend_products p
-        LEFT JOIN vend_inventory i ON p.id = i.product_id
-        WHERE p.supplier_id = ?
-        AND p.active = 1
-        AND p.deleted_at IS NULL
-    ";
-    $stmt = $db->prepare($stockHealthQuery);
-    $stmt->bind_param('s', $supplierID);
-    $stmt->execute();
-    $stockData = $stmt->get_result()->fetch_assoc();
-    $stmt->close();
-    
-    $stockHealthPercent = $stockData['total_products'] > 0 
-        ? round(($stockData['healthy_products'] / $stockData['total_products']) * 100) 
-        : 0;
-    
-    // ========================================================================
-    // STAT 3: This Month's Orders
-    // ========================================================================
-    $thisMonthQuery = "
+    $thisWeekQuery = "
         SELECT COUNT(*) as count
         FROM vend_consignments
         WHERE supplier_id = ?
-        AND YEAR(created_at) = YEAR(CURDATE())
-        AND MONTH(created_at) = MONTH(CURDATE())
+        AND created_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)
         AND deleted_at IS NULL
     ";
-    $stmt = $db->prepare($thisMonthQuery);
+    $stmt = $db->prepare($thisWeekQuery);
     $stmt->bind_param('s', $supplierID);
     $stmt->execute();
-    $thisMonthOrders = $stmt->get_result()->fetch_assoc()['count'];
+    $ordersThisWeek = $stmt->get_result()->fetch_assoc()['count'];
     $stmt->close();
-    
-    // Last month for percentage calculation
-    $lastMonthQuery = "
+
+    // ========================================================================
+    // STAT 3: Completed This Week (RECEIVED in last 7 days)
+    // ========================================================================
+    $completedThisWeekQuery = "
         SELECT COUNT(*) as count
         FROM vend_consignments
         WHERE supplier_id = ?
-        AND YEAR(created_at) = YEAR(DATE_SUB(CURDATE(), INTERVAL 1 MONTH))
-        AND MONTH(created_at) = MONTH(DATE_SUB(CURDATE(), INTERVAL 1 MONTH))
+        AND state = 'RECEIVED'
+        AND updated_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)
         AND deleted_at IS NULL
     ";
-    $stmt = $db->prepare($lastMonthQuery);
+    $stmt = $db->prepare($completedThisWeekQuery);
     $stmt->bind_param('s', $supplierID);
     $stmt->execute();
-    $lastMonthOrders = $stmt->get_result()->fetch_assoc()['count'];
+    $completedThisWeek = $stmt->get_result()->fetch_assoc()['count'];
     $stmt->close();
-    
-    $monthlyGrowthPercent = $lastMonthOrders > 0 
-        ? round((($thisMonthOrders - $lastMonthOrders) / $lastMonthOrders) * 100) 
-        : 100;
-    
+
+    // ========================================================================
+    // STAT 4: My Products Listed (active products for this supplier)
+    // ========================================================================
+    $productsListedQuery = "
+        SELECT COUNT(DISTINCT id) as count
+        FROM vend_products
+        WHERE supplier_id = ?
+        AND deleted_at IS NULL
+    ";
+    $stmt = $db->prepare($productsListedQuery);
+    $stmt->bind_param('s', $supplierID);
+    $stmt->execute();
+    $productsListed = $stmt->get_result()->fetch_assoc()['count'];
+    $stmt->close();
+
     // ========================================================================
     // RECENT ACTIVITY: Last 5 significant events from VAST ARRAY of sources
     // Sources: Orders, Warranties, Notes, Status Changes, Tracking Updates
     // ========================================================================
-    
+
     // Collect activities from multiple sources
     $allActivities = [];
-    
+
     // SOURCE 1: Order Events (created, status changes)
     try {
         $orderActivitiesQuery = "
-            SELECT 
+            SELECT
                 'order' as type,
                 t.public_id as reference,
                 t.state as status,
@@ -145,7 +131,7 @@ try {
         $stmt->execute();
         $orderActivities = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
         $stmt->close();
-        
+
         foreach ($orderActivities as $activity) {
             $allActivities[] = [
                 'timestamp' => $activity['timestamp'],
@@ -159,17 +145,17 @@ try {
     } catch (Exception $e) {
         error_log('Sidebar Stats - Order Activities Error: ' . $e->getMessage());
     }
-    
+
     // SOURCE 2: Warranty Claims (new claims, status changes)
     try {
         $warrantyActivitiesQuery = "
-            SELECT 
+            SELECT
                 'warranty' as type,
                 fp.id as reference,
                 fp.supplier_status as status,
                 fp.supplier_status_timestamp as timestamp,
                 p.name as product_name,
-                CASE 
+                CASE
                     WHEN fp.supplier_status = 0 THEN 'pending'
                     WHEN fp.supplier_status = 1 THEN 'accepted'
                     WHEN fp.supplier_status = 2 THEN 'declined'
@@ -187,7 +173,7 @@ try {
         $stmt->execute();
         $warrantyActivities = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
         $stmt->close();
-        
+
         foreach ($warrantyActivities as $activity) {
             $allActivities[] = [
                 'timestamp' => $activity['timestamp'],
@@ -201,14 +187,14 @@ try {
     } catch (Exception $e) {
         error_log('Sidebar Stats - Warranty Activities Error: ' . $e->getMessage());
     }
-    
+
     // SOURCE 3: Notes Added (order notes, warranty notes)
     // PLACEHOLDER - Activity log table schema needs verification
     try {
         // TODO: Verify supplier_activity_log table structure before enabling
         // Expected columns: supplier_id, consignment_id, action, created_at
         $noteActivities = []; // Return empty for now
-        
+
         foreach ($noteActivities as $activity) {
             $allActivities[] = [
                 'timestamp' => $activity['timestamp'],
@@ -221,13 +207,13 @@ try {
     } catch (Exception $e) {
         error_log('Sidebar Stats - Notes Activities Error: ' . $e->getMessage());
     }
-    
+
     // SOURCE 4: Tracking Number Updates
     // PLACEHOLDER - Activity log table schema needs verification
     try {
         // TODO: Verify supplier_activity_log table structure before enabling
         $trackingActivities = []; // Return empty for now
-        
+
         foreach ($trackingActivities as $activity) {
             $allActivities[] = [
                 'timestamp' => $activity['timestamp'],
@@ -240,20 +226,20 @@ try {
     } catch (Exception $e) {
         error_log('Sidebar Stats - Tracking Activities Error: ' . $e->getMessage());
     }
-    
+
     // Sort all activities by timestamp (most recent first)
     if (!empty($allActivities)) {
         usort($allActivities, function($a, $b) {
             return strtotime($b['timestamp']) - strtotime($a['timestamp']);
         });
-        
+
         // Take top 5 activities
         $topActivities = array_slice($allActivities, 0, 5);
     } else {
         // No activities found, return empty array
         $topActivities = [];
     }
-    
+
     // Format activities for display with icons and rich text
     $recentActivity = [];
     foreach ($topActivities as $activity) {
@@ -261,10 +247,10 @@ try {
         $label = '';
         $color = 'primary';
         $icon = 'circle';
-        
+
         // Ensure reference exists and format it nicely
         $reference = $activity['reference'] ?? 'Unknown';
-        
+
         // Truncate long UUIDs/IDs - keep only last 6 characters for display
         // Example: "JCE-PO-12345" stays as is, but "abc123def456ghi789" becomes "...hi789"
         $displayRef = $reference;
@@ -275,7 +261,7 @@ try {
             // Very long reference, truncate
             $displayRef = substr($reference, 0, 12) . '...';
         }
-        
+
         switch ($activity['type']) {
             case 'order':
                 switch ($activity['status']) {
@@ -312,7 +298,7 @@ try {
                         break;
                 }
                 break;
-                
+
             case 'warranty':
                 switch ($activity['status']) {
                     case 'pending':
@@ -337,19 +323,19 @@ try {
                         break;
                 }
                 break;
-                
+
             case 'note':
                 $label = 'Note added to #' . $displayRef;
                 $color = 'info';
                 $icon = 'comment';
                 break;
-                
+
             case 'tracking':
                 $label = 'Tracking updated for #' . $displayRef;
                 $color = 'primary';
                 $icon = 'box';
                 break;
-                
+
             default:
                 // Fallback for unknown activity types
                 $label = 'Activity on ' . $reference;
@@ -357,7 +343,7 @@ try {
                 $icon = 'circle';
                 break;
         }
-        
+
         // Only add if we have a valid label
         if (!empty($label)) {
             $recentActivity[] = [
@@ -369,7 +355,7 @@ try {
             ];
         }
     }
-    
+
     // ========================================================================
     // SEND RESPONSE
     // ========================================================================
@@ -378,18 +364,18 @@ try {
             'count' => $activeOrders,
             'percent' => $activeOrdersPercent
         ],
-        'stock_health' => [
-            'percent' => $stockHealthPercent,
-            'healthy' => $stockData['healthy_products'],
-            'total' => $stockData['total_products']
+        'orders_this_week' => [
+            'count' => $ordersThisWeek
         ],
-        'monthly_orders' => [
-            'count' => $thisMonthOrders,
-            'growth_percent' => $monthlyGrowthPercent
+        'completed_this_week' => [
+            'count' => $completedThisWeek
+        ],
+        'products_listed' => [
+            'count' => $productsListed
         ],
         'recent_activity' => $recentActivity
     ]);
-    
+
 } catch (Exception $e) {
     error_log('Sidebar Stats Error: ' . $e->getMessage());
     sendJsonResponse(false, null, 'Failed to load sidebar stats', 500);
@@ -402,7 +388,7 @@ function timeAgo(string $timestamp): string {
     $now = time();
     $ago = strtotime($timestamp);
     $diff = $now - $ago;
-    
+
     if ($diff < 60) {
         return 'Just now';
     } elseif ($diff < 3600) {
