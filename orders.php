@@ -99,6 +99,33 @@ $stmt->execute();
 $totalOrders = $stmt->get_result()->fetch_assoc()['total'];
 $stmt->close();
 
+// Get status counts for dropdown
+$statusCounts = [];
+$statusCountQuery = "
+    SELECT
+        state,
+        COUNT(*) as count
+    FROM vend_consignments
+    WHERE supplier_id = ?
+    AND transfer_category = 'PURCHASE_ORDER'
+    AND deleted_at IS NULL
+    GROUP BY state
+";
+$stmt = $db->prepare($statusCountQuery);
+$stmt->bind_param('s', $supplierID);
+$stmt->execute();
+$result = $stmt->get_result();
+while ($row = $result->fetch_assoc()) {
+    $statusCounts[$row['state']] = (int)$row['count'];
+}
+$stmt->close();
+
+// Calculate aggregate counts
+$statusCounts['all'] = array_sum($statusCounts);
+$statusCounts['active'] = ($statusCounts['OPEN'] ?? 0) + ($statusCounts['PACKING'] ?? 0) +
+                           ($statusCounts['PACKED'] ?? 0) + ($statusCounts['SENT'] ?? 0) +
+                           ($statusCounts['RECEIVING'] ?? 0);
+
 // ============================================================================
 // QUERY 2: Get Orders with Line Items
 // ============================================================================
@@ -349,15 +376,15 @@ $actionButtons = '
                 <div class="col-md-2">
                     <label class="form-label small fw-bold">Status</label>
                     <select name="status" class="form-select">
-                        <option value="all" <?php echo $filterStatus === 'all' ? 'selected' : ''; ?>>All Status</option>
-                        <option value="active" <?php echo $filterStatus === 'active' ? 'selected' : ''; ?>>Active Orders</option>
-                        <option value="open" <?php echo $filterStatus === 'open' ? 'selected' : ''; ?>>Open</option>
-                        <option value="packing" <?php echo $filterStatus === 'packing' ? 'selected' : ''; ?>>Packing</option>
-                        <option value="packed" <?php echo $filterStatus === 'packed' ? 'selected' : ''; ?>>Packed</option>
-                        <option value="sent" <?php echo $filterStatus === 'sent' ? 'selected' : ''; ?>>Sent</option>
-                        <option value="receiving" <?php echo $filterStatus === 'receiving' ? 'selected' : ''; ?>>Receiving</option>
-                        <option value="received" <?php echo $filterStatus === 'received' ? 'selected' : ''; ?>>Received</option>
-                        <option value="cancelled" <?php echo $filterStatus === 'cancelled' ? 'selected' : ''; ?>>Cancelled</option>
+                        <option value="all" <?php echo $filterStatus === 'all' ? 'selected' : ''; ?>>All Status (<?php echo $statusCounts['all'] ?? 0; ?>)</option>
+                        <option value="active" <?php echo $filterStatus === 'active' ? 'selected' : ''; ?>>Active Orders (<?php echo $statusCounts['active'] ?? 0; ?>)</option>
+                        <option value="open" <?php echo $filterStatus === 'open' ? 'selected' : ''; ?>>Open (<?php echo $statusCounts['OPEN'] ?? 0; ?>)</option>
+                        <option value="packing" <?php echo $filterStatus === 'packing' ? 'selected' : ''; ?>>Packing (<?php echo $statusCounts['PACKING'] ?? 0; ?>)</option>
+                        <option value="packed" <?php echo $filterStatus === 'packed' ? 'selected' : ''; ?>>Packed (<?php echo $statusCounts['PACKED'] ?? 0; ?>)</option>
+                        <option value="sent" <?php echo $filterStatus === 'sent' ? 'selected' : ''; ?>>Sent (<?php echo $statusCounts['SENT'] ?? 0; ?>)</option>
+                        <option value="receiving" <?php echo $filterStatus === 'receiving' ? 'selected' : ''; ?>>Receiving (<?php echo $statusCounts['RECEIVING'] ?? 0; ?>)</option>
+                        <option value="received" <?php echo $filterStatus === 'received' ? 'selected' : ''; ?>>Received (<?php echo $statusCounts['RECEIVED'] ?? 0; ?>)</option>
+                        <option value="cancelled" <?php echo $filterStatus === 'cancelled' ? 'selected' : ''; ?>>Cancelled (<?php echo $statusCounts['CANCELLED'] ?? 0; ?>)</option>
                     </select>
                 </div>
 
@@ -451,8 +478,8 @@ $actionButtons = '
                             </tr>
                         <?php else: ?>
                             <?php foreach ($orders as $order): ?>
-                                <tr class="clickable-row" data-order-id="<?php echo $order['id']; ?>" onclick="if(!event.target.closest('.no-click')) window.location.href='/supplier/order-detail.php?id=<?php echo $order['id']; ?>'" style="cursor: pointer;">
-                                    <td class="text-center no-click" onclick="event.stopPropagation();">
+                                <tr class="clickable-row" data-order-id="<?php echo $order['id']; ?>" data-detail-url="/supplier/order-detail.php?id=<?php echo $order['id']; ?>">
+                                    <td class="text-center no-click">
                                         <input type="checkbox" class="form-check-input order-checkbox" value="<?php echo $order['id']; ?>" data-order-number="<?php echo htmlspecialchars($order['vend_number'] ?? '-'); ?>">
                                     </td>                                    <td class="fw-bold">
                                         <?php
@@ -502,7 +529,7 @@ $actionButtons = '
                                             <?php echo htmlspecialchars($order['state']); ?>
                                         </span>
                                     </td>
-                                    <td class="text-center" onclick="event.stopPropagation();">
+                                    <td class="text-center no-click">
                                         <?php
                                         // Check if status allows modifications
                                         $lockedStatuses = ['RECEIVED', 'RECEIVING', 'CANCELLED', 'CLOSED'];
@@ -523,7 +550,7 @@ $actionButtons = '
                                             </button>
                                         <?php endif; ?>
                                     </td>
-                                    <td class="text-center no-click" onclick="event.stopPropagation();">
+                                    <td class="text-center no-click">
                                         <?php
                                         // Check 24-hour lock: if tracking exists or status is SENT, check if updated within 24h
                                         $canEdit = false;
@@ -628,15 +655,14 @@ $actionButtons = '
     background-color: rgba(59, 130, 246, 0.05);
 }
 
-/* Clickable row styling */
+/* Clickable row styling - FIXED: Removed transform to prevent shake */
 .clickable-row {
     cursor: pointer;
-    transition: background-color 0.2s ease, box-shadow 0.2s ease;
+    transition: background-color 0.15s ease;
 }
 
 .clickable-row:hover {
-    background-color: rgba(59, 130, 246, 0.1) !important;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    background-color: rgba(59, 130, 246, 0.08) !important;
 }
 
 .page-title {
@@ -657,6 +683,29 @@ $actionButtons = '
 
 <!-- Purchase Orders JavaScript -->
 <script src="/supplier/assets/js/orders.js?v=<?php echo time(); ?>"></script>
+
+<script>
+// Handle clickable table rows - navigate to detail page
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.clickable-row').forEach(row => {
+        row.addEventListener('click', function(e) {
+            // Don't navigate if clicking on checkbox, button, or no-click elements
+            if (e.target.closest('.no-click') ||
+                e.target.closest('button') ||
+                e.target.closest('input[type="checkbox"]') ||
+                e.target.closest('a')) {
+                return;
+            }
+
+            // Navigate to detail page
+            const detailUrl = this.dataset.detailUrl;
+            if (detailUrl) {
+                window.location.href = detailUrl;
+            }
+        });
+    });
+});
+</script>
 
 </body>
 </html>

@@ -34,6 +34,9 @@ $pageTitle = 'Product Catalog';
 // Get supplier ID
 $supplierId = Auth::getSupplierId();
 
+// Debug: Log the supplier ID being used
+error_log("Catalog page - Supplier ID: " . $supplierId);
+
 // Get search and filter parameters
 $search = isset($_GET['search']) ? trim($_GET['search']) : '';
 $category = isset($_GET['category']) ? trim($_GET['category']) : '';
@@ -43,7 +46,7 @@ $perPage = 50;
 $offset = ($page - 1) * $perPage;
 
 try {
-    $pdo = $GLOBALS['pdo'];
+    $db = db();
 
     // Build query to fetch products
     $query = "
@@ -61,111 +64,122 @@ try {
             END as margin_percent
         FROM vend_products p
         LEFT JOIN vend_inventory i ON p.id = i.product_id
-        WHERE p.supplier_id = :supplier_id
+        WHERE p.supplier_id = ?
+        AND (p.deleted_at IS NULL OR p.deleted_at = '0000-00-00 00:00:00')
     ";
 
-    $params = ['supplier_id' => $supplierId];
+    $params = [$supplierId];
+    $types = 's';
 
     // Add search filter
     if (!empty($search)) {
-        $query .= " AND (p.name LIKE :search OR p.sku LIKE :search OR p.description LIKE :search)";
-        $params['search'] = '%' . $search . '%';
+        $query .= " AND (p.name LIKE ? OR p.sku LIKE ? OR p.description LIKE ?)";
+        $params[] = '%' . $search . '%';
+        $params[] = '%' . $search . '%';
+        $params[] = '%' . $search . '%';
+        $types .= 'sss';
     }
 
-    // Add status filter (if exists, otherwise skip)
+    // Add status filter
     if (!empty($status) && $status !== 'all') {
-        $query .= " AND p.active = :status";
-        $params['status'] = $status === 'active' ? 1 : 0;
+        $query .= " AND p.active = ?";
+        $params[] = $status === 'active' ? 1 : 0;
+        $types .= 'i';
     }
 
-    // Get total count
-    $countQuery = "SELECT COUNT(DISTINCT p.id) as total FROM (" . $query . ") as sub";
-    $countStmt = $pdo->prepare($query);
-    foreach ($params as $key => $value) {
-        $countStmt->bindValue(':' . $key, $value);
-    }
+    // Count total products - wrap the full query in a subquery
+    $countQuery = "SELECT COUNT(*) as total FROM (" . $query . " GROUP BY p.id) as product_count";
+    $countStmt = $db->prepare($countQuery);
+    $countStmt->bind_param($types, ...$params);
     $countStmt->execute();
-    $totalRow = $countStmt->fetch(PDO::FETCH_ASSOC);
+    $totalRow = $countStmt->get_result()->fetch_assoc();
     $total = $totalRow['total'] ?? 0;
     $totalPages = ceil($total / $perPage);
+    $countStmt->close();
 
     // Add GROUP BY and LIMIT
-    $query .= " GROUP BY p.id ORDER BY p.name ASC LIMIT :offset, :limit";
+    $query .= " GROUP BY p.id ORDER BY p.name ASC LIMIT ?, ?";
+    $params[] = $offset;
+    $params[] = $perPage;
+    $types .= 'ii';
 
-    $stmt = $pdo->prepare($query);
-    foreach ($params as $key => $value) {
-        $stmt->bindValue(':' . $key, $value);
-    }
-    $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
-    $stmt->bindValue(':limit', $perPage, PDO::PARAM_INT);
+    $stmt = $db->prepare($query);
+    $stmt->bind_param($types, ...$params);
     $stmt->execute();
 
-    $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $products = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+    $stmt->close();
 
     // Get unique categories for filter
-    $categoryQuery = "SELECT DISTINCT p.type FROM vend_products p WHERE p.supplier_id = :supplier_id AND p.type IS NOT NULL ORDER BY p.type";
-    $categoryStmt = $pdo->prepare($categoryQuery);
-    $categoryStmt->bindValue(':supplier_id', $supplierId);
+    $categoryQuery = "SELECT DISTINCT p.type FROM vend_products p WHERE p.supplier_id = ? AND p.type IS NOT NULL ORDER BY p.type";
+    $categoryStmt = $db->prepare($categoryQuery);
+    $categoryStmt->bind_param('s', $supplierId);
     $categoryStmt->execute();
-    $categories = $categoryStmt->fetchAll(PDO::FETCH_COLUMN);
+    $result = $categoryStmt->get_result();
+    $categories = [];
+    while ($row = $result->fetch_assoc()) {
+        $categories[] = $row['type'];
+    }
+    $categoryStmt->close();
 
 } catch (Exception $e) {
     error_log("Catalog page error: " . $e->getMessage());
+    error_log("Catalog page error trace: " . $e->getTraceAsString());
     $products = [];
     $categories = [];
     $total = 0;
     $totalPages = 1;
-    $error = "Error loading products. Please try again.";
+    $error = "Error loading products: " . $e->getMessage();
 }
 
+$activeTab = 'catalog';
+$pageTitle = 'Product Catalog';
+$pageIcon = 'fa-solid fa-box-open';
+$pageDescription = 'Browse and manage your product catalog';
+$breadcrumb = [
+    ['text' => 'Product Catalog', 'href' => '/supplier/catalog.php']
+];
 ?>
-<!doctype html>
-<html lang="en">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title><?php echo htmlspecialchars($pageTitle); ?> - Supplier Portal</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="/supplier/assets/css/style.css?v=<?php echo time(); ?>">
-    <style>
-        .catalog-container {
-            background: #fff;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            padding: 20px;
-            margin-bottom: 30px;
-        }
+<?php include __DIR__ . '/components/html-head.php'; ?>
 
-        .product-table {
-            font-size: 14px;
-            margin-top: 20px;
-        }
+<style>
+.catalog-container {
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    padding: 20px;
+    margin-bottom: 30px;
+}
 
-        .product-table thead {
-            background: #f8f9fa;
-            border-bottom: 2px solid #dee2e6;
-        }
+.product-table {
+    font-size: 14px;
+    margin-top: 20px;
+}
 
-        .product-table th {
-            font-weight: 700;
-            color: #333;
-            padding: 12px;
-            vertical-align: middle;
-            text-transform: uppercase;
-            font-size: 12px;
-            letter-spacing: 0.5px;
-        }
+.product-table thead {
+    background: #f8f9fa;
+    border-bottom: 2px solid #dee2e6;
+}
 
-        .product-table td {
-            padding: 12px;
-            vertical-align: middle;
-            border-bottom: 1px solid #dee2e6;
-        }
+.product-table th {
+    font-weight: 700;
+    color: #333;
+    padding: 12px;
+    vertical-align: middle;
+    text-transform: uppercase;
+    font-size: 12px;
+    letter-spacing: 0.5px;
+}
 
-        .product-table tbody tr:hover {
-            background: #f8f9fa;
-        }
+.product-table td {
+    padding: 12px;
+    vertical-align: middle;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.product-table tbody tr:hover {
+    background: #f8f9fa;
+}
 
         .sku-badge {
             background: #e7f3ff;
@@ -326,89 +340,61 @@ try {
             gap: 6px;
             transition: background 0.3s;
         }
+    .excel-export:hover {
+        background: #218838;
+        text-decoration: none;
+        color: white;
+    }
+</style>
 
-        .excel-export:hover {
-            background: #218838;
-            text-decoration: none;
-            color: white;
-        }
-    </style>
-</head>
-<body>
-<div class="wrapper">
-    <?php include __DIR__ . '/components/sidebar-new.php'; ?>
+<?php include __DIR__ . '/components/sidebar-new.php'; ?>
+<?php include __DIR__ . '/components/page-header.php'; ?>
 
-    <div class="main-content">
-        <?php include __DIR__ . '/components/page-header.php'; ?>
+<div class="main-content">
+    <div class="content-wrapper p-4">
 
-        <div class="container-fluid p-4">
-            <div class="catalog-container">
-                <!-- Page Header -->
-                <div class="page-header">
-                    <div>
-                        <h1><i class="fas fa-box"></i> <?php echo htmlspecialchars($pageTitle); ?></h1>
-                        <p class="result-info">
-                            Showing <?php echo !empty($products) ? (($page - 1) * $perPage) + 1 : 0; ?> -
-                            <?php echo min($page * $perPage, $total); ?>
-                            of <?php echo number_format($total); ?> products
-                        </p>
-                    </div>
-                    <div>
-                        <a href="?export=csv&search=<?php echo urlencode($search); ?>&category=<?php echo urlencode($category); ?>&status=<?php echo urlencode($status); ?>"
-                           class="excel-export">
-                            <i class="fas fa-download"></i> Export to CSV
-                        </a>
-                    </div>
+        <!-- Page Title Section -->
+        <?php include __DIR__ . '/components/page-title.php'; ?>
+
+        <div class="catalog-container">
+            <!-- Search & Filter Bar -->
+            <div class="row g-3 mb-4">
+                <div class="col-md-4">
+                    <input type="text" id="searchBox" class="form-control" placeholder="Search products..." value="<?php echo htmlspecialchars($search); ?>">
                 </div>
-
-                <!-- Filter Section -->
-                <div class="filter-section">
-                    <form method="GET" class="row g-3">
-                        <div class="col-md-5">
-                            <div class="filter-label">Search</div>
-                            <input type="text" name="search" class="form-control"
-                                   placeholder="Product name, SKU, or barcode..."
-                                   value="<?php echo htmlspecialchars($search); ?>">
-                        </div>
-
-                        <div class="col-md-3">
-                            <div class="filter-label">Category</div>
-                            <select name="category" class="form-select">
-                                <option value="">All Categories</option>
-                                <?php foreach ($categories as $cat): ?>
-                                    <option value="<?php echo htmlspecialchars($cat); ?>"
-                                            <?php echo $category === $cat ? 'selected' : ''; ?>>
-                                        <?php echo htmlspecialchars($cat); ?>
-                                    </option>
-                                <?php endforeach; ?>
-                            </select>
-                        </div>
-
-                        <div class="col-md-2">
-                            <div class="filter-label">Status</div>
-                            <select name="status" class="form-select">
-                                <option value="">All Status</option>
-                                <option value="active" <?php echo $status === 'active' ? 'selected' : ''; ?>>Active</option>
-                                <option value="inactive" <?php echo $status === 'inactive' ? 'selected' : ''; ?>>Inactive</option>
-                            </select>
-                        </div>
-
-                        <div class="col-md-2" style="display: flex; align-items: flex-end; gap: 8px;">
-                            <button type="submit" class="btn btn-primary btn-sm" style="flex: 1;">
-                                <i class="fas fa-search"></i> Filter
-                            </button>
-                            <a href="?page=1" class="btn btn-secondary btn-sm">Reset</a>
-                        </div>
-                    </form>
+                <div class="col-md-3">
+                    <select id="statusFilter" class="form-select">
+                        <option value="">All Statuses</option>
+                        <option value="active" <?php echo $status === 'active' ? 'selected' : ''; ?>>Active</option>
+                        <option value="inactive" <?php echo $status === 'inactive' ? 'selected' : ''; ?>>Inactive</option>
+                    </select>
                 </div>
+                <div class="col-md-3">
+                    <button onclick="applyFilters()" class="btn btn-primary w-100"><i class="fas fa-filter"></i> Apply Filters</button>
+                </div>
+                <div class="col-md-2">
+                    <a href="?export=csv&search=<?php echo urlencode($search); ?>&status=<?php echo urlencode($status); ?>"
+                       class="btn btn-success w-100">
+                        <i class="fas fa-download"></i> Export CSV
+                    </a>
+                </div>
+            </div>
 
-                <?php if (isset($error)): ?>
-                    <div class="alert alert-danger" role="alert">
-                        <i class="fas fa-exclamation-circle"></i> <?php echo htmlspecialchars($error); ?>
-                    </div>
-                <?php endif; ?>
+            <!-- Results Info -->
+            <p class="text-muted mb-3">
+                Showing <?php echo !empty($products) ? (($page - 1) * $perPage) + 1 : 0; ?> -
+                <?php echo min($page * $perPage, $total); ?>
+                of <?php echo number_format($total); ?> products
+            </p>
 
-                <!-- Products Table -->
+            <!-- Product Table -->
+            <?php if (isset($error)): ?>
+                <div class="alert alert-danger" role="alert">
+                    <i class="fas fa-exclamation-circle"></i> <?php echo htmlspecialchars($error); ?>
+                </div>
+            <?php endif; ?>
+
+            <!-- Products Table -->
                 <?php if (!empty($products)): ?>
                     <div class="table-responsive">
                         <table class="table product-table">
@@ -538,6 +524,7 @@ try {
                             </ul>
                         </nav>
                     <?php endif; ?>
+                    </div>
                 <?php else: ?>
                     <div class="no-results">
                         <div><i class="fas fa-inbox"></i></div>
@@ -546,10 +533,17 @@ try {
                     </div>
                 <?php endif; ?>
             </div>
-        </div>
-    </div>
-</div>
+        </div> <!-- END content-wrapper -->
+    </div> <!-- END main-content -->
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<?php include __DIR__ . '/components/html-footer.php'; ?>
+
+<script>
+function applyFilters() {
+    const search = document.getElementById('searchBox').value;
+    const status = document.getElementById('statusFilter').value;
+    window.location.href = '?search=' + encodeURIComponent(search) + '&status=' + encodeURIComponent(status);
+}
+</script>
 </body>
 </html>

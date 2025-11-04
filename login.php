@@ -23,16 +23,10 @@ require_once __DIR__ . '/lib/OneTimeAccess.php';
 // Start session
 Session::start();
 
-// If already logged in, redirect to portal
-if (Auth::check()) {
-    header('Location: /supplier/');
-    exit;
-}
-
 // Initialize database connection
 $db = Database::connect();
 
-// Check if arriving with a supplier_id token (magic link)
+// Check if arriving with a supplier_id token (magic link) - DO THIS FIRST!
 if (isset($_GET['supplier_id'])) {
     $supplierId = trim($_GET['supplier_id']);
 
@@ -51,12 +45,15 @@ if (isset($_GET['supplier_id'])) {
         $supplier = $result->fetch_assoc();
 
         if ($supplier) {
-            // Log them in
+            // Log them in using proper Auth method
             $_SESSION['supplier_id'] = $supplier['id'];
             $_SESSION['supplier_name'] = $supplier['name'];
             $_SESSION['supplier_email'] = $supplier['email'];
-            $_SESSION['logged_in'] = true;
+            $_SESSION['authenticated'] = true;  // Auth::check() looks for this!
             $_SESSION['login_time'] = time();
+
+            // Regenerate session ID for security
+            session_regenerate_id(true);
 
             // Redirect to dashboard
             header('Location: /supplier/dashboard.php');
@@ -71,6 +68,12 @@ if (isset($_GET['supplier_id'])) {
         $message = 'System error. Please try again.';
         $messageType = 'danger';
     }
+}
+
+// If already logged in (and not arriving via token), redirect to portal
+if (Auth::check()) {
+    header('Location: /supplier/');
+    exit;
 }
 
 // Handle form submission

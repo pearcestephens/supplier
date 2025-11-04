@@ -1,9 +1,9 @@
 <?php
 /**
  * Supplier Portal - Configuration
- * 
+ *
  * Central config for supplier portal settings
- * 
+ *
  * @package CIS\Supplier
  */
 
@@ -24,6 +24,12 @@ define('FEATURE_NEURO_AI_ENABLED', true);
 define('FEATURE_BULK_DOWNLOADS_ENABLED', true);
 define('FEATURE_WARRANTY_AUTO_ACCEPT', false);
 
+// TEMPORARY: Hide specific menu items and widgets (set to false to hide)
+define('FEATURE_SHOW_INVENTORY_MOVEMENTS', false);
+define('FEATURE_SHOW_WARRANTY_CLAIMS', false);
+define('FEATURE_SHOW_REPORTS', false);
+define('FEATURE_SHOW_SIDEBAR_WIDGETS', false); // Hides both Recent Activity and Quick Stats
+
 // Allowed file extensions for media
 $GLOBALS['allowed_media_extensions'] = ['jpg', 'jpeg', 'png', 'gif', 'mp4', 'mov', 'avi'];
 
@@ -42,7 +48,7 @@ function get_supplier_session(): ?array
     if (!isset($_SESSION['supplier_id'])) {
         return null;
     }
-    
+
     return [
         'supplier_id' => $_SESSION['supplier_id'],
         'supplier_name' => $_SESSION['supplier_name'] ?? 'Unknown Supplier',
@@ -54,38 +60,38 @@ function get_supplier_session(): ?array
 function verify_supplier_auth(): bool
 {
     $session = get_supplier_session();
-    
+
     if (!$session) {
         return false;
     }
-    
+
     // Check session timeout
     if ((time() - $session['last_activity']) > SUPPLIER_SESSION_TIMEOUT) {
         session_destroy();
         return false;
     }
-    
+
     // Update last activity
     $_SESSION['last_activity'] = time();
-    
+
     return true;
 }
 
 function log_supplier_action(string $action, array $data = []): void
 {
     global $db;
-    
+
     $session = get_supplier_session();
-    
+
     if (!$session) {
         return;
     }
-    
+
     $stmt = $db->prepare("
         INSERT INTO supplier_portal_logs (supplier_id, action, data, ip_address, user_agent, created_at)
         VALUES (?, ?, ?, ?, ?, NOW())
     ");
-    
+
     $stmt->bind_param(
         'sssss',
         $session['supplier_id'],
@@ -94,6 +100,6 @@ function log_supplier_action(string $action, array $data = []): void
         $_SERVER['REMOTE_ADDR'],
         $_SERVER['HTTP_USER_AGENT']
     );
-    
+
     $stmt->execute();
 }

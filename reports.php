@@ -7,15 +7,19 @@ if (!Auth::check()) {
     exit;
 }
 
-$supplierID = Auth::getSupplierId();
+$supplierId = Auth::getSupplierId();
 $supplierName = Auth::getSupplierName();
+
+// Debug logging
+error_log("Reports page - Supplier ID: " . $supplierId);
+error_log("Reports page - Supplier Name: " . $supplierName);
 
 // ============================================================================
 // DATABASE QUERIES - Reports Page Logic
 // ============================================================================
 $db = db();
 
-if (empty($supplierID)) {
+if (empty($supplierId)) {
     die('<div class="alert alert-danger">Supplier ID not found in session. Please log in again.</div>');
 }
 
@@ -48,14 +52,17 @@ $performanceQuery = "
     LEFT JOIN vend_consignment_line_items ti ON t.id = ti.transfer_id
     WHERE t.supplier_id = ?
       AND t.transfer_category = 'PURCHASE_ORDER'
-      AND t.deleted_at IS NULL
+      AND (t.deleted_at IS NULL OR t.deleted_at = '0000-00-00 00:00:00')
       AND t.created_at BETWEEN ? AND ?
 ";
 $stmt = $db->prepare($performanceQuery);
-$stmt->bind_param('sss', $supplierID, $startDate, $endDate);
+$stmt->bind_param('sss', $supplierId, $startDate, $endDate);
 $stmt->execute();
 $performance = $stmt->get_result()->fetch_assoc();
 $stmt->close();
+
+// Debug: Log performance data
+error_log("Reports page - Performance query returned: " . json_encode($performance));
 
 // QUERY 2: Monthly Trend Data (Last 12 Months)
 $monthlyTrendQuery = "
@@ -68,13 +75,13 @@ $monthlyTrendQuery = "
     LEFT JOIN vend_consignment_line_items ti ON t.id = ti.transfer_id
     WHERE t.supplier_id = ?
       AND t.transfer_category = 'PURCHASE_ORDER'
-      AND t.deleted_at IS NULL
+      AND (t.deleted_at IS NULL OR t.deleted_at = '0000-00-00 00:00:00')
       AND t.created_at >= DATE_SUB(NOW(), INTERVAL 12 MONTH)
     GROUP BY DATE_FORMAT(t.created_at, '%Y-%m')
     ORDER BY month ASC
 ";
 $stmt = $db->prepare($monthlyTrendQuery);
-$stmt->bind_param('s', $supplierID);
+$stmt->bind_param('s', $supplierId);
 $stmt->execute();
 $monthlyTrend = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
 $stmt->close();
@@ -94,14 +101,14 @@ $topProductsQuery = "
     JOIN vend_products p ON ti.product_id = p.id
     WHERE t.supplier_id = ?
       AND t.transfer_category = 'PURCHASE_ORDER'
-      AND t.deleted_at IS NULL
+      AND (t.deleted_at IS NULL OR t.deleted_at = '0000-00-00 00:00:00')
       AND t.created_at BETWEEN ? AND ?
     GROUP BY ti.product_id
     ORDER BY total_revenue DESC
     LIMIT 10
 ";
 $stmt = $db->prepare($topProductsQuery);
-$stmt->bind_param('sss', $supplierID, $startDate, $endDate);
+$stmt->bind_param('sss', $supplierId, $startDate, $endDate);
 $stmt->execute();
 $topProducts = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
 $stmt->close();
@@ -122,13 +129,13 @@ $storePerformanceQuery = "
     LEFT JOIN vend_outlets o ON t.outlet_to = o.id
     WHERE t.supplier_id = ?
       AND t.transfer_category = 'PURCHASE_ORDER'
-      AND t.deleted_at IS NULL
+      AND (t.deleted_at IS NULL OR t.deleted_at = '0000-00-00 00:00:00')
       AND t.created_at BETWEEN ? AND ?
     GROUP BY t.outlet_to
     ORDER BY total_revenue DESC
 ";
 $stmt = $db->prepare($storePerformanceQuery);
-$stmt->bind_param('sss', $supplierID, $startDate, $endDate);
+$stmt->bind_param('sss', $supplierId, $startDate, $endDate);
 $stmt->execute();
 $storePerformance = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
 $stmt->close();
@@ -145,12 +152,12 @@ $fulfillmentQuery = "
     FROM vend_consignments t
     WHERE t.supplier_id = ?
       AND t.transfer_category = 'PURCHASE_ORDER'
-      AND t.deleted_at IS NULL
+      AND (t.deleted_at IS NULL OR t.deleted_at = '0000-00-00 00:00:00')
       AND t.created_at BETWEEN ? AND ?
     GROUP BY t.state
 ";
 $stmt = $db->prepare($fulfillmentQuery);
-$stmt->bind_param('sss', $supplierID, $startDate, $endDate);
+$stmt->bind_param('sss', $supplierId, $startDate, $endDate);
 $stmt->execute();
 $fulfillmentMetrics = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
 $stmt->close();
@@ -166,39 +173,6 @@ foreach ($fulfillmentMetrics as $metric) {
 $fulfillmentRate = $totalOrdersInPeriod > 0 ? ($completedOrdersInPeriod / $totalOrdersInPeriod) * 100 : 0;
 
 $activeTab = 'reports';
-$pageTitle = 'Reports';
-$pageIcon = 'fa-solid fa-chart-bar';
-$pageDescription = 'Analyze my sales, fulfillment, and product performance with The Vape Shed';
-$breadcrumb = [
-    ['text' => 'Reports', 'href' => '/supplier/reports.php']
-];
-?>
-<?php include __DIR__ . '/components/html-head.php'; ?>
-
-<!-- Reports Specific CSS -->
-<link rel="stylesheet" href="/supplier/assets/css/05-reports.css?v=<?php echo time(); ?>">
-
-<!-- Sidebar -->
-<?php include __DIR__ . '/components/sidebar-new.php'; ?>
-
-<!-- Page Header (Fixed Top Bar) -->
-<?php include __DIR__ . '/components/page-header.php'; ?>
-
-<!-- Main Content Area -->
-<div class="main-content">
-    <div class="content-wrapper p-4">
-
-        <!-- Page Title Section -->
-        <?php include __DIR__ . '/components/page-title.php'; ?>
-
-<!-- Supplier Reports Page -->
-<div class="reports-page">
-
-    <!-- Filter Bar & Export Toolbar -->
-    <div class="filter-bar">
-        <form method="GET" action="" class="d-flex gap-3 flex-wrap align-items-end w-100">
-            <input type="hidden" name="tab" value="reports">
-$activeTab = 'reports';
 $pageTitle = 'Analytics & Reports';
 $pageIcon = 'fa-solid fa-chart-line';
 $pageDescription = 'Comprehensive sales analytics and performance insights';
@@ -212,29 +186,75 @@ $breadcrumb = [
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 
 <style>
-:root { --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
-.reports-header { background: var(--gradient-primary); color: white; padding: 2.5rem; margin: -1.5rem -1.5rem 2rem; border-radius: 12px 12px 0 0; text-align: center; }
-.reports-header h1 { font-size: 2rem; font-weight: 700; margin-bottom: 0.5rem; }
-.filter-toolbar { background: white; border-radius: 12px; padding: 1.5rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 2rem; }
-.quick-date-btn { padding: 0.4rem 0.8rem; font-size: 0.875rem; border: 1px solid #e5e7eb; background: white; border-radius: 6px; cursor: pointer; transition: all 0.2s; margin: 2px; }
-.quick-date-btn:hover { background: #667eea; color: white; }
-.kpi-card { background: white; border-radius: 12px; padding: 1.5rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border-left: 4px solid; transition: transform 0.2s; }
+:root { --gradient-primary: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%); }
+body { background: #f5f5f5; color: #333; }
+.filter-toolbar {
+    background: white;
+    border-radius: 8px;
+    padding: 1.25rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    margin-bottom: 1.5rem;
+    border: 1px solid #e5e7eb;
+}
+.quick-date-btn {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.875rem;
+    border: 1px solid #d1d5db;
+    background: white;
+    color: #4b5563;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin: 2px;
+}
+.quick-date-btn:hover { background: #ffcc00; color: #000; border-color: #ffcc00; }
+.kpi-card {
+    background: white;
+    border-radius: 8px;
+    padding: 1.25rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    border-left: 4px solid;
+    transition: transform 0.2s;
+    border: 1px solid #e5e7eb;
+    min-height: 120px;
+}
 .kpi-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
-.kpi-card.primary { border-left-color: #667eea; }
+.kpi-card.primary { border-left-color: #ffcc00; }
 .kpi-card.success { border-left-color: #10b981; }
 .kpi-card.warning { border-left-color: #f59e0b; }
 .kpi-card.info { border-left-color: #3b82f6; }
-.kpi-value { font-size: 2rem; font-weight: 700; margin: 0.5rem 0 0.25rem; }
-.kpi-label { font-size: 0.875rem; font-weight: 600; color: #6b7280; text-transform: uppercase; }
-.kpi-meta { font-size: 0.875rem; color: #9ca3af; }
-.chart-card { background: white; border-radius: 12px; padding: 1.5rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1); height: 100%; }
-.chart-title { font-size: 1.125rem; font-weight: 700; margin-bottom: 1rem; }
-.data-table { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+.kpi-value { font-size: 1.75rem; font-weight: 700; margin: 0.5rem 0 0.25rem; color: #111827; }
+.kpi-label { font-size: 0.875rem; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px; }
+.kpi-meta { font-size: 0.875rem; color: #9ca3af; margin-top: 0.25rem; }
+.chart-card {
+    background: white;
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    border: 1px solid #e5e7eb;
+    margin-bottom: 1.5rem;
+}
+.chart-title { font-size: 1.125rem; font-weight: 700; margin-bottom: 1rem; color: #111827; }
+.data-table {
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    border: 1px solid #e5e7eb;
+    margin-bottom: 1.5rem;
+}
 .rank-badge { display: inline-flex; width: 32px; height: 32px; border-radius: 8px; align-items: center; justify-content: center; font-weight: 700; }
 .rank-badge.gold { background: linear-gradient(135deg, #fbbf24, #f59e0b); color: white; }
 .rank-badge.silver { background: linear-gradient(135deg, #d1d5db, #9ca3af); color: white; }
 .rank-badge.bronze { background: linear-gradient(135deg, #f97316, #ea580c); color: white; }
 .rank-badge.default { background: #f3f4f6; color: #6b7280; }
+.form-select, .form-control { background: white; color: #374151; border: 1px solid #d1d5db; }
+.form-select:focus, .form-control:focus { background: white; color: #111827; border-color: #ffcc00; box-shadow: 0 0 0 3px rgba(255,204,0,0.1); }
+.table { color: #374151; }
+.table thead th { background: #f9fafb; color: #111827; border-color: #e5e7eb; font-weight: 600; }
+.table tbody tr { background: white; border-color: #e5e7eb; }
+.table tbody tr:hover { background: #f9fafb; }
+.content-wrapper { max-width: 1400px; margin: 0 auto; }
 </style>
 
 <?php include __DIR__ . '/components/sidebar-new.php'; ?>
@@ -242,12 +262,11 @@ $breadcrumb = [
 
 <div class="main-content">
     <div class="content-wrapper p-4">
-        
-        <div class="reports-header">
-            <h1><i class="fas fa-chart-line"></i> Analytics & Reports</h1>
-            <p>Comprehensive insights into your sales performance and trends</p>
-        </div>
 
+        <!-- Page Title Section -->
+        <?php include __DIR__ . '/components/page-title.php'; ?>
+
+        <!-- Filter Toolbar -->
         <div class="filter-toolbar">
             <form method="GET" class="d-flex gap-3 flex-wrap align-items-end">
                 <div style="flex: 1; min-width: 150px;">
@@ -273,6 +292,18 @@ $breadcrumb = [
             </form>
         </div>
 
+        <?php if (!$performance['total_orders'] || (int)$performance['total_orders'] === 0): ?>
+        <!-- No Data Message -->
+        <div class="alert alert-info d-flex align-items-center" role="alert">
+            <i class="fas fa-info-circle me-3" style="font-size: 2rem;"></i>
+            <div>
+                <h5 class="alert-heading mb-1">No Data Available</h5>
+                <p class="mb-0">There are no orders for the selected date range (<?php echo date('M d, Y', strtotime($startDate)); ?> to <?php echo date('M d, Y', strtotime($endDate)); ?>).</p>
+                <p class="mb-0 mt-2"><strong>Tip:</strong> Try selecting a different date range or check back later.</p>
+            </div>
+        </div>
+        <?php else: ?>
+        <!-- KPI Cards -->
         <div class="row g-4 mb-4">
             <div class="col-xl-3 col-md-6">
                 <div class="kpi-card primary">
@@ -347,7 +378,7 @@ $breadcrumb = [
                         </tr>
                     </thead>
                     <tbody>
-                        <?php foreach ($topProducts as $i => $p): 
+                        <?php foreach ($topProducts as $i => $p):
                             $rank = $i === 0 ? 'gold' : ($i === 1 ? 'silver' : ($i === 2 ? 'bronze' : 'default'));
                         ?>
                         <tr>
@@ -401,9 +432,10 @@ $breadcrumb = [
             </div>
         </div>
         <?php endif; ?>
+        <?php endif; ?> <!-- End if has data check -->
 
-    </div>
-</div>
+    </div> <!-- END content-wrapper -->
+</div> <!-- END main-content -->
 
 <?php include __DIR__ . '/components/html-footer.php'; ?>
 
@@ -417,7 +449,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const revenue = reportData.monthlyTrend.map(d => parseFloat(d.revenue || 0));
         new Chart(document.getElementById('revenueTrendChart'), {
             type: 'line',
-            data: { labels: months, datasets: [{ label: 'Revenue', data: revenue, borderColor: '#667eea', backgroundColor: 'rgba(102,126,234,0.1)', borderWidth: 3, fill: true, tension: 0.4 }] },
+            data: { labels: months, datasets: [{ label: 'Revenue', data: revenue, borderColor: '#ffcc00', backgroundColor: 'rgba(255,204,0,0.1)', borderWidth: 3, fill: true, tension: 0.4 }] },
             options: { responsive: true, maintainAspectRatio: false, plugins: { legend: {display:false} }, scales: { y: { beginAtZero: true, ticks: { callback: v => '$'+v.toLocaleString() } } } }
         });
     }
@@ -439,7 +471,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const revenue = reportData.storePerformance.map(s => parseFloat(s.total_revenue || 0));
         new Chart(document.getElementById('storePerformanceChart'), {
             type: 'bar',
-            data: { labels: stores, datasets: [{ label: 'Revenue', data: revenue, backgroundColor: 'rgba(102,126,234,0.8)', borderColor: '#667eea', borderWidth: 2, borderRadius: 6 }] },
+            data: { labels: stores, datasets: [{ label: 'Revenue', data: revenue, backgroundColor: 'rgba(255,204,0,0.8)', borderColor: '#ffcc00', borderWidth: 2, borderRadius: 6 }] },
             options: { responsive: true, maintainAspectRatio: false, plugins: { legend: {display:false} }, scales: { y: { beginAtZero: true, ticks: { callback: v => '$'+v.toLocaleString() } } } }
         });
     }

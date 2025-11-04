@@ -34,11 +34,14 @@ $activeTab = $activeTab ?? $currentPage;
                 <i class="fa-solid fa-box-open"></i> Product Catalog
             </a>
         </li>
+        <?php if (defined('FEATURE_SHOW_INVENTORY_MOVEMENTS') && FEATURE_SHOW_INVENTORY_MOVEMENTS): ?>
         <li class="nav-item">
             <a class="nav-link <?php echo $activeTab === 'inventory-movements' ? 'active' : ''; ?>" href="/supplier/inventory-movements.php">
                 <i class="fa-solid fa-arrow-right-arrow-left"></i> Inventory Movements
             </a>
         </li>
+        <?php endif; ?>
+        <?php if (defined('FEATURE_SHOW_WARRANTY_CLAIMS') && FEATURE_SHOW_WARRANTY_CLAIMS): ?>
         <li class="nav-item">
             <a class="nav-link <?php echo $activeTab === 'warranty' ? 'active' : ''; ?>" href="/supplier/warranty.php">
                 <i class="fa-solid fa-wrench"></i> Warranty Claims
@@ -47,6 +50,7 @@ $activeTab = $activeTab ?? $currentPage;
                 <?php endif; ?>
             </a>
         </li>
+        <?php endif; ?>
         <?php if (defined('FEATURE_DOWNLOADS_ENABLED') && FEATURE_DOWNLOADS_ENABLED): ?>
         <li class="nav-item">
             <a class="nav-link <?php echo $activeTab === 'downloads' ? 'active' : ''; ?>" href="/supplier/downloads.php">
@@ -54,11 +58,13 @@ $activeTab = $activeTab ?? $currentPage;
             </a>
         </li>
         <?php endif; ?>
+        <?php if (defined('FEATURE_SHOW_REPORTS') && FEATURE_SHOW_REPORTS): ?>
         <li class="nav-item">
             <a class="nav-link <?php echo $activeTab === 'reports' ? 'active' : ''; ?>" href="/supplier/reports.php">
                 <i class="fa-solid fa-chart-bar"></i> Reports
             </a>
         </li>
+        <?php endif; ?>
         <li class="nav-item">
             <a class="nav-link <?php echo $activeTab === 'account' ? 'active' : ''; ?>" href="/supplier/account.php">
                 <i class="fa-solid fa-user"></i> Account
@@ -66,6 +72,7 @@ $activeTab = $activeTab ?? $currentPage;
         </li>
     </ul>
 
+    <?php if (defined('FEATURE_SHOW_SIDEBAR_WIDGETS') && FEATURE_SHOW_SIDEBAR_WIDGETS): ?>
     <!-- Activity Feed Widget (shows first, hides on short screens) -->
     <div class="sidebar-widget sidebar-activity-widget mt-2 px-3">
         <h6 class="sidebar-widget-title text-white-50 text-uppercase mb-2">
@@ -153,4 +160,5 @@ $activeTab = $activeTab ?? $currentPage;
             </div>
         </div>
     </div>
+    <?php endif; ?>
 </div>

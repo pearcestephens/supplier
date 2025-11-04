@@ -116,7 +116,7 @@ $stmt = $db->prepare("
         p.created_at as parcel_created
     FROM consignment_shipments s
     LEFT JOIN consignment_parcels p ON s.id = p.shipment_id
-    WHERE s.consignment_id = ?
+    WHERE s.transfer_id = ?
     ORDER BY p.box_number ASC, p.parcel_number ASC
 ");
 
@@ -403,13 +403,13 @@ $breadcrumb = [
                             <th width="35%">Product Name</th>
                             <th width="10%" class="text-center">Ordered</th>
                             <th width="15%" class="text-center">
-                                Sent
-                                <div class="form-check form-check-sm mt-1">
-                                    <input class="form-check-input" type="checkbox" id="enableEdit" onchange="toggleEditMode()">
-                                    <label class="form-check-label small text-muted" for="enableEdit">
-                                        <i class="fas fa-edit"></i> Edit
+                                <div class="form-check d-inline-block mb-1">
+                                    <input class="form-check-input" type="checkbox" id="enableEdit" onchange="toggleEditMode(this)">
+                                    <label class="form-check-label small" for="enableEdit" title="Enable editing of sent quantities">
+                                        <i class="fas fa-edit"></i> Edit?
                                     </label>
                                 </div>
+                                <div>Sent</div>
                             </th>
                             <th width="12%" class="text-center">Received</th>
                             <th width="13%" class="text-end">Unit Cost</th>
@@ -431,9 +431,6 @@ $breadcrumb = [
                                 $receivedPercent = $item['quantity'] > 0 ? ($item['quantity_sent'] / $item['quantity']) * 100 : 0;
                                 ?>
                                 <tr data-item-id="<?php echo $item['id']; ?>">
-                                    <td class="text-center">
-                                        <input type="checkbox" class="item-checkbox" disabled onchange="toggleItemEdit(this)">
-                                    </td>
                                     <td>
                                         <code class="small"><?php echo htmlspecialchars($item['sku']); ?></code>
                                     </td>
@@ -446,14 +443,17 @@ $breadcrumb = [
                                     <td class="text-center">
                                         <span class="badge bg-secondary"><?php echo number_format($item['quantity']); ?></span>
                                     </td>
-                                    <td class="text-center qty-sent-cell">
-                                        <span class="qty-sent-display"><?php echo number_format($item['quantity_sent']); ?></span>
+                                    <td class="text-center">
                                         <input type="number"
-                                               class="form-control form-control-sm qty-sent-input d-none"
+                                               class="form-control form-control-sm qty-sent-input"
                                                value="<?php echo $item['quantity_sent']; ?>"
                                                min="0"
                                                max="<?php echo $item['quantity']; ?>"
-                                               style="width: 80px; margin: 0 auto;">
+                                               disabled
+                                               data-item-id="<?php echo $item['id']; ?>"
+                                               data-original-value="<?php echo $item['quantity_sent']; ?>"
+                                               onchange="updateQuantitySent(this)"
+                                               style="width: 100px; margin: 0 auto;">
                                     </td>
                                     <td class="text-center">
                                         <span class="text-muted">-</span>
@@ -469,6 +469,7 @@ $breadcrumb = [
                             <td colspan="2" class="text-end"><strong>Totals:</strong></td>
                             <td class="text-center"><strong><?php echo number_format($totalQuantity); ?></strong></td>
                             <td class="text-center"><strong class="text-success"><?php echo number_format($totalReceived); ?></strong></td>
+                            <td></td>
                             <td></td>
                             <td class="text-end"><strong class="text-primary fs-5">$<?php echo number_format((float)$totalValue, 2); ?></strong></td>
                         </tr>
@@ -730,73 +731,102 @@ function addOrderNote() {
 }
 
 // Toggle edit mode for quantities
-function toggleEditMode() {
-    const checkbox = document.getElementById('enableEdit');
+function toggleEditMode(checkbox) {
     const isEditMode = checkbox.checked;
+    const qtyInputs = document.querySelectorAll('.qty-sent-input');
+    const exportBtn = document.querySelector('[onclick="exportItemsCSV()"]');
+    const trackingElements = document.querySelectorAll('.tracking-field, .add-tracking-btn, .mark-shipped-btn');
 
-    // Toggle all row checkboxes
-    const rowCheckboxes = document.querySelectorAll('.item-checkbox');
-    rowCheckboxes.forEach(cb => {
-        cb.disabled = !isEditMode;
-        if (!isEditMode) {
-            cb.checked = false;
-        }
-    });
-
-    // Show/hide quantity inputs based on row checkbox state
     if (isEditMode) {
-        showToast('Edit mode enabled. Check items to edit quantities.', 'info');
+        // Enable all quantity inputs
+        qtyInputs.forEach(input => {
+            input.disabled = false;
+            input.classList.add('border-primary');
+        });
+
+        // Disable export and tracking controls
+        if (exportBtn) exportBtn.disabled = true;
+        trackingElements.forEach(el => el.disabled = true);
+
+        showToast('Edit mode enabled. Values will save automatically as you type.', 'info');
     } else {
-        // Hide all inputs when disabling edit mode
-        document.querySelectorAll('.qty-sent-display').forEach(span => span.classList.remove('d-none'));
-        document.querySelectorAll('.qty-sent-input').forEach(input => input.classList.add('d-none'));
-        showToast('Edit mode disabled.', 'info');
+        // Disable all quantity inputs
+        qtyInputs.forEach(input => {
+            input.disabled = true;
+            input.classList.remove('border-primary');
+        });
+
+        // Re-enable export and tracking controls
+        if (exportBtn) exportBtn.disabled = false;
+        trackingElements.forEach(el => el.disabled = false);
+
+        showToast('Edit mode disabled. All changes saved.', 'success');
     }
 }
 
-// Toggle individual item edit
-function toggleItemEdit(checkbox) {
-    const row = checkbox.closest('tr');
-    const display = row.querySelector('.qty-sent-display');
-    const input = row.querySelector('.qty-sent-input');
+// Update quantity sent via AJAX (live update as typed)
+let updateTimeout = null;
+function updateQuantitySent(input) {
+    const itemId = input.dataset.itemId;
+    const newValue = parseInt(input.value) || 0;
+    const maxValue = parseInt(input.max);
+    const originalValue = parseInt(input.dataset.originalValue);
 
-    if (checkbox.checked) {
-        display.classList.add('d-none');
-        input.classList.remove('d-none');
-        input.focus();
-    } else {
-        display.classList.remove('d-none');
-        input.classList.add('d-none');
+    // Validate range
+    if (newValue < 0) {
+        input.value = 0;
+        return;
     }
-}
-
-// Save edited quantities
-function saveEditedQuantities() {
-    const checkedBoxes = document.querySelectorAll('.item-checkbox:checked');
-
-    if (checkedBoxes.length === 0) {
-        showToast('No items selected to save', 'warning');
+    if (newValue > maxValue) {
+        input.value = maxValue;
+        showToast('Cannot exceed ordered quantity', 'warning');
         return;
     }
 
-    const updates = [];
-    checkedBoxes.forEach(checkbox => {
-        const row = checkbox.closest('tr');
-        const itemId = row.dataset.itemId;
-        const input = row.querySelector('.qty-sent-input');
-        const newQty = parseInt(input.value) || 0;
+    // Skip if no change
+    if (newValue === originalValue) {
+        return;
+    }
 
-        updates.push({
-            item_id: itemId,
-            quantity_sent: newQty
+    // Debounce the AJAX call (wait 500ms after typing stops)
+    clearTimeout(updateTimeout);
+    updateTimeout = setTimeout(() => {
+        // Show saving indicator
+        input.classList.add('border-success');
+
+        // Send AJAX update
+        fetch('/supplier/api/update-quantity-sent.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                item_id: itemId,
+                quantity_sent: newValue
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Update original value
+                input.dataset.originalValue = newValue;
+                input.classList.remove('border-success');
+                input.classList.add('border-success');
+                setTimeout(() => input.classList.remove('border-success'), 1000);
+            } else {
+                input.value = originalValue;
+                input.classList.remove('border-success');
+                showToast(data.error || 'Failed to update quantity', 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            input.value = originalValue;
+            input.classList.remove('border-success');
+            showToast('Network error. Please try again.', 'error');
         });
-    });
-
-    // Confirm before saving
-    Swal.fire({
-        title: 'Save Changes?',
-        text: `Update quantities for ${updates.length} item(s)?`,
-        icon: 'question',
+    }, 500);
+}
         showCancelButton: true,
         confirmButtonText: 'Yes, Save',
         confirmButtonColor: '#28a745',

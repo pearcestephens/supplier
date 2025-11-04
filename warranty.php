@@ -42,7 +42,7 @@ $pendingQuery = "
     LEFT JOIN vend_products p ON fp.product_id = p.id
     LEFT JOIN vend_outlets o ON fp.store_location = o.id
     WHERE p.supplier_id = ?
-      AND (fp.supplier_status = 0 OR fp.supplier_status IS NULL)
+      AND fp.supplier_status = 0
     ORDER BY fp.time_created DESC
     LIMIT 100
 ";
@@ -52,15 +52,15 @@ $stmt1->execute();
 $pendingClaims = $stmt1->get_result()->fetch_all(MYSQLI_ASSOC);
 $stmt1->close();
 
-// QUERY 1B: Defect Analytics - Product defect rates by category (30 days)
+// QUERY 1B: Defect Analytics - Product defect rates by category
 $defectAnalyticsQuery = "
     SELECT
         p.id,
         p.sku,
         p.name as product_name,
-        COUNT(fp.id) as total_claims_30d,
+        COUNT(fp.id) as total_claims,
         ROUND((COUNT(fp.id) / NULLIF(
-            SUM(CASE WHEN li.created_at >= DATE_SUB(NOW(), INTERVAL 30 DAY) THEN li.quantity ELSE 0 END), 0
+            SUM(li.quantity), 0
         )) * 100, 2) as defect_rate_pct,
         COUNT(DISTINCT fp.fault_desc) as issue_types,
         fp.fault_desc as primary_issue
@@ -68,10 +68,9 @@ $defectAnalyticsQuery = "
     LEFT JOIN vend_products p ON fp.product_id = p.id
     LEFT JOIN vend_consignment_line_items li ON p.id = li.product_id
     WHERE p.supplier_id = ?
-        AND fp.time_created >= DATE_SUB(NOW(), INTERVAL 30 DAY)
         AND fp.supplier_status IN (0, 1, NULL)
     GROUP BY p.id, fp.fault_desc
-    ORDER BY total_claims_30d DESC
+    ORDER BY total_claims DESC
     LIMIT 10
 ";
 $stmt1b = $db->prepare($defectAnalyticsQuery);
@@ -95,8 +94,8 @@ foreach ($pendingClaims as &$claim) {
 }
 unset($claim); // Break reference
 
-// QUERY 2: Get Approved Claims (PAGINATION FIX: Added LIMIT)
-$approvedQuery = "
+// QUERY 2: Get Accepted Claims (PAGINATION FIX: Added LIMIT)
+$acceptedQuery = "
     SELECT
         fp.id as fault_id,
         fp.product_id,
@@ -113,14 +112,13 @@ $approvedQuery = "
     LEFT JOIN vend_outlets o ON fp.store_location = o.id
     WHERE p.supplier_id = ?
       AND fp.supplier_status = 1
-      AND fp.supplier_status_timestamp >= DATE_SUB(NOW(), INTERVAL 30 DAY)
     ORDER BY fp.supplier_status_timestamp DESC
     LIMIT 100
 ";
-$stmt2 = $db->prepare($approvedQuery);
+$stmt2 = $db->prepare($acceptedQuery);
 $stmt2->bind_param('s', $supplierID);
 $stmt2->execute();
-$approvedClaims = $stmt2->get_result()->fetch_all(MYSQLI_ASSOC);
+$acceptedClaims = $stmt2->get_result()->fetch_all(MYSQLI_ASSOC);
 $stmt2->close();
 
 // QUERY 3: Get Declined Claims (PAGINATION FIX: Added LIMIT)
@@ -141,7 +139,6 @@ $declinedQuery = "
     LEFT JOIN vend_outlets o ON fp.store_location = o.id
     WHERE p.supplier_id = ?
       AND fp.supplier_status = 2
-      AND fp.supplier_status_timestamp >= DATE_SUB(NOW(), INTERVAL 30 DAY)
     ORDER BY fp.supplier_status_timestamp DESC
     LIMIT 100
 ";
@@ -208,7 +205,7 @@ $breadcrumb = [
             <div class="card-body">
                 <div class="row no-gutters align-items-center">
                     <div class="col mr-2">
-                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Accepted (30d)</div>
+                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Accepted (Last 100)</div>
                         <div class="h5 mb-0 font-weight-bold text-gray-800"><?php echo count($acceptedClaims ?? []); ?></div>
                     </div>
                     <div class="col-auto">
@@ -223,7 +220,7 @@ $breadcrumb = [
             <div class="card-body">
                 <div class="row no-gutters align-items-center">
                     <div class="col mr-2">
-                        <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">Declined (30d)</div>
+                        <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">Declined (Last 100)</div>
                         <div class="h5 mb-0 font-weight-bold text-gray-800"><?php echo count($declinedClaims ?? []); ?></div>
                     </div>
                     <div class="col-auto">
@@ -269,13 +266,13 @@ $breadcrumb = [
             <div class="card shadow mb-3">
                 <div class="card-header bg-warning text-dark d-flex justify-content-between align-items-center">
                     <div>
-                        <strong><?php echo htmlspecialchars($claim['fault_id']); ?></strong>
+                        <strong><?php echo htmlspecialchars((string)$claim['fault_id']); ?></strong>
                         <span class="ml-3">
                             <i class="fas fa-clock"></i> <?php echo $claim['days_open']; ?> days open
                         </span>
                     </div>
                     <div>
-                        <span class="badge badge-light"><?php echo htmlspecialchars($claim['outlet_code']); ?></span>
+                        <span class="badge badge-light"><?php echo htmlspecialchars((string)$claim['outlet_code']); ?></span>
                     </div>
                 </div>
                 <div class="card-body">
@@ -343,13 +340,13 @@ $breadcrumb = [
                     <div class="row">
                         <div class="col-md-6">
                             <button class="btn btn-success btn-block"
-                                    onclick="acceptClaim('<?php echo htmlspecialchars($claim['fault_id']); ?>');">
+                                    onclick="acceptClaim('<?php echo (int)$claim['fault_id']; ?>');">
                                 <i class="fas fa-check"></i> Accept Claim
                             </button>
                         </div>
                         <div class="col-md-6">
                             <button class="btn btn-danger btn-block"
-                                    onclick="declineClaim('<?php echo htmlspecialchars($claim['fault_id']); ?>');">
+                                    onclick="declineClaim('<?php echo (int)$claim['fault_id']; ?>');">
                                 <i class="fas fa-times"></i> Decline Claim
                             </button>
                         </div>
@@ -365,7 +362,7 @@ $breadcrumb = [
         <?php if (empty($acceptedClaims)): ?>
             <div class="alert alert-success">
                 <i class="fas fa-check-circle"></i>
-                <strong>No accepted claims in the last 30 days</strong><br>
+                <strong>No accepted claims in recent history</strong><br>
                 Claims you accept will appear here.
             </div>
         <?php else: ?>
@@ -405,7 +402,7 @@ $breadcrumb = [
         <?php if (empty($declinedClaims)): ?>
             <div class="alert alert-secondary">
                 <i class="fas fa-times-circle"></i>
-                <strong>No declined claims in the last 30 days</strong><br>
+                <strong>No declined claims in recent history</strong><br>
                 Claims you decline will appear here.
             </div>
         <?php else: ?>
@@ -425,7 +422,7 @@ $breadcrumb = [
                     <tbody>
                         <?php foreach ($declinedClaims as $claim): ?>
                             <tr>
-                                <td><?php echo htmlspecialchars($claim['fault_id']); ?></td>
+                                <td><?php echo (int)$claim['fault_id']; ?></td>
                                 <td><?php echo htmlspecialchars($claim['product_name']); ?></td>
                                 <td><?php echo htmlspecialchars($claim['outlet_name'] ?? 'Unknown'); ?></td>
                                 <td><?php echo $claim['declined_date'] ? date('j M Y', strtotime($claim['declined_date'])) : 'N/A'; ?></td>

@@ -349,7 +349,7 @@
 .main-content {
     margin-left: 250px;
     padding-top: 60px; /* Only for fixed top bar */
-    min-height: 100vh;
+    min-height: calc(100vh - 60px); /* Account for header height */
 }
 
 .content-wrapper {

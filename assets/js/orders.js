@@ -419,124 +419,70 @@ function quickViewOrder(orderId) {
 }
 
 // =============================================================================
-// ADD TRACKING MODAL (MULTIPLE TRACKING NUMBERS)
+// ADD TRACKING MODAL (COMPACT VERSION)
 // =============================================================================
 
 /**
- * Show modal to add one or more tracking numbers to an order
- * ONE LINE PER PARCEL with Add button and parcel counter
+ * Show COMPACT modal to add tracking number(s) to an order
+ * MUCH SMALLER - Just carrier, tracking number, and optional note
  */
 function addTrackingModal(orderId, orderNumber) {
-    let trackingList = [];
-
-    function renderTrackingUI() {
-        let html = `
+    Swal.fire({
+        title: `Add Tracking - #${orderNumber}`,
+        html: `
             <div class="text-start">
-                <div class="mb-3">
-                    <label class="form-label fw-bold">Carrier</label>
-                    <select id="tracking-carrier" class="form-select">
+                <div class="mb-2">
+                    <label class="form-label small fw-bold mb-1">Carrier</label>
+                    <select id="tracking-carrier" class="form-select form-select-sm">
                         <option value="NZ Post">NZ Post</option>
                         <option value="CourierPost">CourierPost</option>
                         <option value="FedEx">FedEx</option>
                         <option value="DHL">DHL</option>
-                        <option value="UPS">UPS</option>
-                        <option value="TNT">TNT</option>
                         <option value="Other">Other</option>
                     </select>
                 </div>
 
-                <div class="mb-3">
-                    <label class="form-label fw-bold">Add Tracking Number (1 per parcel)</label>
-                    <div class="input-group">
-                        <input type="text" id="tracking-input" class="form-control" placeholder="Enter tracking number" onkeypress="if(event.key==='Enter'){event.preventDefault();document.getElementById('add-tracking-btn').click();}">
-                        <button class="btn btn-success" type="button" id="add-tracking-btn">
-                            <i class="fas fa-plus"></i> Add
-                        </button>
-                    </div>
-                    <small class="text-muted">Enter one tracking number and click Add. Repeat for each parcel.</small>
+                <div class="mb-2">
+                    <label class="form-label small fw-bold mb-1">Tracking Number(s)</label>
+                    <textarea id="tracking-input" class="form-control form-control-sm" rows="2"
+                        placeholder="Enter tracking numbers (one per line for multiple parcels)"></textarea>
+                    <small class="text-muted">One per line if multiple parcels</small>
                 </div>
 
-                <div class="mb-3">
-                    <label class="form-label fw-bold">Parcel Count (readonly)</label>
-                    <input type="text" class="form-control" id="parcel-counter" value="${trackingList.length}" readonly style="background-color: #e9ecef; font-weight: bold;">
-                </div>
-
-                <div class="mb-3" id="tracking-list-container">
-                    <label class="form-label fw-bold">Tracking Numbers</label>
-                    ${trackingList.length === 0 ? '<p class="text-muted small">No tracking numbers added yet</p>' : ''}
-                    <div class="list-group" style="max-height: 200px; overflow-y: auto;">
-        `;
-
-        trackingList.forEach((tracking, index) => {
-            html += `
-                <div class="list-group-item d-flex justify-content-between align-items-center">
-                    <span><strong>#${index + 1}</strong> <code>${tracking}</code></span>
-                    <button class="btn btn-sm btn-danger" onclick="window.removeTracking(${index})">
-                        <i class="fas fa-trash"></i>
-                    </button>
-                </div>
-            `;
-        });
-
-        html += `
-                    </div>
+                <div class="mb-2">
+                    <label class="form-label small fw-bold mb-1">Note (optional)</label>
+                    <input type="text" id="tracking-note" class="form-control form-control-sm"
+                        placeholder="e.g., 'Fragile', 'Express delivery'">
                 </div>
             </div>
-        `;
-
-        return html;
-    }
-
-    // Global function to remove tracking
-    window.removeTracking = (index) => {
-        trackingList.splice(index, 1);
-        Swal.update({ html: renderTrackingUI() });
-        attachAddButtonListener();
-    };
-
-    function attachAddButtonListener() {
-        const addBtn = document.getElementById('add-tracking-btn');
-        const input = document.getElementById('tracking-input');
-
-        if (addBtn && input) {
-            addBtn.onclick = () => {
-                const value = input.value.trim();
-                if (value) {
-                    trackingList.push(value);
-                    Swal.update({ html: renderTrackingUI() });
-                    attachAddButtonListener();
-                    setTimeout(() => input.focus(), 100);
-                } else {
-                    Swal.showValidationMessage('Please enter a tracking number');
-                }
-            };
-        }
-    }
-
-    Swal.fire({
-        title: `Add Tracking - Order #${orderNumber}`,
-        html: renderTrackingUI(),
+        `,
         showCancelButton: true,
-        confirmButtonText: '<i class="fas fa-check"></i> Submit All Tracking',
+        confirmButtonText: '<i class="fas fa-check"></i> Add Tracking',
         cancelButtonText: 'Cancel',
-        width: '600px',
+        width: '450px',
         didOpen: () => {
-            attachAddButtonListener();
             document.getElementById('tracking-input').focus();
         },
         preConfirm: () => {
             const carrier = document.getElementById('tracking-carrier').value;
+            const trackingInput = document.getElementById('tracking-input').value.trim();
+            const note = document.getElementById('tracking-note').value.trim();
 
-            if (trackingList.length === 0) {
-                Swal.showValidationMessage('Please add at least one tracking number');
+            if (!trackingInput) {
+                Swal.showValidationMessage('Please enter at least one tracking number');
                 return false;
             }
 
-            return { carrier, trackingNumbers: trackingList };
+            // Split by newlines for multiple tracking numbers
+            const trackingNumbers = trackingInput.split('\n')
+                .map(t => t.trim())
+                .filter(t => t.length > 0);
+
+            return { carrier, trackingNumbers, note };
         }
     }).then((result) => {
         if (result.isConfirmed) {
-            const { carrier, trackingNumbers } = result.value;
+            const { carrier, trackingNumbers, note } = result.value;
 
             Swal.fire({
                 title: 'Adding Tracking...',
@@ -554,7 +500,8 @@ function addTrackingModal(orderId, orderNumber) {
                 body: JSON.stringify({
                     order_id: orderId,
                     tracking_numbers: trackingNumbers,
-                    carrier_name: carrier
+                    carrier_name: carrier,
+                    note: note
                 })
             })
             .then(response => response.json())
@@ -562,9 +509,9 @@ function addTrackingModal(orderId, orderNumber) {
                 if (data.success) {
                     Swal.fire({
                         icon: 'success',
-                        title: 'Success!',
+                        title: 'Tracking Added!',
                         html: `Added ${trackingNumbers.length} parcel(s) with tracking`,
-                        timer: 2000,
+                        timer: 1500,
                         showConfirmButton: false
                     }).then(() => {
                         location.reload();
@@ -1033,7 +980,8 @@ function bulkDownloadPackingSlips() {
 }
 
 // =============================================================================
-// BULK MARK AS SHIPPED
+// =============================================================================
+// BULK MARK AS SHIPPED (WITH TRACKING OPTION & REVERT)
 // =============================================================================
 
 function bulkMarkShipped() {
@@ -1044,61 +992,184 @@ function bulkMarkShipped() {
         return;
     }
 
+    // Ask if they want to add tracking first
     Swal.fire({
         title: 'Mark Orders as Shipped?',
-        html: `This will mark <strong>${selectedOrders.length}</strong> order(s) as SENT/SHIPPED`,
+        html: `
+            <div class="text-start mb-3">
+                <p>You are about to mark <strong>${selectedOrders.length}</strong> order(s) as <strong>SENT/SHIPPED</strong>.</p>
+                <div class="alert alert-warning small">
+                    <i class="fas fa-exclamation-triangle"></i> <strong>Note:</strong> Once marked as shipped,
+                    you have <strong>24 hours</strong> to revert back to OPEN status if needed.
+                </div>
+            </div>
+            <div class="form-check text-start">
+                <input class="form-check-input" type="checkbox" id="add-tracking-check">
+                <label class="form-check-label" for="add-tracking-check">
+                    <strong>Add tracking number(s) before shipping</strong>
+                </label>
+            </div>
+        `,
         icon: 'question',
         showCancelButton: true,
-        confirmButtonText: 'Yes, Mark as Shipped',
-        confirmButtonColor: '#28a745',
-        cancelButtonText: 'Cancel'
+        confirmButtonText: 'Continue',
+        cancelButtonText: 'Cancel',
+        preConfirm: () => {
+            return {
+                addTracking: document.getElementById('add-tracking-check').checked
+            };
+        }
     }).then((result) => {
         if (result.isConfirmed) {
-            Swal.fire({
-                title: 'Processing...',
-                html: '<i class="fas fa-spinner fa-spin fa-2x"></i>',
-                showConfirmButton: false,
-                allowOutsideClick: false
-            });
+            const { addTracking } = result.value;
 
-            const requests = selectedOrders.map(orderId => {
-                return fetch('/supplier/api/update-order-status.php', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        order_id: orderId,
-                        status: 'SENT'
-                    })
-                }).then(r => r.json());
-            });
-
-            Promise.all(requests)
-                .then(results => {
-                    const successful = results.filter(r => r.success).length;
-                    const failed = results.length - successful;
-
-                    if (failed === 0) {
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Success!',
-                            html: `Marked ${successful} order(s) as shipped`,
-                            timer: 2000,
-                            showConfirmButton: false
-                        }).then(() => location.reload());
-                    } else {
-                        Swal.fire({
-                            icon: 'warning',
-                            title: 'Partially Complete',
-                            html: `Success: ${successful}<br>Failed: ${failed}`
-                        }).then(() => location.reload());
+            if (addTracking) {
+                // Show compact tracking input
+                showBulkTrackingInput(selectedOrders);
+            } else {
+                // Warn about no tracking
+                Swal.fire({
+                    title: 'No Tracking Number?',
+                    html: `
+                        <p class="text-warning"><i class="fas fa-exclamation-triangle"></i> <strong>Warning:</strong>
+                        You are about to mark orders as shipped WITHOUT tracking numbers.</p>
+                        <p class="small text-muted">This may make it difficult to track deliveries later.</p>
+                    `,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Ship Without Tracking',
+                    cancelButtonText: 'Go Back',
+                    confirmButtonColor: '#dc3545'
+                }).then((confirmResult) => {
+                    if (confirmResult.isConfirmed) {
+                        performBulkMarkShipped(selectedOrders, null);
                     }
-                })
-                .catch(error => {
-                    console.error('Bulk mark shipped error:', error);
-                    Swal.fire('Error', 'Failed to update orders', 'error');
                 });
+            }
         }
     });
+}
+
+/**
+ * Show bulk tracking input modal (COMPACT)
+ */
+function showBulkTrackingInput(orderIds) {
+    Swal.fire({
+        title: 'Add Tracking & Ship',
+        html: `
+            <div class="text-start">
+                <div class="mb-2">
+                    <label class="form-label small fw-bold mb-1">Carrier</label>
+                    <select id="bulk-tracking-carrier" class="form-select form-select-sm">
+                        <option value="NZ Post">NZ Post</option>
+                        <option value="CourierPost">CourierPost</option>
+                        <option value="FedEx">FedEx</option>
+                        <option value="DHL">DHL</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+
+                <div class="mb-2">
+                    <label class="form-label small fw-bold mb-1">Tracking Number(s)</label>
+                    <textarea id="bulk-tracking-input" class="form-control form-control-sm" rows="3"
+                        placeholder="Enter one tracking number per line (one per order)"></textarea>
+                    <small class="text-muted">One per line if shipping ${orderIds.length} order(s) separately</small>
+                </div>
+
+                <div class="mb-2">
+                    <label class="form-label small fw-bold mb-1">Note (optional)</label>
+                    <input type="text" id="bulk-tracking-note" class="form-control form-control-sm"
+                        placeholder="e.g., 'All shipped together'">
+                </div>
+            </div>
+        `,
+        showCancelButton: true,
+        confirmButtonText: '<i class="fas fa-check"></i> Add Tracking & Ship',
+        cancelButtonText: 'Cancel',
+        width: '500px',
+        didOpen: () => {
+            document.getElementById('bulk-tracking-input').focus();
+        },
+        preConfirm: () => {
+            const carrier = document.getElementById('bulk-tracking-carrier').value;
+            const trackingInput = document.getElementById('bulk-tracking-input').value.trim();
+            const note = document.getElementById('bulk-tracking-note').value.trim();
+
+            if (!trackingInput) {
+                Swal.showValidationMessage('Please enter at least one tracking number');
+                return false;
+            }
+
+            // Split by newlines
+            const trackingNumbers = trackingInput.split('\n')
+                .map(t => t.trim())
+                .filter(t => t.length > 0);
+
+            return { carrier, trackingNumbers, note };
+        }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            performBulkMarkShipped(orderIds, result.value);
+        }
+    });
+}
+
+/**
+ * Actually mark orders as shipped (with optional tracking)
+ */
+function performBulkMarkShipped(orderIds, trackingData) {
+    Swal.fire({
+        title: 'Processing...',
+        html: '<i class="fas fa-spinner fa-spin fa-2x"></i>',
+        showConfirmButton: false,
+        allowOutsideClick: false
+    });
+
+    const requests = orderIds.map((orderId, index) => {
+        const payload = {
+            order_id: orderId,
+            status: 'SENT'
+        };
+
+        // Add tracking if provided
+        if (trackingData) {
+            payload.tracking_number = trackingData.trackingNumbers[index] || trackingData.trackingNumbers[0];
+            payload.carrier_name = trackingData.carrier;
+            payload.note = trackingData.note;
+        }
+
+        return fetch('/supplier/api/update-order-status.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        }).then(r => r.json());
+    });
+
+    Promise.all(requests)
+        .then(results => {
+            const successful = results.filter(r => r.success).length;
+            const failed = results.length - successful;
+
+            if (failed === 0) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Orders Shipped!',
+                    html: `Marked ${successful} order(s) as shipped${trackingData ? ' with tracking' : ''}`,
+                    timer: 1500,
+                    showConfirmButton: false
+                }).then(() => location.reload());
+            } else {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Partially Complete',
+                    html: `Success: ${successful}<br>Failed: ${failed}`
+                }).then(() => location.reload());
+            }
+        })
+        .catch(error => {
+            console.error('Bulk mark shipped error:', error);
+            Swal.fire('Error', 'Failed to update orders', 'error');
+        });
 }
 
 // =============================================================================
